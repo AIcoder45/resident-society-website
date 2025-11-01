@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "position": "President",
+    "photo": "/images/rwa/john-doe.jpg",
+    "message": "As President, I am committed to ensuring transparent governance and community welfare. Together, we build a stronger Greenwood City.",
+    "order": 1
+  },
+  {
+    "id": "2",
+    "name": "Jane Smith",
+    "position": "Vice President",
+    "photo": "/images/rwa/jane-smith.jpg",
+    "message": "I am dedicated to supporting our community initiatives and ensuring every resident's voice is heard in our decision-making process.",
+    "order": 2
+  },
+  {
+    "id": "3",
+    "name": "Robert Johnson",
+    "position": "Secretary",
+    "message": "As Secretary, I ensure all community communications are clear, timely, and transparent. Your concerns matter to us.",
+    "order": 3
+  },
+  {
+    "id": "4",
+    "name": "Emily Davis",
+    "position": "Treasurer",
+    "message": "Financial transparency and responsible budgeting are my priorities. I ensure every rupee is accounted for in community development.",
+    "order": 4
+  },
+  {
+    "id": "5",
+    "name": "Michael Wilson",
+    "position": "Member",
+    "message": "I work closely with residents to address maintenance issues and ensure our community facilities are well-maintained.",
+    "order": 5
+  },
+  {
+    "id": "6",
+    "name": "Sarah Brown",
+    "position": "Member",
+    "message": "Community events and social activities are my focus. Let's create memorable experiences that bring our residents together.",
+    "order": 6
+  }
+]
+

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "1",
+    "title": "New Year Celebration 2024",
+    "description": "Memorable moments from our New Year celebration with residents",
+    "images": [
+      "/images/gallery/new-year-1.jpg",
+      "/images/gallery/new-year-2.jpg",
+      "/images/gallery/new-year-3.jpg",
+      "/images/gallery/new-year-4.jpg"
+    ],
+    "eventId": null,
+    "createdAt": "2024-01-01T20:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "Community Garden",
+    "description": "Beautiful views of our thriving community garden",
+    "images": [
+      "/images/gallery/garden-1.jpg",
+      "/images/gallery/garden-2.jpg",
+      "/images/gallery/garden-3.jpg"
+    ],
+    "eventId": null,
+    "createdAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "id": "3",
+    "title": "Festival Celebrations",
+    "description": "Festival celebrations bringing our community together",
+    "images": [
+      "/images/gallery/festival-1.jpg",
+      "/images/gallery/festival-2.jpg",
+      "/images/gallery/festival-3.jpg",
+      "/images/gallery/festival-4.jpg",
+      "/images/gallery/festival-5.jpg"
+    ],
+    "eventId": null,
+    "createdAt": "2023-12-20T18:00:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Sports Day 2023",
+    "description": "Annual sports day with exciting competitions and fun activities",
+    "images": [
+      "/images/gallery/sports-1.jpg",
+      "/images/gallery/sports-2.jpg",
+      "/images/gallery/sports-3.jpg",
+      "/images/gallery/sports-4.jpg"
+    ],
+    "eventId": null,
+    "createdAt": "2023-11-15T09:00:00Z"
+  }
+]

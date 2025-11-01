@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "title": "Community Garden Workshop",
+    "slug": "community-garden-workshop",
+    "description": "Learn organic gardening techniques and sustainable practices. Perfect for beginners and experienced gardeners alike.",
+    "eventDate": "2024-03-10T10:00:00Z",
+    "location": "Community Garden",
+    "coverImage": "/images/events/garden-workshop.jpg",
+    "gallery": []
+  },
+  {
+    "id": "2",
+    "title": "Annual General Meeting",
+    "slug": "annual-general-meeting-2024",
+    "description": "Join us for the AGM where we'll discuss community matters, review annual reports, and plan for the future.",
+    "eventDate": "2024-03-15T18:00:00Z",
+    "location": "Community Hall",
+    "coverImage": "/images/events/agm.jpg",
+    "gallery": []
+  },
+  {
+    "id": "3",
+    "title": "Children's Fun Fair",
+    "slug": "childrens-fun-fair",
+    "description": "A day of fun activities, games, and entertainment for children of all ages. Food stalls and prizes included.",
+    "eventDate": "2024-03-20T14:00:00Z",
+    "location": "Central Park",
+    "coverImage": "/images/events/fun-fair.jpg",
+    "gallery": []
+  },
+  {
+    "id": "4",
+    "title": "Fitness Bootcamp",
+    "slug": "fitness-bootcamp",
+    "description": "Free fitness sessions for all residents. Improve your health while having fun with neighbors.",
+    "eventDate": "2024-02-28T07:00:00Z",
+    "location": "Sports Court",
+    "coverImage": "/images/events/fitness.jpg",
+    "gallery": []
+  },
+  {
+    "id": "5",
+    "title": "Cultural Night",
+    "slug": "cultural-night-2024",
+    "description": "Celebrate the diversity of our community with performances, food, and cultural displays from various backgrounds.",
+    "eventDate": "2024-04-05T19:00:00Z",
+    "location": "Community Hall",
+    "coverImage": "/images/events/cultural.jpg",
+    "gallery": []
+  }
+]

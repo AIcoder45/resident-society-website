@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "title": "Water Supply Maintenance",
+    "message": "Water supply will be temporarily interrupted on February 25th from 9 AM to 3 PM for maintenance work. Please store water in advance.",
+    "priority": "urgent",
+    "expiryDate": "2024-02-26T00:00:00Z",
+    "createdAt": "2024-02-20T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "Parking Regulations Reminder",
+    "message": "Please ensure your vehicles are parked in designated areas only. Unauthorized parking may result in fines.",
+    "priority": "normal",
+    "expiryDate": null,
+    "createdAt": "2024-02-15T08:00:00Z"
+  },
+  {
+    "id": "3",
+    "title": "New Committee Members Welcome",
+    "message": "We extend a warm welcome to our newly elected committee members. They will be joining us at the next meeting.",
+    "priority": "normal",
+    "expiryDate": null,
+    "createdAt": "2024-02-10T12:00:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Community Library Open",
+    "message": "The community library is now open with extended hours. Residents can borrow books and use the reading space.",
+    "priority": "normal",
+    "expiryDate": null,
+    "createdAt": "2024-02-05T14:00:00Z"
+  }
+]

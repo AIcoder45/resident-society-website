@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "title": "Annual General Meeting Scheduled",
+    "slug": "annual-general-meeting-scheduled",
+    "shortDescription": "The Annual General Meeting (AGM) for 2024 has been scheduled. All residents are invited to attend.",
+    "content": "We are pleased to announce that the Annual General Meeting (AGM) for the year 2024 has been scheduled. This is an important event where we will discuss community matters, review the past year's activities, and plan for the future.\n\nDate: March 15, 2024\nTime: 6:00 PM\nVenue: Community Hall\n\nAll residents are strongly encouraged to attend. Your participation is crucial for building a stronger community.",
+    "image": "/images/news/agm.jpg",
+    "category": "Announcements",
+    "publishedAt": "2024-02-01T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "New Playground Equipment Installed",
+    "slug": "new-playground-equipment-installed",
+    "shortDescription": "The community playground has been upgraded with new, safe equipment for children.",
+    "content": "Great news for families! We have successfully installed new playground equipment in our community playground. The new equipment includes:\n\n- Modern swing sets\n- Safe climbing structures\n- Slides with safety features\n- Interactive play panels\n\nThe installation was completed with safety as the top priority, and all equipment meets current safety standards. Children can now enjoy a safer and more engaging play experience.",
+    "image": "/images/news/playground.jpg",
+    "category": "Infrastructure",
+    "publishedAt": "2024-01-25T14:30:00Z"
+  },
+  {
+    "id": "3",
+    "title": "Monthly Cleaning Drive Success",
+    "slug": "monthly-cleaning-drive-success",
+    "shortDescription": "The monthly community cleaning drive saw excellent participation from residents.",
+    "content": "Our monthly community cleaning drive held on January 20th was a tremendous success! Over 50 residents participated in cleaning up the common areas, gardens, and walkways.\n\nWe removed over 200 kg of waste and beautified several areas of our community. Special thanks to all volunteers who dedicated their time and effort.\n\nThe next cleaning drive is scheduled for February 20th. We look forward to seeing even more participation.",
+    "image": "/images/news/cleaning.jpg",
+    "category": "Community",
+    "publishedAt": "2024-01-22T09:15:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Security System Upgrade",
+    "slug": "security-system-upgrade",
+    "shortDescription": "Enhanced security measures including new CCTV cameras and access control systems.",
+    "content": "To ensure the safety and security of all residents, we have upgraded our security systems with:\n\n- High-resolution CCTV cameras covering all entry/exit points\n- Modern access control systems\n- 24/7 security monitoring\n- Emergency response protocols\n\nThese improvements will help maintain a secure environment for everyone. Please contact the security office if you need access cards or have any security concerns.",
+    "image": "/images/news/security.jpg",
+    "category": "Security",
+    "publishedAt": "2024-01-15T11:00:00Z"
+  },
+  {
+    "id": "5",
+    "title": "Green Energy Initiative Launched",
+    "slug": "green-energy-initiative-launched",
+    "shortDescription": "Solar panels installed to reduce electricity costs and promote sustainability.",
+    "content": "We are excited to announce the launch of our Green Energy Initiative! Solar panels have been installed on community buildings to:\n\n- Reduce electricity costs\n- Lower carbon footprint\n- Promote sustainable living\n- Set an example for other communities\n\nThe initiative is expected to save up to 30% on electricity bills while contributing to environmental protection. This is a significant step towards a more sustainable future.",
+    "image": "/images/news/solar.jpg",
+    "category": "Sustainability",
+    "publishedAt": "2024-01-10T08:00:00Z"
+  }
+]

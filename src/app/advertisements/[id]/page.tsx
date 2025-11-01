@@ -1,0 +1,225 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Phone, Mail, Globe, Tag, Calendar, MapPin } from "lucide-react";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Section } from "@/components/shared/Section";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { getAdvertisementById, getAdvertisements } from "@/lib/api";
+import { formatDate } from "@/lib/utils";
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateStaticParams() {
+  const advertisements = await getAdvertisements();
+  return advertisements.map((ad) => ({
+    id: ad.id,
+  }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const advertisement = await getAdvertisementById(id);
+
+  if (!advertisement) {
+    return {
+      title: "Advertisement Not Found",
+    };
+  }
+
+  return {
+    title: `${advertisement.title} - Greenwood City`,
+    description: advertisement.description,
+  };
+}
+
+export default async function AdvertisementDetailPage({ params }: Props) {
+  const { id } = await params;
+  
+  if (process.env.NODE_ENV === "development") {
+    console.log("🔍 Advertisement detail page - ID:", id);
+  }
+
+  const advertisement = await getAdvertisementById(id);
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("🔍 Advertisement detail page - Result:", {
+      hasAdvertisement: !!advertisement,
+      title: advertisement?.title,
+    });
+  }
+
+  if (!advertisement) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("⚠️ Advertisement not found, calling notFound()");
+    }
+    notFound();
+  }
+
+  const isExpired = advertisement.validUntil
+    ? new Date(advertisement.validUntil) < new Date()
+    : false;
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      <Breadcrumb
+        items={[
+          { label: "Advertisements", href: "/advertisements" },
+          { label: advertisement.title },
+        ]}
+      />
+
+      <article>
+        <Section>
+          <div className="space-y-6">
+            <div>
+              <Button asChild variant="ghost" className="mb-4">
+                <Link href="/advertisements">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Advertisements
+                </Link>
+              </Button>
+
+              <div className="flex items-center gap-2 mb-4">
+                <Badge variant="outline">{advertisement.category}</Badge>
+                {isExpired && (
+                  <Badge variant="destructive">Expired</Badge>
+                )}
+              </div>
+
+              <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
+                {advertisement.title}
+              </h1>
+
+              {advertisement.businessName && (
+                <p className="text-lg font-semibold text-primary mb-2">
+                  {advertisement.businessName}
+                </p>
+              )}
+
+              {advertisement.validUntil && (
+                <p className="text-sm text-text-light">
+                  Valid until: {formatDate(advertisement.validUntil, "long")}
+                </p>
+              )}
+            </div>
+
+            {/* Image Section */}
+            {advertisement.image && (
+              <>
+                <div className="relative w-full h-96 overflow-hidden rounded-lg">
+                  <Image
+                    src={advertisement.image}
+                    alt={advertisement.title}
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 800px"
+                  />
+                </div>
+                <Separator />
+              </>
+            )}
+
+            {/* Description */}
+            <div className="prose prose-lg max-w-none text-text">
+              <p className="text-lg leading-relaxed whitespace-pre-line">
+                {advertisement.description}
+              </p>
+            </div>
+
+            {/* Discount and Offers */}
+            {(advertisement.discount || advertisement.offer) && (
+              <>
+                <Separator />
+                <Card>
+                  <CardContent className="p-6">
+                    <h2 className="text-xl font-semibold text-text mb-4">
+                      Special Offers
+                    </h2>
+                    <div className="space-y-3">
+                      {advertisement.discount && (
+                        <div className="flex items-center gap-3">
+                          <Tag className="h-5 w-5 text-primary flex-shrink-0" />
+                          <div>
+                            <p className="font-semibold text-text">
+                              Discount: <span className="text-primary">{advertisement.discount}</span>
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {advertisement.offer && (
+                        <div className="flex items-center gap-3">
+                          <Tag className="h-5 w-5 text-primary flex-shrink-0" />
+                          <div>
+                            <p className="text-text-light">
+                              {advertisement.offer}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
+            {/* Contact Information */}
+            {(advertisement.contactPhone ||
+              advertisement.contactEmail ||
+              advertisement.website) && (
+              <>
+                <Separator />
+                <Card>
+                  <CardContent className="p-6">
+                    <h2 className="text-xl font-semibold text-text mb-4">
+                      Contact Information
+                    </h2>
+                    <div className="space-y-3">
+                      {advertisement.contactPhone && (
+                        <a
+                          href={`tel:${advertisement.contactPhone.replace(/\s+/g, "")}`}
+                          className="flex items-center gap-3 text-text hover:text-primary transition-colors"
+                        >
+                          <Phone className="h-5 w-5 text-primary flex-shrink-0" />
+                          <span className="text-lg">{advertisement.contactPhone}</span>
+                        </a>
+                      )}
+                      {advertisement.contactEmail && (
+                        <a
+                          href={`mailto:${advertisement.contactEmail}`}
+                          className="flex items-center gap-3 text-text-light hover:text-primary transition-colors"
+                        >
+                          <Mail className="h-5 w-5 text-primary flex-shrink-0" />
+                          <span className="text-lg">{advertisement.contactEmail}</span>
+                        </a>
+                      )}
+                      {advertisement.website && (
+                        <a
+                          href={advertisement.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 text-text-light hover:text-primary transition-colors"
+                        >
+                          <Globe className="h-5 w-5 text-primary flex-shrink-0" />
+                          <span className="text-lg truncate">{advertisement.website.replace(/^https?:\/\//, "")}</span>
+                        </a>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+          </div>
+        </Section>
+      </article>
+    </div>
+  );
+}
+

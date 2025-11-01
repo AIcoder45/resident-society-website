@@ -1,0 +1,63 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Utility function to merge Tailwind CSS classes
+ * @param inputs - Class values to merge
+ * @returns Merged class string
+ */
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
+
+/**
+ * Formats a date to a readable string
+ * @param date - Date string or Date object
+ * @param format - Format type ('short' | 'long' | 'relative')
+ * @returns Formatted date string or empty string if invalid
+ */
+export function formatDate(
+  date: string | Date | null | undefined,
+  format: "short" | "long" | "relative" = "short",
+): string {
+  // Handle null/undefined
+  if (!date) {
+    return "";
+  }
+
+  // Create date object
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+
+  // Validate date
+  if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+    console.warn("Invalid date passed to formatDate:", date);
+    return "";
+  }
+
+  if (format === "relative") {
+    const now = new Date();
+    const diff = now.getTime() - dateObj.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days === 0) return "Today";
+    if (days === 1) return "Yesterday";
+    if (days < 7) return `${days} days ago`;
+    if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+    if (days < 365) return `${Math.floor(days / 30)} months ago`;
+    return `${Math.floor(days / 365)} years ago`;
+  }
+
+  if (format === "long") {
+    return dateObj.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  return dateObj.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
