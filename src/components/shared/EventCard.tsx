@@ -31,19 +31,23 @@ export function EventCard({ event, className }: EventCardProps) {
       transition={{ duration: 0.3 }}
       className={cn("w-full min-w-0", className)}
     >
-      <Link href={`/events/${event.slug}`} className="block h-full w-full">
+      <Link href={`/events/${event.slug}`} className="block h-full w-full touch-manipulation">
         <Card className="h-full w-full transition-all hover:shadow-lg overflow-hidden">
           {event.coverImage && (
-            <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
+            <div className="relative w-full h-52 sm:h-48 overflow-hidden rounded-t-lg">
               <Image
                 src={event.coverImage}
                 alt={event.title}
                 fill
                 className="object-cover transition-transform duration-300 hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                loading="lazy"
               />
               {isUpcoming && (
-                <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
+                <div
+                  className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold"
+                  aria-label="Upcoming event"
+                >
                   Upcoming
                 </div>
               )}

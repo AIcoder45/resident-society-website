@@ -12,6 +12,20 @@ export const metadata: Metadata = {
 export default async function RWAPage() {
   const members = await getRWAMembers();
 
+  // Debug logging in development
+  if (process.env.NODE_ENV === "development") {
+    console.log("🔍 RWA Page - Members received:", {
+      count: members.length,
+      members: members.map((m) => ({
+        id: m.id,
+        name: m.name,
+        position: m.position,
+        hasPhoto: !!m.photo,
+        hasMessage: !!m.message,
+      })),
+    });
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Breadcrumb items={[{ label: "RWA" }]} />

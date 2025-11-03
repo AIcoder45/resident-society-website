@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { RichTextContent } from "@/components/shared/RichTextContent";
 import { getAdvertisementById, getAdvertisements } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -113,7 +114,7 @@ export default async function AdvertisementDetailPage({ params }: Props) {
             {/* Image Section */}
             {advertisement.image && (
               <>
-                <div className="relative w-full h-96 overflow-hidden rounded-lg">
+                <div className="relative w-full aspect-video overflow-hidden rounded-lg">
                   <Image
                     src={advertisement.image}
                     alt={advertisement.title}
@@ -128,11 +129,9 @@ export default async function AdvertisementDetailPage({ params }: Props) {
             )}
 
             {/* Description */}
-            <div className="prose prose-lg max-w-none text-text">
-              <p className="text-lg leading-relaxed whitespace-pre-line">
-                {advertisement.description}
-              </p>
-            </div>
+            {advertisement.description && (
+              <RichTextContent content={advertisement.description} />
+            )}
 
             {/* Discount and Offers */}
             {(advertisement.discount || advertisement.offer) && (

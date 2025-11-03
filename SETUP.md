@@ -108,3 +108,4 @@ src/
 ✅ Image optimization (Next.js Image)
 ✅ Type-safe (TypeScript)
 ✅ Modular component structure
+

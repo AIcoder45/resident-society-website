@@ -25,13 +25,21 @@ export default async function HomePage() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="bg-primary text-white py-3 md:py-5 lg:py-6">
-        <div className="mx-auto max-w-[63%] md:max-w-[49%] lg:max-w-[49%] px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold mb-2 md:mb-3 text-white">
-              Welcome to Greenwood City
-            </h1>
-            <p className="text-xs md:text-sm lg:text-base text-white/90 max-w-2xl mx-auto mb-3 md:mb-4 px-2 md:px-0">
+      <section className="bg-primary text-white py-6 md:py-8 lg:py-10">
+        <div className="mx-auto max-w-[90%] sm:max-w-[80%] md:max-w-[70%] lg:max-w-[60%] px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-4 md:space-y-5 lg:space-y-6">
+            <div className="space-y-2">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white">
+                Welcome to
+              </h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white">
+                Greenwood City{" "}
+                <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal opacity-90">
+                  Block C
+                </span>
+              </h1>
+            </div>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed px-2 md:px-0">
               <span className="hidden md:inline">
                 Building a stronger community together. Stay connected and informed with the latest
                 news, events, and updates.
@@ -40,11 +48,11 @@ export default async function HomePage() {
                 Building a stronger community together.
               </span>
             </p>
-            <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center">
-              <Button asChild size="sm" className="text-xs md:text-sm bg-white text-primary hover:bg-white/90 px-4 py-2">
+            <div className="hidden md:flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-2">
+              <Button asChild size="default" className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all">
                 <Link href="/news">Latest News</Link>
               </Button>
-              <Button asChild size="sm" variant="outline" className="text-xs md:text-sm border-white text-white hover:bg-white/10 px-4 py-2">
+              <Button asChild size="default" variant="outline" className="border-2 border-white text-white hover:bg-white/10 hover:border-white/80 transition-all">
                 <Link href="/events">Upcoming Events</Link>
               </Button>
             </div>
@@ -53,7 +61,7 @@ export default async function HomePage() {
       </section>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-6">
         {/* Latest News Section */}
         <Section title="Latest News" subtitle="Stay informed with the latest community updates">
           {latestNews.length > 0 ? (

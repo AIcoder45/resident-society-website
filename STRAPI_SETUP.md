@@ -350,3 +350,4 @@ Strapi returns relative URLs. The API functions handle this automatically by pre
 
 - [Strapi Documentation](https://docs.strapi.io/)
 - [Strapi Discord](https://discord.strapi.io/)
+

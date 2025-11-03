@@ -26,7 +26,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={cn("py-8 md:py-12 lg:py-16 w-full", className)}
+      className={cn("py-6 md:py-12 lg:py-16 w-full", className)}
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -36,14 +36,14 @@ export function Section({
         className="w-full"
       >
         {(title || subtitle) && (
-          <div className="mb-6 md:mb-8">
+          <div className="mb-5 md:mb-8">
             {title && (
-              <h2 className="text-3xl md:text-4xl font-bold text-text mb-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text mb-2 leading-tight">
                 {title}
               </h2>
             )}
             {subtitle && (
-              <p className="text-lg text-text-light max-w-2xl">{subtitle}</p>
+              <p className="text-base sm:text-lg text-text-light max-w-2xl leading-relaxed">{subtitle}</p>
             )}
           </div>
         )}
@@ -52,3 +52,7 @@ export function Section({
     </section>
   );
 }
+
+
+
+

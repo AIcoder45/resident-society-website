@@ -58,7 +58,7 @@ export function GalleryGrid({
             <Card className="w-full h-full overflow-hidden hover:shadow-lg transition-shadow">
               {item.images[0] && (
                 <div
-                  className="relative w-full aspect-square overflow-hidden cursor-pointer"
+                  className="relative w-full aspect-square overflow-hidden cursor-pointer touch-manipulation"
                   onClick={() => handleImageClick(item, 0)}
                 >
                   <Image
@@ -74,7 +74,8 @@ export function GalleryGrid({
                         e.stopPropagation();
                         handleImageClick(item, 0);
                       }}
-                      className="absolute top-2 right-2 bg-primary text-white px-2 py-1 rounded text-xs font-semibold hover:bg-primary/90 transition-colors"
+                      className="absolute top-2 right-2 bg-primary text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-primary/90 transition-colors touch-manipulation min-h-[32px] min-w-[32px]"
+                      aria-label={`View ${item.images.length} images`}
                     >
                       +{item.images.length - 1}
                     </button>
