@@ -36,19 +36,20 @@ export function ContentCard({
   const cardContent = (
     <Card
       className={cn(
-        "h-full w-full transition-all hover:shadow-lg overflow-hidden",
+        "h-full w-full transition-all hover:shadow-lg overflow-hidden touch-manipulation",
         priority === "urgent" && "border-2 border-red-500",
         className,
       )}
     >
       {image && (
-        <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
+        <div className="relative w-full h-52 sm:h-48 overflow-hidden rounded-t-lg">
           <Image
             src={image}
             alt={title}
             fill
             className="object-cover transition-transform duration-300 hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            loading="lazy"
           />
         </div>
       )}
@@ -80,7 +81,7 @@ export function ContentCard({
         transition={{ duration: 0.3 }}
         className="w-full min-w-0"
       >
-        <Link href={href} className="block h-full w-full">
+        <Link href={href} className="block h-full w-full touch-manipulation">
           {cardContent}
         </Link>
       </motion.div>

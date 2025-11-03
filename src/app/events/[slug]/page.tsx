@@ -5,6 +5,7 @@ import { Calendar, MapPin } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { Separator } from "@/components/ui/separator";
+import { RichTextContent } from "@/components/shared/RichTextContent";
 import { getEventBySlug, getEvents } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -82,7 +83,7 @@ export default async function EventDetailPage({ params }: Props) {
             </div>
 
             {event.coverImage && (
-              <div className="relative w-full h-96 overflow-hidden rounded-lg">
+              <div className="relative w-full aspect-video overflow-hidden rounded-lg">
                 <Image
                   src={event.coverImage}
                   alt={event.title}
@@ -96,11 +97,7 @@ export default async function EventDetailPage({ params }: Props) {
 
             <Separator />
 
-            <div className="prose prose-lg max-w-none text-text">
-              <p className="text-lg leading-relaxed whitespace-pre-line">
-                {event.description}
-              </p>
-            </div>
+            <RichTextContent content={event.description} />
 
             {/* Gallery Section */}
             {event.gallery && event.gallery.length > 0 && (

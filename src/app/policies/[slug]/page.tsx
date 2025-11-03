@@ -7,6 +7,7 @@ import { Section } from "@/components/shared/Section";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { RichTextContent } from "@/components/shared/RichTextContent";
 import { QRCodeShare } from "@/components/shared/QRCodeShare";
 import { getPolicyBySlug, getPolicies } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
@@ -90,11 +91,7 @@ export default async function PolicyDetailPage({ params }: Props) {
 
             <Separator />
 
-            <div className="prose prose-lg max-w-none text-text">
-              <p className="text-lg leading-relaxed whitespace-pre-line">
-                {policy.description}
-              </p>
-            </div>
+            <RichTextContent content={policy.description || ""} />
 
             {policy.file && (
               <>

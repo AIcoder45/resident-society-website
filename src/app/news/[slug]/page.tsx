@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { Separator } from "@/components/ui/separator";
+import { RichTextContent } from "@/components/shared/RichTextContent";
 import { getNewsBySlug, getNews } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -67,7 +68,7 @@ export default async function NewsDetailPage({ params }: Props) {
             </div>
 
             {news.image && (
-              <div className="relative w-full h-96 overflow-hidden rounded-lg">
+              <div className="relative w-full aspect-video overflow-hidden rounded-lg">
                 <Image
                   src={news.image}
                   alt={news.title}
@@ -81,10 +82,7 @@ export default async function NewsDetailPage({ params }: Props) {
 
             <Separator />
 
-            <div
-              className="prose prose-lg max-w-none text-text"
-              dangerouslySetInnerHTML={{ __html: news.content.replace(/\n/g, "<br />") }}
-            />
+            <RichTextContent content={news.content} />
           </div>
         </Section>
       </article>
