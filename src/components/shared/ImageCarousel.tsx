@@ -27,6 +27,16 @@ export function ImageCarousel({
   const [currentIndex, setCurrentIndex] = React.useState(initialIndex);
   const [isLoading, setIsLoading] = React.useState(true);
 
+  const goToNext = React.useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setIsLoading(true);
+  }, [images.length]);
+
+  const goToPrevious = React.useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setIsLoading(true);
+  }, [images.length]);
+
   // Handle keyboard navigation
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -41,17 +51,7 @@ export function ImageCarousel({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex]);
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-    setIsLoading(true);
-  };
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-    setIsLoading(true);
-  };
+  }, [goToNext, goToPrevious, onClose]);
 
   const currentImage = images[currentIndex];
 

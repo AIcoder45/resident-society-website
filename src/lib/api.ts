@@ -8,6 +8,8 @@ import type {
   ContactPageData,
   RWAMember,
   Advertisement,
+  Homepage,
+  Theme,
 } from "@/types";
 import { fetchStrapi, getStrapiImageUrl as getStrapiImageUrlUtil } from "@/lib/strapi";
 
@@ -748,6 +750,239 @@ export async function getContactPageData(): Promise<ContactPageData | null> {
   } else {
     if (process.env.NODE_ENV === "development") {
       console.warn("⚠️ USE_STRAPI is false, using default contact info");
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Fetches homepage content data
+ * @returns Homepage data or null if not available
+ */
+export async function getHomepage(): Promise<Homepage | null> {
+  if (USE_STRAPI) {
+    try {
+      const url = `/api/homepage?populate=*`;
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔍 Fetching homepage data from Strapi:", `${STRAPI_URL}${url}`);
+      }
+
+      const response = await fetchStrapi<any>(url);
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("📦 Homepage API response:", {
+          hasResponse: !!response,
+          hasData: !!response?.data,
+          dataKeys: response?.data ? Object.keys(response.data) : [],
+        });
+      }
+
+      if (!response?.data) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ No homepage data returned from Strapi");
+        }
+        return null;
+      }
+
+      // Handle both Strapi v4 (with attributes) and v5/flat structure
+      const isV4Structure = response.data.attributes !== undefined;
+      const homepageData = isV4Structure ? response.data.attributes : response.data;
+
+      const homepage: Homepage = {
+        id: response.data.id.toString(),
+        heroWelcomeText: homepageData.heroWelcomeText || response.data.heroWelcomeText || "Welcome to",
+        heroTitleText: homepageData.heroTitleText || response.data.heroTitleText || "Greenwood City",
+        heroSubtitleText: homepageData.heroSubtitleText || response.data.heroSubtitleText || "Block C",
+        heroDescription: homepageData.heroDescription || response.data.heroDescription || "Building a stronger community together. Stay connected and informed with the latest news, events, and updates.",
+        heroDescriptionMobile: homepageData.heroDescriptionMobile || response.data.heroDescriptionMobile || null,
+        newsSectionTitle: homepageData.newsSectionTitle || response.data.newsSectionTitle || "Latest News",
+        newsSectionSubtitle: homepageData.newsSectionSubtitle || response.data.newsSectionSubtitle || "Stay informed with the latest community updates",
+        eventsSectionTitle: homepageData.eventsSectionTitle || response.data.eventsSectionTitle || "Upcoming Events",
+        eventsSectionSubtitle: homepageData.eventsSectionSubtitle || response.data.eventsSectionSubtitle || "Join us for exciting community events and activities",
+        gallerySectionTitle: homepageData.gallerySectionTitle || response.data.gallerySectionTitle || "Photo Gallery",
+        gallerySectionSubtitle: homepageData.gallerySectionSubtitle || response.data.gallerySectionSubtitle || "Memorable moments from our community events and activities",
+        advertisementsSectionTitle: homepageData.advertisementsSectionTitle || response.data.advertisementsSectionTitle || "Local Advertisements",
+        advertisementsSectionSubtitle: homepageData.advertisementsSectionSubtitle || response.data.advertisementsSectionSubtitle || "Discover offers and services from local residents",
+      };
+
+      if (process.env.NODE_ENV === "development") {
+        console.log(`✅ Successfully fetched homepage data from Strapi`);
+        console.log("Homepage data:", {
+          heroTitleText: homepage.heroTitleText,
+          heroSubtitleText: homepage.heroSubtitleText,
+          newsSectionTitle: homepage.newsSectionTitle,
+        });
+      }
+
+      return homepage;
+    } catch (error) {
+      console.error("❌ Error fetching homepage data from Strapi:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+      }
+      return null;
+    }
+  } else {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("⚠️ USE_STRAPI is false, using default homepage content");
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Fetches theme/branding data
+ * @returns Theme data or null if not available
+ */
+export async function getTheme(): Promise<Theme | null> {
+  if (USE_STRAPI) {
+    try {
+      const url = `/api/theme?populate=*`;
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔍 Fetching theme data from Strapi:", `${STRAPI_URL}${url}`);
+      }
+
+      const response = await fetchStrapi<any>(url);
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("📦 Theme API response:", {
+          hasResponse: !!response,
+          hasData: !!response?.data,
+          dataKeys: response?.data ? Object.keys(response.data) : [],
+        });
+      }
+
+      if (!response?.data) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ No theme data returned from Strapi");
+        }
+        return null;
+      }
+
+      // Handle both Strapi v4 (with attributes) and v5/flat structure
+      const isV4Structure = response.data.attributes !== undefined;
+      const themeData = isV4Structure ? response.data.attributes : response.data;
+
+      // Extract logo URLs
+      // Handle both Strapi v4 (nested) and v5 (flat) structures
+      let logoUrl: string | undefined = undefined;
+      let logoDarkUrl: string | undefined = undefined;
+      let faviconUrl: string | undefined = undefined;
+
+      // Check logo - can be in themeData or directly in response.data
+      const logoSource = themeData.logo || response.data.logo;
+      
+      if (logoSource) {
+        if (process.env.NODE_ENV === "development") {
+          console.log("🔍 Logo extraction:", {
+            hasLogo: !!logoSource,
+            logoType: typeof logoSource,
+            hasUrl: typeof logoSource === "object" && "url" in logoSource,
+            logoKeys: typeof logoSource === "object" ? Object.keys(logoSource) : [],
+          });
+        }
+
+        // Strapi v5: logo is already populated as an object with url property
+        if (typeof logoSource === "object" && logoSource !== null && "url" in logoSource) {
+          const url = (logoSource as any).url as string;
+          logoUrl = url.startsWith("http")
+            ? url
+            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+          
+          if (process.env.NODE_ENV === "development") {
+            console.log("✅ Logo URL extracted:", logoUrl);
+          }
+        } else if (typeof logoSource === "object" && logoSource !== null && "data" in logoSource) {
+          // Strapi v4: nested structure with data.attributes.url
+          const logoData = (logoSource as any).data;
+          logoUrl = getStrapiImageUrlUtil(logoData) || undefined;
+        } else {
+          // Try using the utility function as fallback
+          logoUrl = getStrapiImageUrlUtil(logoSource) || undefined;
+        }
+      }
+
+      // Check logoDark
+      const logoDarkSource = themeData.logoDark || response.data.logoDark;
+      if (logoDarkSource) {
+        if (typeof logoDarkSource === "object" && logoDarkSource !== null && "url" in logoDarkSource) {
+          const url = (logoDarkSource as any).url as string;
+          logoDarkUrl = url.startsWith("http")
+            ? url
+            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+        } else if (typeof logoDarkSource === "object" && logoDarkSource !== null && "data" in logoDarkSource) {
+          const logoDarkData = (logoDarkSource as any).data;
+          logoDarkUrl = getStrapiImageUrlUtil(logoDarkData) || undefined;
+        } else {
+          logoDarkUrl = getStrapiImageUrlUtil(logoDarkSource) || undefined;
+        }
+      }
+
+      // Check favicon
+      const faviconSource = themeData.favicon || response.data.favicon;
+      if (faviconSource) {
+        if (typeof faviconSource === "object" && faviconSource !== null && "url" in faviconSource) {
+          const url = (faviconSource as any).url as string;
+          faviconUrl = url.startsWith("http")
+            ? url
+            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+        } else if (typeof faviconSource === "object" && faviconSource !== null && "data" in faviconSource) {
+          const faviconData = (faviconSource as any).data;
+          faviconUrl = getStrapiImageUrlUtil(faviconData) || undefined;
+        } else {
+          faviconUrl = getStrapiImageUrlUtil(faviconSource) || undefined;
+        }
+      }
+
+      const theme: Theme = {
+        id: response.data.id.toString(),
+        siteName: themeData.siteName || response.data.siteName || undefined,
+        siteShortName: themeData.siteShortName || response.data.siteShortName || undefined,
+        siteDescription: themeData.siteDescription || response.data.siteDescription || undefined,
+        logo: logoUrl,
+        logoDark: logoDarkUrl,
+        favicon: faviconUrl,
+        primaryColor: themeData.primaryColor || response.data.primaryColor || "#2F855A",
+        primaryColorDark: themeData.primaryColorDark || response.data.primaryColorDark || "#22543D",
+        primaryColorLight: themeData.primaryColorLight || response.data.primaryColorLight || "#48BB78",
+        secondaryColor: themeData.secondaryColor || response.data.secondaryColor || null,
+        backgroundColor: themeData.backgroundColor || response.data.backgroundColor || "#F0FFF4",
+        backgroundColorDark: themeData.backgroundColorDark || response.data.backgroundColorDark || "#C6F6D5",
+        textColor: themeData.textColor || response.data.textColor || "#1A202C",
+        textColorLight: themeData.textColorLight || response.data.textColorLight || "#4A5568",
+        themeColor: themeData.themeColor || response.data.themeColor || "#2F855A",
+        accentColor: themeData.accentColor || response.data.accentColor || null,
+        errorColor: themeData.errorColor || response.data.errorColor || "#E53E3E",
+        successColor: themeData.successColor || response.data.successColor || "#38A169",
+        warningColor: themeData.warningColor || response.data.warningColor || "#D69E2E",
+        infoColor: themeData.infoColor || response.data.infoColor || "#3182CE",
+      };
+
+      if (process.env.NODE_ENV === "development") {
+        console.log(`✅ Successfully fetched theme data from Strapi`);
+        console.log("Theme data:", {
+          primaryColor: theme.primaryColor,
+          backgroundColor: theme.backgroundColor,
+          textColor: theme.textColor,
+          hasLogo: !!theme.logo,
+        });
+      }
+
+      return theme;
+    } catch (error) {
+      console.error("❌ Error fetching theme data from Strapi:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+      }
+      return null;
+    }
+  } else {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("⚠️ USE_STRAPI is false, using default theme");
     }
   }
 

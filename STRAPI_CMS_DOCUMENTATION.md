@@ -30,15 +30,16 @@ The Greenwood City website uses Strapi CMS v4 or v5 to manage all dynamic conten
 The following content types need to be created in Strapi:
 
 1. **Homepage** (Single Type) - Homepage hero section and section headings
-2. **News** (Collection Type) - News articles
-3. **Event** (Collection Type) - Community events
-4. **Gallery** (Collection Type) - Photo gallery items
-5. **Notification** (Collection Type) - Announcements and notifications
-6. **Policy** (Collection Type) - Policies and documents
-7. **Contact** (Single Type) - Contact page main data
-8. **Contact Info** (Collection Type) - Contact information cards
-9. **RWA** (Collection Type) - RWA governing body members
-10. **Advertisement** (Collection Type) - Resident advertisements
+2. **Theme** (Single Type) - Site branding, colors, and visual identity
+3. **News** (Collection Type) - News articles
+4. **Event** (Collection Type) - Community events
+5. **Gallery** (Collection Type) - Photo gallery items
+6. **Notification** (Collection Type) - Announcements and notifications
+7. **Policy** (Collection Type) - Policies and documents
+8. **Contact** (Single Type) - Contact page main data
+9. **Contact Info** (Collection Type) - Contact information cards
+10. **RWA** (Collection Type) - RWA governing body members
+11. **Advertisement** (Collection Type) - Resident advertisements
 
 ---
 
@@ -73,7 +74,79 @@ This manages all static text content on the homepage.
 
 ---
 
-### 2. News (Collection Type)
+### 2. Theme (Single Type)
+
+**API Name:** `theme`  
+**Display Name:** "Theme"
+
+This manages all branding, colors, and visual identity settings for the website. Changes here will affect the entire site's appearance.
+
+#### Fields:
+
+| Field Name | Type | Settings | Description |
+|------------|------|----------|-------------|
+| `siteName` | Text (Short text) | Required, Default: "Greenwood City Block C" | Full site name |
+| `siteShortName` | Text (Short text) | Required, Default: "Block C" | Short site name (for mobile, PWA) |
+| `siteDescription` | Text (Long text) | Required | Site meta description |
+| `logo` | Media | Single media, Type: Images only | Main logo image (recommended: SVG or PNG with transparent background) |
+| `logoDark` | Media | Single media, Type: Images only | Dark mode logo variant (optional) |
+| `favicon` | Media | Single media, Type: Images only | Favicon (16x16 or 32x32 PNG) |
+| `primaryColor` | Text (Short text) | Required, Default: "#2F855A" | Primary brand color (hex code, e.g., #2F855A) |
+| `primaryColorDark` | Text (Short text) | Required, Default: "#22543D" | Darker variant of primary color |
+| `primaryColorLight` | Text (Short text) | Required, Default: "#48BB78" | Lighter variant of primary color |
+| `secondaryColor` | Text (Short text) | Optional | Secondary brand color (hex code) |
+| `backgroundColor` | Text (Short text) | Required, Default: "#F0FFF4" | Main background color |
+| `backgroundColorDark` | Text (Short text) | Optional, Default: "#C6F6D5" | Darker background variant |
+| `textColor` | Text (Short text) | Required, Default: "#1A202C" | Primary text color |
+| `textColorLight` | Text (Short text) | Required, Default: "#4A5568" | Light text color (for secondary text) |
+| `themeColor` | Text (Short text) | Required, Default: "#2F855A" | PWA theme color (for mobile browser bars) |
+| `accentColor` | Text (Short text) | Optional | Accent color for highlights, links, etc. |
+| `errorColor` | Text (Short text) | Optional, Default: "#E53E3E" | Error/alert color |
+| `successColor` | Text (Short text) | Optional, Default: "#38A169" | Success color |
+| `warningColor` | Text (Short text) | Optional, Default: "#D69E2E" | Warning color |
+| `infoColor` | Text (Short text) | Optional, Default: "#3182CE" | Info color |
+
+**API Endpoint:** `GET /api/theme?populate=*`
+
+**Color Format Guidelines:**
+- All colors must be in hexadecimal format (e.g., `#2F855A`)
+- Include the `#` symbol
+- Use uppercase or lowercase (both are accepted)
+- For transparency, use 8-digit hex (e.g., `#2F855A80` for 50% opacity)
+
+**Logo Guidelines:**
+- **Main Logo:** Recommended size: 200x60px (or proportional)
+- **Format:** SVG (preferred) or PNG with transparent background
+- **Dark Logo:** Use when you have a dark mode variant
+- **Favicon:** 16x16px or 32x32px PNG, square format
+
+**Example Data:**
+```json
+{
+  "siteName": "Greenwood City Block C",
+  "siteShortName": "Block C",
+  "siteDescription": "Stay connected with Greenwood City Block C. Get the latest news, events, and updates.",
+  "primaryColor": "#2F855A",
+  "primaryColorDark": "#22543D",
+  "primaryColorLight": "#48BB78",
+  "backgroundColor": "#F0FFF4",
+  "backgroundColorDark": "#C6F6D5",
+  "textColor": "#1A202C",
+  "textColorLight": "#4A5568",
+  "themeColor": "#2F855A"
+}
+```
+
+**Implementation Notes:**
+- The frontend will use these colors to dynamically generate CSS variables
+- Colors are applied site-wide for consistent branding
+- Theme color is used for PWA manifest and mobile browser bars
+- Logo is displayed in header and can be used in footer
+- All color values should be validated for proper hex format
+
+---
+
+### 3. News (Collection Type)
 
 **API Name:** `news`  
 **Display Name:** "News"
@@ -413,6 +486,7 @@ For each content type, you must enable public API access:
 | Content Type | Endpoint | Method | Query Params |
 |--------------|----------|--------|--------------|
 | Homepage | `/api/homepage?populate=*` | GET | `populate=*` |
+| Theme | `/api/theme?populate=*` | GET | `populate=*` |
 | News | `/api/news?populate=*` | GET | `populate=*`, `filters[slug][$eq]={slug}` |
 | Events | `/api/events?populate=*` | GET | `populate=*`, `filters[slug][$eq]={slug}`, `filters[eventDate][$gte]={date}` |
 | Gallery | `/api/galleries?populate=*` | GET | `populate=*` |
@@ -465,8 +539,10 @@ Follow the schemas provided above. Use **Content-Type Builder** in Strapi admin:
 
 1. Go to **Settings → Users & Permissions Plugin → Roles → Public**
 2. Enable **find** and **findOne** for all collection types
-3. Enable **find** for single types (Homepage, Contact)
+3. Enable **find** for single types (Homepage, Theme, Contact)
 4. Click **Save**
+
+**Important:** The Theme content type must be accessible to the public API as it controls site-wide branding.
 
 ### Step 5: Populate Initial Content
 
@@ -485,6 +561,9 @@ curl http://localhost:1337/api/news?populate=*
 
 # Example: Test homepage endpoint
 curl http://localhost:1337/api/homepage?populate=*
+
+# Example: Test theme endpoint
+curl http://localhost:1337/api/theme?populate=*
 ```
 
 ### Step 7: Configure Frontend
@@ -501,10 +580,28 @@ STRAPI_URL=http://localhost:1337
 
 ## Content Entry Guidelines
 
+### Color Guidelines
+
+For the **Theme** content type:
+
+- **Color Format:** All colors must be in hexadecimal format with `#` symbol
+  - Valid: `#2F855A`, `#22543D`, `#48BB78`
+  - Invalid: `2F855A` (missing #), `rgb(47, 133, 90)` (wrong format)
+- **Color Validation:** Ensure colors are valid hex codes (6 digits, optionally 8 for alpha)
+- **Accessibility:** Ensure sufficient contrast between text and background colors
+  - Text color on background should have at least 4.5:1 contrast ratio
+  - Large text (18px+) should have at least 3:1 contrast ratio
+- **Testing:** After setting theme colors, test the website appearance:
+  - Primary color should appear in buttons, links, and highlights
+  - Background colors should be visible on the main page
+  - Text colors should be readable
+
 ### Image Guidelines
 
 - **Supported formats:** JPG, PNG, WebP
 - **Recommended sizes:**
+  - **Logo:** 200x60px (or proportional, max width 300px)
+  - **Favicon:** 16x16px or 32x32px PNG (square format)
   - News/Event cover images: 1200x630px (2:1 ratio)
   - Gallery images: 1920x1080px (16:9 ratio) or larger
   - Profile photos (RWA members): 800x800px (1:1 ratio)
@@ -552,6 +649,33 @@ For content types that use categories:
 2. Click **Publish** to make it live
 3. For updates, click **Save** then **Publish** again
 
+### Rich Text Content
+
+Rich text fields from Strapi are rendered as HTML. The frontend component (`RichTextContent`) handles:
+- Paragraphs
+- Headings (h1-h6)
+- Lists (ul, ol)
+- Links
+- Images
+- Bold, italic, blockquotes
+
+### Theme/Branding Management
+
+The **Theme** content type controls site-wide branding:
+
+- **Color Changes:** Updates to theme colors will apply across the entire website
+- **Logo Updates:** Changing the logo will update header and footer displays
+- **Site Name:** Changes to site name affect page titles and meta tags
+- **PWA Colors:** Theme color affects mobile browser bars and PWA appearance
+- **Testing:** After updating theme, clear browser cache and test on multiple devices
+
+**Best Practices:**
+- Keep a backup of your current theme settings before making changes
+- Test color combinations for accessibility (contrast ratios)
+- Use consistent branding across all media (logo, colors, fonts)
+- Preview changes on both desktop and mobile views
+- Validate hex color codes before saving (must start with # and be 6 digits)
+
 ---
 
 ## Troubleshooting
@@ -574,6 +698,14 @@ For content types that use categories:
 1. **404 Not Found:** Check that content type API name matches exactly (case-sensitive)
 2. **403 Forbidden:** Check Public role permissions
 3. **500 Internal Server Error:** Check Strapi server logs
+
+### Theme Colors Not Applying
+
+1. **Check theme data:** Verify theme endpoint returns data: `curl http://localhost:1337/api/theme?populate=*`
+2. **Check color format:** Ensure all colors are valid hex codes (e.g., `#2F855A`)
+3. **Clear browser cache:** Theme colors may be cached by the browser
+4. **Check frontend implementation:** Ensure frontend is fetching and applying theme data
+5. **Restart frontend server:** After updating theme, restart the Next.js development server
 
 ### Frontend Not Using Strapi
 
@@ -598,16 +730,6 @@ Image URLs are automatically constructed:
 Example:
 - Strapi returns: `/uploads/image.jpg`
 - Frontend uses: `http://localhost:1337/uploads/image.jpg`
-
-### Rich Text Content
-
-Rich text fields from Strapi are rendered as HTML. The frontend component (`RichTextContent`) handles:
-- Paragraphs
-- Headings (h1-h6)
-- Lists (ul, ol)
-- Links
-- Images
-- Bold, italic, blockquotes
 
 ### Sorting and Filtering
 

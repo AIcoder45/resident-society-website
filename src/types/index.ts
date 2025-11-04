@@ -114,3 +114,44 @@ export interface MetaTags {
   keywords?: string;
   ogImage?: string;
 }
+
+export interface Homepage {
+  id: string;
+  heroWelcomeText: string;
+  heroTitleText: string;
+  heroSubtitleText: string;
+  heroDescription: string;
+  heroDescriptionMobile?: string | null;
+  newsSectionTitle: string;
+  newsSectionSubtitle: string;
+  eventsSectionTitle: string;
+  eventsSectionSubtitle: string;
+  gallerySectionTitle: string;
+  gallerySectionSubtitle: string;
+  advertisementsSectionTitle: string;
+  advertisementsSectionSubtitle: string;
+}
+
+export interface Theme {
+  id: string;
+  siteName?: string;
+  siteShortName?: string;
+  siteDescription?: string;
+  logo?: string | null;
+  logoDark?: string | null;
+  favicon?: string | null;
+  primaryColor: string;
+  primaryColorDark?: string;
+  primaryColorLight?: string;
+  secondaryColor?: string | null;
+  backgroundColor: string;
+  backgroundColorDark?: string;
+  textColor: string;
+  textColorLight?: string;
+  themeColor: string;
+  accentColor?: string | null;
+  errorColor?: string;
+  successColor?: string;
+  warningColor?: string;
+  infoColor?: string;
+}
