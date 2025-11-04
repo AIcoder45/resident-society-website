@@ -114,7 +114,7 @@ export function PWAInstallPrompt() {
               </div>
               <button
                 onClick={handleDismiss}
-                className="ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors touch-manipulation min-h-[32px] min-w-[32px] flex items-center justify-center"
+                className="ml-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation touch-target tap-feedback flex items-center justify-center"
                 aria-label="Dismiss"
               >
                 <X className="h-4 w-4 text-gray-500" />

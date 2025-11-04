@@ -118,7 +118,7 @@ export function AdvertisementCard({
               <a
                 href={`tel:${advertisement.contactPhone.replace(/\s+/g, "")}`}
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation min-h-[44px]"
+                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
               >
                 <Phone className="h-4 w-4" />
                 <span>{advertisement.contactPhone}</span>
@@ -128,7 +128,7 @@ export function AdvertisementCard({
               <a
                 href={`mailto:${advertisement.contactEmail}`}
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation min-h-[44px]"
+                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
               >
                 <Mail className="h-4 w-4" />
                 <span>{advertisement.contactEmail}</span>
@@ -140,7 +140,7 @@ export function AdvertisementCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation min-h-[44px]"
+                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
               >
                 <Globe className="h-4 w-4" />
                 <span className="truncate">{advertisement.website.replace(/^https?:\/\//, "")}</span>

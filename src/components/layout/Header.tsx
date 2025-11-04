@@ -79,7 +79,7 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-semibold leading-6 text-text hover:text-primary transition-colors touch-manipulation min-h-[36px] flex items-center"
+              className="text-sm font-semibold leading-6 text-text hover:text-primary transition-colors touch-manipulation touch-target tap-feedback flex items-center"
               aria-label={`Navigate to ${item.name}`}
             >
               {item.name}

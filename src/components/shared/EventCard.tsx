@@ -31,7 +31,7 @@ export function EventCard({ event, className }: EventCardProps) {
       transition={{ duration: 0.3 }}
       className={cn("w-full min-w-0", className)}
     >
-      <Link href={`/events/${event.slug}`} className="block h-full w-full touch-manipulation">
+      <Link href={`/events/${event.slug}`} className="block h-full w-full touch-manipulation tap-feedback">
         <Card className="h-full w-full transition-all hover:shadow-lg overflow-hidden">
           {event.coverImage && (
             <div className="relative w-full h-52 sm:h-48 overflow-hidden rounded-t-lg">
