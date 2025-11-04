@@ -5,6 +5,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
+import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegistration";
+import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
 import { getTheme } from "@/lib/api";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -35,12 +37,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <ServiceWorkerRegistration />
         <ThemeProvider theme={theme}>
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1 pb-16 lg:pb-0">{children}</main>
             <Footer />
             <MobileBottomNav />
+            <PWAInstallPrompt />
           </div>
         </ThemeProvider>
       </body>

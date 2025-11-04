@@ -47,7 +47,7 @@ export function ThemeProvider({ theme, children }: ThemeProviderProps) {
     root.style.setProperty("--color-background-dark", theme.backgroundColorDark || theme.backgroundColor);
     
     root.style.setProperty("--color-text", theme.textColor);
-    root.style.setProperty("--color-text-light", theme.textColorLight);
+    root.style.setProperty("--color-text-light", theme.textColorLight || theme.textColor);
     
     root.style.setProperty("--color-theme", theme.themeColor);
     
