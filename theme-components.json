@@ -1,0 +1,452 @@
+{
+  "theme": {
+    "name": "Mobile Magazine App Theme",
+    "source": "Justinmind Prototype",
+    "url": "https://cloud.justinmind.com/usernote/prototype/17672ddcc30d025d9166ff4ff2216bb7043d015392f2c11cb767be8baac59c80/index.html",
+    "extractedDate": "2024"
+  },
+  "colors": {
+    "primary": {
+      "white": "#FFFFFF",
+      "black": "#000000",
+      "yellow": "#FFE100"
+    },
+    "text": {
+      "primary": "#000000",
+      "secondary": "#7F7F7F",
+      "tertiary": "#8B939C",
+      "quaternary": "#939CA7"
+    },
+    "background": {
+      "default": "#FFFFFF",
+      "light": "#DBDBDB",
+      "border": "#DEE3EA",
+      "sideNav": "#3E4044"
+    },
+    "rgb": {
+      "black": "rgb(0, 0, 0)",
+      "gray": "rgb(139, 147, 156)",
+      "yellow": "rgb(255, 225, 0)",
+      "white": "rgb(255, 255, 255)"
+    }
+  },
+  "typography": {
+    "fontFamilies": {
+      "heading": {
+        "name": "Gelasio",
+        "fallback": "Arial",
+        "value": "'Gelasio_1.6.0_system', Arial"
+      },
+      "body": {
+        "name": "Fredoka",
+        "fallback": "Arial",
+        "value": "'Fredoka_14.0.0_google', Arial"
+      },
+      "display": {
+        "name": "D-DIN Exp",
+        "fallback": "Arial",
+        "value": "'D-DIN Exp_1.0.0_system', Arial"
+      },
+      "system": {
+        "name": "Roboto",
+        "fallback": "Arial",
+        "value": "'Roboto_0.0.0_system', Arial"
+      },
+      "sans": {
+        "name": "Arial",
+        "value": "Arial, Arial"
+      }
+    },
+    "fontSizes": {
+      "xs": {
+        "value": "7.5pt",
+        "px": "10px",
+        "rem": "0.625rem"
+      },
+      "sm": {
+        "value": "8.25pt",
+        "px": "11px",
+        "rem": "0.688rem"
+      },
+      "base": {
+        "value": "9pt",
+        "px": "12px",
+        "rem": "0.75rem"
+      },
+      "md": {
+        "value": "10.5pt",
+        "px": "14px",
+        "rem": "0.875rem"
+      },
+      "lg": {
+        "value": "11.25pt",
+        "px": "15px",
+        "rem": "0.938rem"
+      },
+      "xl": {
+        "value": "12pt",
+        "px": "16px",
+        "rem": "1rem"
+      },
+      "2xl": {
+        "value": "15pt",
+        "px": "20px",
+        "rem": "1.25rem"
+      },
+      "3xl": {
+        "value": "15.75pt",
+        "px": "21px",
+        "rem": "1.313rem"
+      },
+      "4xl": {
+        "value": "16.5pt",
+        "px": "22px",
+        "rem": "1.375rem"
+      },
+      "5xl": {
+        "value": "20.25pt",
+        "px": "27px",
+        "rem": "1.688rem"
+      },
+      "6xl": {
+        "value": "21pt",
+        "px": "28px",
+        "rem": "1.75rem"
+      }
+    },
+    "fontWeights": {
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "lineHeights": {
+      "tight": "20px",
+      "normal": "21px",
+      "relaxed": "23px",
+      "loose": "30px"
+    },
+    "letterSpacing": {
+      "normal": "0px",
+      "wide": "1.0px"
+    },
+    "textTransforms": {
+      "none": "none",
+      "uppercase": "uppercase"
+    }
+  },
+  "spacing": {
+    "xs": "10px",
+    "sm": "12px",
+    "md": "14px",
+    "lg": "17px",
+    "xl": "19px",
+    "2xl": "20px",
+    "3xl": "23px",
+    "4xl": "25px",
+    "5xl": "26px",
+    "padding": {
+      "left": {
+        "sm": "0px 0px 0px 14px",
+        "md": "0px 0px 0px 17px",
+        "lg": "0px 0px 0px 20px",
+        "xl": "0px 0px 0px 23px"
+      }
+    }
+  },
+  "borderRadius": {
+    "sm": "9px",
+    "md": "10px",
+    "lg": "15px"
+  },
+  "shadows": {
+    "default": "drop-shadow(12.0px 1.47px 6px rgba(64,64,64,0.3))"
+  },
+  "layout": {
+    "container": {
+      "maxWidth": "430px",
+      "maxHeight": "932px"
+    },
+    "breakpoints": {
+      "mobile": "430px"
+    }
+  },
+  "components": {
+    "heading": {
+      "h1": {
+        "fontFamily": "Gelasio",
+        "fontSize": "20.25pt",
+        "fontWeight": 500,
+        "lineHeight": "30px",
+        "color": "#000000"
+      },
+      "h2": {
+        "fontFamily": "Gelasio",
+        "fontSize": "15.75pt",
+        "fontWeight": 500,
+        "lineHeight": "23px",
+        "color": "#000000"
+      },
+      "h3": {
+        "fontFamily": "Gelasio",
+        "fontSize": "15pt",
+        "fontWeight": 400,
+        "lineHeight": "21px",
+        "color": "#000000"
+      }
+    },
+    "body": {
+      "default": {
+        "fontFamily": "Fredoka",
+        "fontSize": "11.25pt",
+        "fontWeight": 400,
+        "lineHeight": "20px",
+        "color": "#8B939C"
+      },
+      "small": {
+        "fontFamily": "Fredoka",
+        "fontSize": "8.25pt",
+        "fontWeight": 400,
+        "color": "#7F7F7F"
+      },
+      "meta": {
+        "fontFamily": "Fredoka",
+        "fontSize": "8.25pt",
+        "fontWeight": 400,
+        "color": "#8B939C"
+      }
+    },
+    "label": {
+      "category": {
+        "fontFamily": "Fredoka",
+        "fontSize": "8.25pt",
+        "fontWeight": 400,
+        "letterSpacing": "1.0px",
+        "textTransform": "uppercase",
+        "color": "#8B939C"
+      },
+      "navigation": {
+        "fontFamily": "Fredoka",
+        "fontSize": "9pt",
+        "fontWeight": 400,
+        "letterSpacing": "1.0px",
+        "textTransform": "uppercase",
+        "color": "#939CA7"
+      },
+      "navigationActive": {
+        "fontFamily": "Fredoka",
+        "fontSize": "9pt",
+        "fontWeight": 700,
+        "letterSpacing": "1.0px",
+        "textTransform": "uppercase",
+        "color": "#000000"
+      }
+    },
+    "badge": {
+      "featured": {
+        "fontFamily": "Fredoka",
+        "fontSize": "7.5pt",
+        "fontWeight": 500,
+        "letterSpacing": "1.0px",
+        "backgroundColor": "#FFE100",
+        "color": "#000000"
+      }
+    },
+    "card": {
+      "image": {
+        "borderRadius": "15px",
+        "backgroundColor": "#DBDBDB"
+      }
+    },
+    "divider": {
+      "default": {
+        "height": "2px",
+        "width": "394.66px"
+      }
+    },
+    "navigation": {
+      "tab": {
+        "borderBottom": "1px solid #DEE3EA",
+        "height": "43.67px"
+      },
+      "sideNav": {
+        "backgroundColor": "#3E4044",
+        "textColor": "#707070",
+        "width": "auto",
+        "padding": "8px"
+      },
+      "sideNavItem": {
+        "fontFamily": "Arial",
+        "fontSize": "14px",
+        "color": "#707070",
+        "padding": "8px",
+        "hover": {
+          "backgroundColor": "rgba(255, 255, 255, 0.1)"
+        },
+        "active": {
+          "color": "#FFFFFF",
+          "fontWeight": 600
+        }
+      },
+      "bottomNav": {
+        "height": "74px",
+        "backgroundColor": "#FFFFFF",
+        "shadow": "drop-shadow(12.0px 1.47px 6px rgba(64,64,64,0.3))",
+        "borderTop": "1px solid #DEE3EA"
+      }
+    },
+    "screens": {
+      "home": {
+        "header": {
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "20.25pt",
+            "fontWeight": 500,
+            "color": "#000000"
+          },
+          "breadcrumb": {
+            "fontFamily": "Fredoka",
+            "fontSize": "8.25pt",
+            "color": "#7F7F7F"
+          }
+        },
+        "featuredSection": {
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "15pt",
+            "fontWeight": 400,
+            "color": "#000000"
+          }
+        },
+        "trendingSection": {
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "15pt",
+            "fontWeight": 400,
+            "color": "#000000"
+          }
+        }
+      },
+      "favorites": {
+        "header": {
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "20.25pt",
+            "fontWeight": 500,
+            "color": "#000000"
+          }
+        },
+        "savedArticles": {
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "15pt",
+            "fontWeight": 500,
+            "color": "#000000"
+          },
+          "emptyState": {
+            "fontFamily": "Fredoka",
+            "fontSize": "11.25pt",
+            "color": "#8B939C"
+          }
+        }
+      },
+      "notifications": {
+        "header": {
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "20.25pt",
+            "fontWeight": 500,
+            "color": "#000000"
+          }
+        },
+        "notificationItem": {
+          "padding": "16px",
+          "borderBottom": "1px solid #DEE3EA",
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "15.75pt",
+            "fontWeight": 500,
+            "color": "#000000"
+          },
+          "message": {
+            "fontFamily": "Fredoka",
+            "fontSize": "11.25pt",
+            "color": "#8B939C"
+          },
+          "time": {
+            "fontFamily": "Fredoka",
+            "fontSize": "8.25pt",
+            "color": "#7F7F7F"
+          }
+        }
+      },
+      "account": {
+        "header": {
+          "title": {
+            "fontFamily": "Gelasio",
+            "fontSize": "20.25pt",
+            "fontWeight": 500,
+            "color": "#000000"
+          }
+        },
+        "profile": {
+          "avatar": {
+            "width": "60px",
+            "height": "60px",
+            "borderRadius": "50%"
+          },
+          "name": {
+            "fontFamily": "Gelasio",
+            "fontSize": "15.75pt",
+            "fontWeight": 500,
+            "color": "#000000"
+          },
+          "email": {
+            "fontFamily": "Fredoka",
+            "fontSize": "11.25pt",
+            "color": "#8B939C"
+          }
+        },
+        "menuItem": {
+          "padding": "16px",
+          "borderBottom": "1px solid #DEE3EA",
+          "fontFamily": "Fredoka",
+          "fontSize": "11.25pt",
+          "color": "#000000",
+          "icon": {
+            "width": "24px",
+            "height": "24px"
+          }
+        },
+        "signOut": {
+          "fontFamily": "Fredoka",
+          "fontSize": "11.25pt",
+          "color": "#8B939C",
+          "padding": "16px"
+        }
+      }
+    },
+    "userProfile": {
+      "container": {
+        "padding": "16px",
+        "borderBottom": "1px solid #DEE3EA"
+      },
+      "avatar": {
+        "width": "48px",
+        "height": "48px",
+        "borderRadius": "50%"
+      },
+      "name": {
+        "fontFamily": "Gelasio",
+        "fontSize": "15.75pt",
+        "fontWeight": 500,
+        "color": "#000000"
+      },
+      "email": {
+        "fontFamily": "Fredoka",
+        "fontSize": "11.25pt",
+        "color": "#8B939C"
+      }
+    }
+  }
+}

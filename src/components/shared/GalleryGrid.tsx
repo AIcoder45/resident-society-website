@@ -74,7 +74,7 @@ export function GalleryGrid({
                         e.stopPropagation();
                         handleImageClick(item, 0);
                       }}
-                      className="absolute top-2 right-2 bg-primary text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-primary/90 transition-colors touch-manipulation min-h-[32px] min-w-[32px]"
+                      className="absolute top-2 right-2 bg-primary text-white px-3 py-2 rounded text-xs font-semibold hover:bg-primary/90 transition-colors touch-manipulation touch-target tap-feedback"
                       aria-label={`View ${item.images.length} images`}
                     >
                       +{item.images.length - 1}

@@ -5,6 +5,11 @@ const nextConfig = {
     domains: ["localhost"],
     remotePatterns: [
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "1337",
+      },
+      {
         protocol: "https",
         hostname: "**",
       },
@@ -20,8 +25,31 @@ const nextConfig = {
   // Optimize production builds
   swcMinify: true,
   // Enable experimental features for better performance
-  experimental: {
-    optimizeCss: true,
+    // Disabled optimizeCss to avoid critters dependency issue
+    // experimental: {
+    //   optimizeCss: true,
+    // },
+  // PWA configuration - service worker headers
+  async headers() {
+    return [
+      {
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/javascript; charset=utf-8",
+          },
+          {
+            key: "Service-Worker-Allowed",
+            value: "/",
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
+          },
+        ],
+      },
+    ];
   },
 };
 

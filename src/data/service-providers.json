@@ -1,0 +1,48 @@
+[
+  {
+    "id": "1",
+    "name": "John's Plumbing Services",
+    "serviceType": "plumber",
+    "phone": "+91 98765 43210",
+    "email": "john.plumber@example.com",
+    "address": "Block C, Unit 101",
+    "description": "Expert plumbing services for all your needs. Available 24/7 for emergencies.",
+    "rating": 4.5,
+    "verified": true,
+    "available": true,
+    "emergency": true,
+    "order": 1,
+    "createdAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "name": "Green Thumb Landscaping",
+    "serviceType": "gardener",
+    "phone": "+91 98765 43211",
+    "email": "greenthumb@example.com",
+    "address": "Block C, Unit 205",
+    "description": "Professional gardening and landscaping services. Weekly maintenance available.",
+    "rating": 4.8,
+    "verified": true,
+    "available": true,
+    "emergency": false,
+    "order": 2,
+    "createdAt": "2024-01-16T10:00:00Z"
+  },
+  {
+    "id": "3",
+    "name": "Spark Electric Solutions",
+    "serviceType": "electrician",
+    "phone": "+91 98765 43212",
+    "email": "spark.electric@example.com",
+    "address": "Block C, Unit 302",
+    "description": "Licensed electrician for all electrical repairs and installations.",
+    "rating": 4.7,
+    "verified": true,
+    "available": true,
+    "emergency": true,
+    "order": 3,
+    "createdAt": "2024-01-17T10:00:00Z"
+  }
+]
+

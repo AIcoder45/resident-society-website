@@ -81,7 +81,7 @@ export function ContentCard({
         transition={{ duration: 0.3 }}
         className="w-full min-w-0"
       >
-        <Link href={href} className="block h-full w-full touch-manipulation">
+        <Link href={href} className="block h-full w-full touch-manipulation tap-feedback">
           {cardContent}
         </Link>
       </motion.div>

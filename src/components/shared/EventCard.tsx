@@ -31,7 +31,7 @@ export function EventCard({ event, className }: EventCardProps) {
       transition={{ duration: 0.3 }}
       className={cn("w-full min-w-0", className)}
     >
-      <Link href={`/events/${event.slug}`} className="block h-full w-full touch-manipulation">
+      <Link href={`/events/${event.slug}`} className="block h-full w-full touch-manipulation tap-feedback">
         <Card className="h-full w-full transition-all hover:shadow-lg overflow-hidden">
           {event.coverImage && (
             <div className="relative w-full h-52 sm:h-48 overflow-hidden rounded-t-lg">
@@ -45,7 +45,7 @@ export function EventCard({ event, className }: EventCardProps) {
               />
               {isUpcoming && (
                 <div
-                  className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold"
+                  className="absolute top-2 right-2 md:top-3 md:right-3 bg-primary text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-lg z-10"
                   aria-label="Upcoming event"
                 >
                   Upcoming

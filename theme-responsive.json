@@ -1,0 +1,221 @@
+{
+  "theme": {
+    "name": "Greenwood Mobile-Only Responsive Theme",
+    "version": "1.0.0",
+    "mode": "light",
+    "viewport": {
+      "minWidth": "320px",
+      "maxWidth": "480px",
+      "orientation": "portrait"
+    },
+    "breakpoints": {
+      "mobileSmall": "320px",
+      "mobileMedium": "375px",
+      "mobileLarge": "480px"
+    },
+    "colors": {
+      "palette": {
+        "primary": {
+          "50": "#F0FFF4",
+          "100": "#C6F6D5",
+          "200": "#9AE6B4",
+          "300": "#68D391",
+          "400": "#48BB78",
+          "500": "#2F855A",
+          "600": "#22543D",
+          "700": "#1C4532",
+          "800": "#153E2A",
+          "900": "#0F2921"
+        },
+        "accent": {
+          "yellow": "#FFD700",
+          "yellowDark": "#FFC107",
+          "yellowLight": "#FFEB3B"
+        },
+        "gray": {
+          "50": "#F7FAFC",
+          "100": "#EDF2F7",
+          "200": "#E2E8F0",
+          "300": "#CBD5E0",
+          "400": "#A0AEC0",
+          "500": "#718096",
+          "600": "#4A5568",
+          "700": "#2D3748",
+          "800": "#1A202C",
+          "900": "#171923"
+        }
+      },
+      "background": {
+        "default": "#FFFFFF",
+        "paper": "#FFFFFF",
+        "elevated": "#F7FAFC"
+      },
+      "text": {
+        "primary": "#1A202C",
+        "secondary": "#4A5568",
+        "disabled": "#A0AEC0",
+        "hint": "#718096"
+      },
+      "action": {
+        "active": "#2F855A",
+        "hover": "rgba(47, 133, 90, 0.08)",
+        "selected": "rgba(47, 133, 90, 0.12)",
+        "disabled": "rgba(0, 0, 0, 0.26)"
+      }
+    },
+    "typography": {
+      "htmlFontSize": 16,
+      "fontFamily": {
+        "primary": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+        "secondary": "Georgia, 'Times New Roman', serif",
+        "monospace": "'Courier New', Courier, monospace"
+      },
+      "fontSize": {
+        "xs": 12,
+        "sm": 14,
+        "md": 16,
+        "lg": 18,
+        "xl": 20,
+        "2xl": 24,
+        "3xl": 30,
+        "4xl": 36,
+        "5xl": 48
+      },
+      "fontWeight": {
+        "light": 300,
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "lineHeight": {
+        "xs": 1.25,
+        "sm": 1.4,
+        "md": 1.5,
+        "lg": 1.6,
+        "xl": 1.75
+      }
+    },
+    "spacing": {
+      "unit": 8,
+      "scale": [0, 4, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96]
+    },
+    "shadows": [
+      "none",
+      "0px 1px 2px rgba(0, 0, 0, 0.05)",
+      "0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px rgba(0, 0, 0, 0.06)",
+      "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)",
+      "0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      "0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)"
+    ],
+    "shape": {
+      "borderRadius": {
+        "none": 0,
+        "sm": 4,
+        "md": 8,
+        "lg": 12,
+        "xl": 16,
+        "full": 9999
+      }
+    },
+    "transitions": {
+      "duration": {
+        "shortest": 150,
+        "shorter": 200,
+        "short": 250,
+        "standard": 300,
+        "complex": 375,
+        "enteringScreen": 225,
+        "leavingScreen": 195
+      },
+      "easing": {
+        "easeInOut": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "easeOut": "cubic-bezier(0.0, 0, 0.2, 1)",
+        "easeIn": "cubic-bezier(0.4, 0, 1, 1)",
+        "sharp": "cubic-bezier(0.4, 0, 0.6, 1)"
+      }
+    }
+  },
+  "components": {
+    "MuiCard": {
+      "styleOverrides": {
+        "root": {
+          "borderRadius": "12px",
+          "boxShadow": "0px 1px 3px rgba(0, 0, 0, 0.1)",
+          "transition": "all 0.2s ease-in-out",
+          "&:hover": {
+            "boxShadow": "0px 10px 15px -3px rgba(0, 0, 0, 0.1)"
+          }
+        }
+      }
+    },
+    "MuiButton": {
+      "styleOverrides": {
+        "root": {
+          "minHeight": "44px",
+          "fontWeight": 600,
+          "textTransform": "none",
+          "borderRadius": "8px",
+          "padding": "12px 24px"
+        }
+      }
+    },
+    "MuiAppBar": {
+      "styleOverrides": {
+        "root": {
+          "backgroundColor": "#FFFFFF",
+          "color": "#1A202C",
+          "boxShadow": "0px 1px 3px rgba(0, 0, 0, 0.1)"
+        }
+      }
+    }
+  },
+  "responsive": {
+    "mobileSmall": {
+      "minWidth": "320px",
+      "maxWidth": "374px",
+      "padding": "12px",
+      "fontSize": {
+        "base": "15px",
+        "h1": "24px",
+        "h2": "20px",
+        "h3": "18px"
+      },
+      "spacing": {
+        "section": "24px",
+        "card": "12px"
+      }
+    },
+    "mobileMedium": {
+      "minWidth": "375px",
+      "maxWidth": "427px",
+      "padding": "16px",
+      "fontSize": {
+        "base": "16px",
+        "h1": "28px",
+        "h2": "24px",
+        "h3": "20px"
+      },
+      "spacing": {
+        "section": "32px",
+        "card": "16px"
+      }
+    },
+    "mobileLarge": {
+      "minWidth": "428px",
+      "maxWidth": "480px",
+      "padding": "20px",
+      "fontSize": {
+        "base": "16px",
+        "h1": "30px",
+        "h2": "26px",
+        "h3": "22px"
+      },
+      "spacing": {
+        "section": "32px",
+        "card": "20px"
+      }
+    }
+  }
+}
+
