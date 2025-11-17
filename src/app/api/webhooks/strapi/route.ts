@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import webpush from "web-push";
 
 /**
  * Strapi Webhook Handler
@@ -7,11 +6,20 @@ import webpush from "web-push";
  * Sends push notifications to all subscribed users
  */
 
-webpush.setVapidDetails(
-  process.env.VAPID_EMAIL || "mailto:notifications@greenwoodcity.com",
-  process.env.VAPID_PUBLIC_KEY || "",
-  process.env.VAPID_PRIVATE_KEY || ""
-);
+// Initialize VAPID details only if keys are provided
+function initializeVapid() {
+  const publicKey = process.env.VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+  const email = process.env.VAPID_EMAIL || "mailto:notifications@greenwoodcity.com";
+  
+  // Only set VAPID details if both keys are provided
+  if (publicKey && privateKey && publicKey.trim() !== "" && privateKey.trim() !== "") {
+    const webpush = require("web-push");
+    webpush.setVapidDetails(email, publicKey, privateKey);
+    return webpush;
+  }
+  return null;
+}
 
 // Map Strapi models to app routes
 function getContentUrl(model: string, entry: any): string {
@@ -42,6 +50,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
+      );
+    }
+
+    // Initialize VAPID (only if keys are provided)
+    const webpush = initializeVapid();
+    if (!webpush) {
+      console.warn("VAPID keys not configured. Push notifications disabled.");
+      return NextResponse.json(
+        { message: "Push notifications not configured" },
+        { status: 200 }
       );
     }
 
