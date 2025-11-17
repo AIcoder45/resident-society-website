@@ -71,7 +71,7 @@ export function OfflineHandler() {
                   No Internet Connection
                 </h3>
                 <p className="text-xs text-text-light line-height-1.5">
-                  You're offline. Some features may not be available. We'll automatically retry when you're back online.
+                  You&apos;re offline. Some features may not be available. We&apos;ll automatically retry when you&apos;re back online.
                 </p>
               </div>
             </div>

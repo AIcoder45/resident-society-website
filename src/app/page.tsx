@@ -65,7 +65,7 @@ export default async function HomePage() {
         {/* Latest News Section */}
         <Section title="Latest News" subtitle="Stay informed with the latest community updates">
           {latestNews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {latestNews.map((item) => (
                 <ContentCard
                   key={item.id}
@@ -95,7 +95,7 @@ export default async function HomePage() {
         {/* Upcoming Events Section */}
         <Section title="Upcoming Events" subtitle="Join us for exciting community events and activities">
           {upcomingEvents.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {upcomingEvents.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
@@ -117,7 +117,7 @@ export default async function HomePage() {
         {/* Gallery Section */}
         <Section title="Photo Gallery" subtitle="Memorable moments from our community events and activities">
           {galleryItems.length > 0 ? (
-            <GalleryGrid items={galleryItems} columns={3} />
+            <GalleryGrid items={galleryItems} columns={2} />
           ) : (
             <div className="text-center py-12">
               <p className="text-text-light">No gallery items available at the moment.</p>
@@ -135,7 +135,7 @@ export default async function HomePage() {
         {/* Featured Advertisements Section */}
         <Section title="Local Advertisements" subtitle="Discover offers and services from local residents">
           {featuredAds.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               {featuredAds.map((ad, index) => (
                 <AdvertisementCard
                   key={ad.id}

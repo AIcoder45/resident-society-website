@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Newspaper, Calendar, Image, MoreVertical } from "lucide-react";
+import { Home, Newspaper, Calendar, Image, MoreVertical, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MobileMoreMenu } from "./MobileMoreMenu";
 
@@ -11,7 +11,7 @@ const mobileNavItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "News", href: "/news", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
-  { name: "Gallery", href: "/gallery", icon: Image },
+  { name: "Quick Contact", href: "/quick-contact", icon: Wrench },
   { name: "More", href: "#", icon: MoreVertical },
 ];
 
@@ -24,8 +24,16 @@ export function MobileBottomNav() {
   const [moreMenuOpen, setMoreMenuOpen] = React.useState(false);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg lg:hidden safe-area-inset-bottom">
-      <div className="grid grid-cols-5 h-16">
+    <nav 
+      className="fixed bottom-0 left-0 right-0 z-50 lg:hidden safe-area-inset-bottom"
+      style={{
+        height: 'var(--magazine-bottom-nav-height, 74px)',
+        backgroundColor: 'var(--magazine-bg-default, #FFFFFF)',
+        borderTop: '1px solid var(--magazine-bg-border, #DEE3EA)',
+        filter: 'var(--magazine-shadow-default, drop-shadow(12.0px 1.47px 6px rgba(64,64,64,0.3)))',
+      }}
+    >
+      <div className="grid grid-cols-5" style={{ height: '100%' }}>
         {mobileNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || 
@@ -42,14 +50,24 @@ export function MobileBottomNav() {
                   )}
                   aria-label={item.name}
                 >
-                  <Icon className={cn(
-                    "h-6 w-6 mb-1 transition-colors",
-                    moreMenuOpen ? "text-primary" : "text-gray-500"
-                  )} />
-                  <span className={cn(
-                    "text-xs font-medium transition-colors",
-                    moreMenuOpen ? "text-primary" : "text-gray-500"
-                  )}>
+                  <Icon 
+                    className="h-6 w-6 mb-1 transition-colors"
+                    style={{
+                      color: moreMenuOpen 
+                        ? 'var(--magazine-text-primary, #000000)' 
+                        : 'var(--magazine-text-quaternary, #939CA7)'
+                    }}
+                  />
+                  <span 
+                    className="text-xs font-medium transition-colors"
+                    style={{
+                      fontFamily: 'var(--magazine-font-body, Fredoka, Arial)',
+                      fontSize: 'var(--magazine-font-base, 0.75rem)',
+                      color: moreMenuOpen 
+                        ? 'var(--magazine-text-primary, #000000)' 
+                        : 'var(--magazine-text-quaternary, #939CA7)'
+                    }}
+                  >
                     {item.name}
                   </span>
                 </button>
@@ -62,21 +80,34 @@ export function MobileBottomNav() {
             <Link
               key={item.name}
               href={item.href}
-              className={cn(
-                "flex flex-col items-center justify-center min-h-[44px] touch-manipulation transition-colors",
-                isActive && "bg-primary/5"
-              )}
+              className="flex flex-col items-center justify-center min-h-[44px] touch-manipulation transition-colors"
+              style={{
+                backgroundColor: isActive ? 'rgba(0, 0, 0, 0.05)' : 'transparent'
+              }}
               aria-label={`Navigate to ${item.name}`}
               aria-current={isActive ? "page" : undefined}
             >
-              <Icon className={cn(
-                "h-6 w-6 mb-1 transition-colors",
-                isActive ? "text-primary" : "text-gray-500"
-              )} />
-              <span className={cn(
-                "text-xs font-medium transition-colors",
-                isActive ? "text-primary" : "text-gray-500"
-              )}>
+              <Icon 
+                className="h-6 w-6 mb-1 transition-colors"
+                style={{
+                  color: isActive 
+                    ? 'var(--magazine-text-primary, #000000)' 
+                    : 'var(--magazine-text-quaternary, #939CA7)'
+                }}
+              />
+              <span 
+                className="text-xs font-medium transition-colors"
+                style={{
+                  fontFamily: 'var(--magazine-font-body, Fredoka, Arial)',
+                  fontSize: 'var(--magazine-font-base, 0.75rem)',
+                  fontWeight: isActive ? 700 : 400,
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  color: isActive 
+                    ? 'var(--magazine-text-primary, #000000)' 
+                    : 'var(--magazine-text-quaternary, #939CA7)'
+                }}
+              >
                 {item.name}
               </span>
             </Link>

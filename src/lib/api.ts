@@ -10,6 +10,7 @@ import type {
   Advertisement,
   Homepage,
   Theme,
+  ServiceProvider,
 } from "@/types";
 import { fetchStrapi, getStrapiImageUrl as getStrapiImageUrlUtil } from "@/lib/strapi";
 
@@ -1498,5 +1499,120 @@ export async function getAdvertisementById(id: string): Promise<Advertisement | 
   } catch (error) {
     console.error("Error loading advertisement JSON:", error);
     return null;
+  }
+}
+
+/**
+ * Fetches all service providers
+ * @param serviceType - Optional filter by service type
+ * @returns Array of service providers
+ */
+export async function getServiceProviders(
+  serviceType?: string,
+): Promise<ServiceProvider[]> {
+  if (USE_STRAPI) {
+    try {
+      let url = `/api/service-providers?populate=*&sort[0]=order:asc&sort[1]=name:asc`;
+      
+      if (serviceType) {
+        url += `&filters[serviceType][$eqi]=${encodeURIComponent(serviceType)}`;
+      }
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔍 Fetching service providers from Strapi:", `${STRAPI_URL}${url}`);
+      }
+
+      const response = await fetchStrapi<any>(url);
+
+      if (!response?.data || !Array.isArray(response.data)) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ No service providers data returned from Strapi");
+        }
+        return [];
+      }
+
+      const providers: ServiceProvider[] = response.data.map((item: any) => {
+        const isV4Structure = item.attributes !== undefined;
+        const providerData = isV4Structure ? item.attributes : item;
+
+        // Extract image URL
+        const imageData = providerData.image || item.image;
+        let imageUrl: string | undefined = undefined;
+
+        if (imageData) {
+          // Handle Strapi v5 flat structure
+          if (typeof imageData === "object" && imageData !== null) {
+            // Try to get medium format first, then small, then full URL
+            if (imageData.formats?.medium?.url) {
+              const url = imageData.formats.medium.url as string;
+              imageUrl = url.startsWith("http")
+                ? url
+                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            } else if (imageData.formats?.small?.url) {
+              const url = imageData.formats.small.url as string;
+              imageUrl = url.startsWith("http")
+                ? url
+                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            } else if (imageData.url) {
+              const url = imageData.url as string;
+              imageUrl = url.startsWith("http")
+                ? url
+                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            } else {
+              // Fallback to utility function
+              imageUrl = getStrapiImageUrlUtil(imageData) || undefined;
+            }
+          }
+        }
+
+        return {
+          id: item.id.toString(),
+          name: providerData.name || item.name || "",
+          serviceType: providerData.serviceType || item.serviceType || "",
+          phone: providerData.phone || item.phone || "",
+          email: providerData.email || item.email || undefined,
+          address: providerData.address || item.address || undefined,
+          description: providerData.description || item.description || undefined,
+          rating: providerData.rating || item.rating || undefined,
+          verified: providerData.verified ?? item.verified ?? false,
+          available: providerData.available ?? item.available ?? true,
+          emergency: providerData.emergency ?? item.emergency ?? false,
+          order: providerData.order || item.order || 0,
+          image: imageUrl,
+          createdAt: providerData.createdAt || item.createdAt || new Date().toISOString(),
+        };
+      });
+
+      if (process.env.NODE_ENV === "development") {
+        console.log(`✅ Successfully fetched ${providers.length} service providers`);
+      }
+
+      return providers;
+    } catch (error) {
+      console.error("❌ Error fetching service providers from Strapi:", error);
+      return [];
+    }
+  }
+
+  // Fallback to JSON files
+  try {
+    const providersData = await import("@/data/service-providers.json");
+    let providers: ServiceProvider[] = providersData.default as ServiceProvider[];
+    
+    if (serviceType) {
+      providers = providers.filter(
+        (p) => p.serviceType.toLowerCase() === serviceType.toLowerCase(),
+      );
+    }
+    
+    return providers.sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      return a.name.localeCompare(b.name);
+    });
+  } catch (error) {
+    console.error("Error loading service providers JSON:", error);
+    return [];
   }
 }

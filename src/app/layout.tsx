@@ -9,6 +9,7 @@ import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegi
 import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { OfflineHandler } from "@/components/shared/OfflineHandler";
+import { ContrastValidator } from "@/components/shared/ContrastValidator";
 import { getTheme } from "@/lib/api";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -23,6 +24,12 @@ export const metadata: Metadata = {
     title: "Block C",
   },
   manifest: "/manifest.json",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 export default async function RootLayout({
@@ -42,14 +49,15 @@ export default async function RootLayout({
         <ServiceWorkerRegistration />
         <ErrorBoundary>
           <ThemeProvider theme={theme}>
-            <div className="flex min-h-screen flex-col">
-              <Header />
+        <div className="flex min-h-screen flex-col">
+          <Header />
               <main className="flex-1 pb-16 lg:pb-0">{children}</main>
-              <Footer />
+          <Footer />
               <MobileBottomNav />
               <PWAInstallPrompt />
               <OfflineHandler />
-            </div>
+              <ContrastValidator />
+        </div>
           </ThemeProvider>
         </ErrorBoundary>
       </body>

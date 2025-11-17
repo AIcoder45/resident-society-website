@@ -155,3 +155,20 @@ export interface Theme {
   warningColor?: string;
   infoColor?: string;
 }
+
+export interface ServiceProvider {
+  id: string;
+  name: string;
+  serviceType: string; // e.g., "plumber", "electrician", "gardener"
+  phone: string;
+  email?: string;
+  address?: string;
+  description?: string;
+  rating?: number; // 1-5
+  verified?: boolean; // Verified by RWA
+  available?: boolean; // Currently available
+  emergency?: boolean; // Available for emergencies
+  order?: number; // Display order
+  image?: string; // Service provider image URL
+  createdAt: string;
+}

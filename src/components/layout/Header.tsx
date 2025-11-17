@@ -10,6 +10,7 @@ const navigation = [
   { name: "News", href: "/news" },
   { name: "Events", href: "/events" },
   { name: "Gallery", href: "/gallery" },
+  { name: "Quick Contact", href: "/quick-contact" },
   { name: "RWA", href: "/rwa" },
   { name: "Advertisements", href: "/advertisements" },
   { name: "Notifications", href: "/notifications" },
@@ -36,8 +37,20 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between py-2.5 px-4 lg:px-8" aria-label="Global">
+    <header 
+      className="sticky top-0 z-40 w-full backdrop-blur supports-[backdrop-filter]:bg-white/60 lg:border-b lg:border-gray-200 lg:bg-white/95"
+      style={{
+        borderBottom: '1px solid var(--magazine-bg-border, #DEE3EA)',
+        backgroundColor: 'var(--magazine-bg-default, #FFFFFF)',
+      }}
+    >
+      <nav 
+        className="mx-auto flex max-w-7xl items-center justify-between py-2.5 px-4 lg:px-8" 
+        aria-label="Global"
+        style={{
+          maxWidth: 'var(--magazine-container-max-width, 430px)',
+        }}
+      >
         {/* Icon/Logo and Site Name on the left */}
         <div className="flex items-center gap-3 flex-1 lg:flex-none">
           {(logoUrl || faviconUrl) && (
@@ -56,7 +69,7 @@ export function Header() {
                   priority
                 />
               </div>
-            </Link>
+          </Link>
           )}
           
           {/* Site Name - shown on mobile when scrolled */}
@@ -66,7 +79,15 @@ export function Header() {
               className="lg:hidden"
               aria-label="Go to homepage"
             >
-              <h1 className="text-sm font-semibold text-text truncate max-w-[200px]">
+              <h1 
+                className="text-sm font-semibold truncate max-w-[200px]"
+                style={{
+                  fontFamily: 'var(--magazine-font-heading, Gelasio, Arial)',
+                  fontSize: 'var(--magazine-font-3xl, 1.313rem)',
+                  fontWeight: 500,
+                  color: 'var(--magazine-text-primary, #000000)',
+                }}
+              >
                 {siteName}
               </h1>
             </Link>
@@ -79,7 +100,7 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-semibold leading-6 text-text hover:text-primary transition-colors touch-manipulation touch-target tap-feedback flex items-center"
+              className="text-sm font-semibold leading-6 text-text hover:text-primary transition-colors touch-manipulation touch-target tap-feedback flex items-center whitespace-nowrap"
               aria-label={`Navigate to ${item.name}`}
             >
               {item.name}

@@ -45,7 +45,7 @@ export function EventCard({ event, className }: EventCardProps) {
               />
               {isUpcoming && (
                 <div
-                  className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold"
+                  className="absolute top-2 right-2 md:top-3 md:right-3 bg-primary text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-lg z-10"
                   aria-label="Upcoming event"
                 >
                   Upcoming
