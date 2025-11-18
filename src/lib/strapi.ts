@@ -3,7 +3,13 @@
  * Provides type-safe functions for fetching data from Strapi CMS
  */
 
-const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
+/**
+ * Get Strapi URL from environment variables at runtime
+ * This ensures Next.js has loaded .env.local before reading
+ */
+function getStrapiUrl(): string {
+  return process.env.STRAPI_URL || "http://localhost:1337";
+}
 
 /**
  * Strapi API response structure
@@ -51,13 +57,14 @@ export async function fetchStrapi<T>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<StrapiResponse<T>> {
-  const url = `${STRAPI_URL}${endpoint}`;
+  const strapiUrl = getStrapiUrl();
+  const url = `${strapiUrl}${endpoint}`;
   
   if (process.env.NODE_ENV === "development") {
     console.log("Strapi fetchStrapi called:", {
       fullUrl: url,
       endpoint,
-      STRAPI_URL,
+      STRAPI_URL: strapiUrl,
     });
   }
 
@@ -122,7 +129,8 @@ export function getStrapiImageUrl(media: unknown): string | null {
         "url" in mediaObj.attributes
       ) {
         const url = mediaObj.attributes.url as string;
-        return url.startsWith("http") ? url : `${STRAPI_URL}${url}`;
+        const strapiUrl = getStrapiUrl();
+        return url.startsWith("http") ? url : `${strapiUrl}${url}`;
       }
     } else if (
       data &&
@@ -133,7 +141,8 @@ export function getStrapiImageUrl(media: unknown): string | null {
       "url" in data.attributes
     ) {
       const url = data.attributes.url as string;
-      return url.startsWith("http") ? url : `${STRAPI_URL}${url}`;
+      const strapiUrl = getStrapiUrl();
+      return url.startsWith("http") ? url : `${strapiUrl}${url}`;
     }
   }
 
@@ -146,7 +155,8 @@ export function getStrapiImageUrl(media: unknown): string | null {
     "url" in mediaObj
   ) {
     const url = mediaObj.url as string;
-    return url.startsWith("http") ? url : `${STRAPI_URL}${url}`;
+    const strapiUrl = getStrapiUrl();
+    return url.startsWith("http") ? url : `${strapiUrl}${url}`;
   }
 
   return null;
