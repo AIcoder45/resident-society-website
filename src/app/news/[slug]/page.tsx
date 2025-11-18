@@ -76,6 +76,7 @@ export default async function NewsDetailPage({ params }: Props) {
                   className="object-cover"
                   priority
                   sizes="(max-width: 768px) 100vw, 800px"
+                  unoptimized={news.image.startsWith("/") && !news.image.startsWith("http")}
                 />
               </div>
             )}

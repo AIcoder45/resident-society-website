@@ -50,6 +50,7 @@ export function ContentCard({
             className="object-cover transition-transform duration-300 hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             loading="lazy"
+            unoptimized={image.startsWith("/") && !image.startsWith("http")}
           />
         </div>
       )}

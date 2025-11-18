@@ -156,7 +156,9 @@ Repeat for Events, Gallery, Notifications, and Policies.
 
 ## Step 5: Configure Environment Variables
 
-### Local Development (.env.local)
+### Local Development
+
+**Option 1: Using `.env.local` (Recommended)**
 
 In your Next.js project root, create `.env.local`:
 
@@ -167,6 +169,21 @@ STRAPI_URL=http://localhost:1337
 # For production, use:
 # STRAPI_URL=https://your-strapi-instance.com
 ```
+
+**Option 2: Using `.env` (Also works)**
+
+You can also use `.env` instead of `.env.local`:
+
+```env
+# Strapi Local Development
+STRAPI_URL=http://localhost:1337
+```
+
+**Difference between `.env` and `.env.local`:**
+- **`.env.local`**: Next.js convention, has higher priority, automatically gitignored
+- **`.env`**: Works fine, but `.env.local` takes precedence if both exist
+- **Both are gitignored** in this project, so either is safe for secrets
+- **Recommendation**: Use `.env.local` for local development (Next.js best practice)
 
 ### Strapi Environment Variables
 

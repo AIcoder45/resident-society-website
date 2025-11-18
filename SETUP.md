@@ -38,10 +38,12 @@ To switch from JSON files to Strapi:
 
 1. Set up your Strapi instance
 2. Update `src/lib/api.ts` - Replace JSON imports with Strapi API calls
-3. Update environment variables in `.env.local`:
+3. Update environment variables in `.env.local` (or `.env`):
    ```
    STRAPI_URL=https://your-strapi-instance.com
    ```
+   
+   **Note**: Both `.env` and `.env.local` work. `.env.local` is recommended (Next.js convention).
 
 Example API call in `src/lib/api.ts`:
 ```typescript
