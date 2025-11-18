@@ -17,23 +17,26 @@ export function getMagazineTheme(): MagazineTheme {
 
 /**
  * Get magazine theme colors
+ * Note: theme-components.json doesn't include colors, returns undefined
  */
-export function getMagazineColors() {
-  return themeComponents.colors;
+export function getMagazineColors(): undefined {
+  return undefined;
 }
 
 /**
  * Get magazine typography settings
+ * Note: theme-components.json doesn't include typography, returns undefined
  */
-export function getMagazineTypography() {
-  return themeComponents.typography;
+export function getMagazineTypography(): undefined {
+  return undefined;
 }
 
 /**
  * Get magazine component styles for a specific screen
+ * Note: theme-components.json doesn't include screens, returns undefined
  */
-export function getScreenStyles(screen: 'home' | 'favorites' | 'notifications' | 'account') {
-  return themeComponents.components.screens[screen];
+export function getScreenStyles(screen: 'home' | 'favorites' | 'notifications' | 'account'): undefined {
+  return undefined;
 }
 
 /**
@@ -45,16 +48,18 @@ export function getNavigationStyles() {
 
 /**
  * Get magazine heading styles
+ * Note: theme-components.json doesn't include heading, returns undefined
  */
-export function getHeadingStyles(level: 'h1' | 'h2' | 'h3' = 'h1') {
-  return themeComponents.components.heading[level];
+export function getHeadingStyles(level: 'h1' | 'h2' | 'h3' = 'h1'): undefined {
+  return undefined;
 }
 
 /**
  * Get magazine body text styles
+ * Note: theme-components.json doesn't include body, returns undefined
  */
-export function getBodyStyles(variant: 'default' | 'small' | 'meta' = 'default') {
-  return themeComponents.components.body[variant];
+export function getBodyStyles(variant: 'default' | 'small' | 'meta' = 'default'): undefined {
+  return undefined;
 }
 
 /**

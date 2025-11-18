@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify": "node scripts/verify-components.js",
+    "prebuild": "node scripts/verify-components.js"
   },
   "dependencies": {
     "@radix-ui/react-separator": "^1.0.3",
