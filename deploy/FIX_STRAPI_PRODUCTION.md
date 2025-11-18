@@ -8,6 +8,25 @@ The Next.js app deployed on VPS is not connecting to Strapi, causing:
 ## Root Cause
 The PM2 ecosystem configuration doesn't include `STRAPI_URL` environment variable, so the app can't find Strapi.
 
+## Quick Commands to Ensure Production Environment Variables Are Loaded
+
+```bash
+# Quick verification (run this first)
+cd /var/www/greenwood-city
+pm2 env 0 | grep STRAPI_URL || echo "❌ STRAPI_URL not found"
+
+# Force reload environment variables
+pm2 restart greenwood-city --update-env
+
+# Or completely restart to ensure .env.production is loaded
+pm2 delete greenwood-city
+NODE_ENV=production pm2 start ecosystem.config.js
+pm2 save
+
+# Verify .env.production file exists and is readable
+cat .env.production | grep STRAPI_URL
+```
+
 ## Solution
 
 ### Step 1: Update PM2 Configuration
@@ -52,16 +71,62 @@ pm2 start ecosystem.config.js
 pm2 save
 ```
 
-### Step 3: Verify Environment Variables
+### Step 3: Verify Environment Variables Are Loaded
 
-Check if the environment variables are loaded:
+**Comprehensive commands to ensure production environment variables are loaded:**
 
 ```bash
-# Check PM2 logs
-pm2 logs greenwood-city --lines 50
+# Navigate to app directory
+cd /var/www/greenwood-city
 
-# You should see:
-# Strapi Configuration: { STRAPI_URL: 'https://admin.greenwoodscity.in', USE_STRAPI: true }
+# Method 1: Check PM2 environment variables directly
+pm2 env 0  # Shows all env vars for process ID 0 (or use: pm2 show greenwood-city | grep env)
+
+# Method 2: Check if .env.production file exists and is readable
+ls -la .env.production
+cat .env.production  # View contents (be careful with secrets)
+
+# Method 3: Verify PM2 process environment
+pm2 show greenwood-city | grep -A 20 "env:"
+
+# Method 4: Check environment variables in running process
+pm2 describe greenwood-city | grep -E "(STRAPI_URL|NODE_ENV|PORT)"
+
+# Method 5: Test environment variable loading by checking PM2 logs
+pm2 logs greenwood-city --lines 50 --nostream
+
+# Method 6: Restart PM2 to ensure .env.production is loaded
+pm2 restart greenwood-city --update-env
+
+# Method 7: Verify environment variables are accessible (if using .env.production)
+# This ensures Next.js loads the file
+NODE_ENV=production node -e "require('dotenv').config({ path: '.env.production' }); console.log('STRAPI_URL:', process.env.STRAPI_URL)"
+
+# Method 8: Check PM2 ecosystem config is correct
+cat ecosystem.config.js | grep -A 10 "env:"
+
+# Method 9: Force reload environment variables
+pm2 delete greenwood-city
+pm2 start ecosystem.config.js
+pm2 save
+
+# Method 10: Verify in application logs (should show env vars if debug logging enabled)
+pm2 logs greenwood-city --lines 100 | grep -i "strapi\|env"
+```
+
+**Expected Output:**
+
+When environment variables are loaded correctly, you should see:
+- `STRAPI_URL=https://admin.greenwoodscity.in` in PM2 env output
+- `NODE_ENV=production` in PM2 env output
+- Application logs showing Strapi connection attempts
+- No errors about missing environment variables
+
+**Quick Verification Command:**
+
+```bash
+# One-liner to check if STRAPI_URL is set in PM2
+pm2 env 0 | grep STRAPI_URL || echo "❌ STRAPI_URL not found in PM2 environment"
 ```
 
 ### Step 4: Alternative - Use .env.production File
@@ -87,15 +152,39 @@ Then restart PM2:
 pm2 restart greenwood-city
 ```
 
-### Step 5: Rebuild Next.js App (If Needed)
+### Step 5: Ensure Production Environment Variables Are Loaded
 
-If you made changes to `next.config.mjs`, rebuild:
+**Important:** Next.js loads `.env.production` automatically when `NODE_ENV=production`. To ensure it's loaded:
 
 ```bash
 cd /var/www/greenwood-city
-npm run build
+
+# Option 1: Rebuild Next.js app (ensures env vars are loaded at build time)
+# This is important if you're using NEXT_PUBLIC_* variables
+NODE_ENV=production npm run build
 pm2 restart greenwood-city
+
+# Option 2: Restart PM2 with explicit environment
+pm2 restart greenwood-city --update-env
+
+# Option 3: Delete and restart to force reload
+pm2 delete greenwood-city
+NODE_ENV=production pm2 start ecosystem.config.js
+pm2 save
+
+# Option 4: Verify .env.production is being read
+# Check that Next.js can read the file
+node -e "
+require('dotenv').config({ path: '.env.production' });
+console.log('✅ STRAPI_URL:', process.env.STRAPI_URL || '❌ NOT SET');
+console.log('✅ NODE_ENV:', process.env.NODE_ENV || '❌ NOT SET');
+"
 ```
+
+**Note:** If you're using `.env.production` file:
+- Next.js automatically loads it when `NODE_ENV=production`
+- PM2 should set `NODE_ENV=production` in ecosystem.config.js
+- Rebuild the app after changing `.env.production` to ensure changes take effect
 
 ## Verification
 
