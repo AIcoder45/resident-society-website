@@ -19,16 +19,32 @@ import { fetchStrapi, getStrapiImageUrl as getStrapiImageUrlUtil } from "@/lib/s
  * Automatically uses Strapi if STRAPI_URL is set, otherwise falls back to JSON files
  */
 
-const STRAPI_URL = process.env.STRAPI_URL;
-const USE_STRAPI = !!STRAPI_URL;
+/**
+ * Get Strapi URL from environment variables at runtime
+ * This ensures Next.js has loaded .env.local before reading
+ */
+function getStrapiUrl(): string | undefined {
+  return process.env.STRAPI_URL;
+}
 
-// Debug logging (remove in production)
-if (process.env.NODE_ENV === "development") {
-  console.log("Strapi Configuration:", {
-    STRAPI_URL,
-    USE_STRAPI,
-    envKeys: Object.keys(process.env).filter((k) => k.includes("STRAPI")),
-  });
+/**
+ * Check if Strapi should be used
+ * Reads environment variable at runtime
+ */
+function shouldUseStrapi(): boolean {
+  const url = getStrapiUrl();
+  const useStrapi = !!url;
+  
+  // Debug logging (remove in production)
+  if (process.env.NODE_ENV === "development") {
+    console.log("Strapi Configuration:", {
+      STRAPI_URL: url,
+      USE_STRAPI: useStrapi,
+      envKeys: Object.keys(process.env).filter((k) => k.includes("STRAPI")),
+    });
+  }
+  
+  return useStrapi;
 }
 
 /**
@@ -38,10 +54,11 @@ if (process.env.NODE_ENV === "development") {
 function getStrapiImageUrl(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
   if (url.startsWith("http")) return url;
-  if (STRAPI_URL) {
+  const strapiUrl = getStrapiUrl();
+  if (strapiUrl) {
     // Remove leading slash if present to avoid double slashes
     const cleanUrl = url.startsWith("/") ? url.slice(1) : url;
-    return `${STRAPI_URL}${cleanUrl.startsWith("/") ? "" : "/"}${cleanUrl}`;
+    return `${strapiUrl}${cleanUrl.startsWith("/") ? "" : "/"}${cleanUrl}`;
   }
   return url;
 }
@@ -52,12 +69,13 @@ function getStrapiImageUrl(url: string | null | undefined): string | undefined {
  * @returns Array of news articles
  */
 export async function getNews(limit?: number): Promise<News[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/news-articles?populate=*&sort[0]=publishedAt:desc`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching news from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching news from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -77,7 +95,7 @@ export async function getNews(limit?: number): Promise<News[]> {
             const url = imageData.url as string;
             imageUrl = url.startsWith("http")
               ? url
-              : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
           } else {
             // Strapi v4: nested structure
             imageUrl = getStrapiImageUrlUtil(imageData) || undefined;
@@ -126,7 +144,7 @@ export async function getNews(limit?: number): Promise<News[]> {
  * @returns News article or null
  */
 export async function getNewsBySlug(slug: string): Promise<News | null> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/news-articles?filters[slug][$eq]=${slug}&populate=*`;
       const response = await fetchStrapi<any[]>(url);
@@ -147,7 +165,7 @@ export async function getNewsBySlug(slug: string): Promise<News | null> {
           const url = imageData.url as string;
           imageUrl = url.startsWith("http")
             ? url
-            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
         } else {
           // Strapi v4: nested structure
           imageUrl = getStrapiImageUrlUtil(imageData) || undefined;
@@ -185,7 +203,7 @@ export async function getEvents(
   limit?: number,
   upcomingOnly: boolean = false,
 ): Promise<Event[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       let url = `/api/events?populate=*&sort[0]=eventDate:asc`;
 
@@ -195,7 +213,8 @@ export async function getEvents(
       }
 
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching events from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching events from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -233,7 +252,7 @@ export async function getEvents(
             const url = coverImageData.url as string;
             coverImageUrl = url.startsWith("http") 
               ? url 
-              : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
           } else {
             // Strapi v4: nested structure
             coverImageUrl = getStrapiImageUrlUtil(coverImageData) || undefined;
@@ -253,7 +272,7 @@ export async function getEvents(
               const url = img.url as string;
               return url.startsWith("http") 
                 ? url 
-                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             }
             // Strapi v4: nested structure
             const extracted = getStrapiImageUrlUtil(img);
@@ -298,8 +317,8 @@ export async function getEvents(
 
   // If not using Strapi, use JSON fallback
   if (process.env.NODE_ENV === "development") {
-    console.warn("⚠️ Using JSON fallback for events (USE_STRAPI:", USE_STRAPI, ")");
-    console.warn("⚠️ STRAPI_URL is:", STRAPI_URL);
+    console.warn("⚠️ Using JSON fallback for events (USE_STRAPI:", shouldUseStrapi(), ")");
+    console.warn("⚠️ STRAPI_URL is:", getStrapiUrl());
   }
 
   // Fallback to JSON files
@@ -326,7 +345,7 @@ export async function getEvents(
  * @returns Event or null
  */
 export async function getEventBySlug(slug: string): Promise<Event | null> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/events?filters[slug][$eq]=${slug}&populate=*`;
       const response = await fetchStrapi<any[]>(url);
@@ -348,7 +367,7 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
           const url = coverImageData.url as string;
           coverImageUrl = url.startsWith("http") 
             ? url 
-            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
         } else {
           // Strapi v4: nested structure
           coverImageUrl = getStrapiImageUrlUtil(coverImageData) || undefined;
@@ -368,7 +387,7 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
             const url = img.url as string;
             return url.startsWith("http") 
               ? url 
-              : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
           }
           // Strapi v4: nested structure
           const extracted = getStrapiImageUrlUtil(img);
@@ -403,12 +422,13 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
  * @returns Array of gallery items
  */
 export async function getGallery(limit?: number): Promise<GalleryItem[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/galleries?populate=*&sort[0]=createdAt:desc`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching gallery from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching gallery from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -431,7 +451,7 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
               const url = img.url as string;
               return url.startsWith("http")
                 ? url
-                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             }
             // Strapi v4: nested structure
             const extracted = getStrapiImageUrlUtil(img);
@@ -487,13 +507,14 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
  * @returns Array of active notifications
  */
 export async function getNotifications(): Promise<Notification[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const now = new Date().toISOString();
       const url = `/api/notifications?filters[$or][0][expiryDate][$gt]=${now}&filters[$or][1][expiryDate][$null]=true&populate=*&sort[0]=createdAt:desc`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching notifications from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching notifications from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -542,7 +563,7 @@ export async function getNotifications(): Promise<Notification[]> {
  * @returns Array of policies
  */
 export async function getPolicies(category?: string): Promise<Policy[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       let url = `/api/policies?populate=*&sort[0]=updatedAt:desc`;
 
@@ -551,7 +572,8 @@ export async function getPolicies(category?: string): Promise<Policy[]> {
       }
 
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching policies from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching policies from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -571,7 +593,7 @@ export async function getPolicies(category?: string): Promise<Policy[]> {
             const url = fileData.url as string;
             fileUrl = url.startsWith("http")
               ? url
-              : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
           } else {
             // Strapi v4: nested structure
             fileUrl = getStrapiImageUrlUtil(fileData) || undefined;
@@ -626,12 +648,13 @@ export async function getPolicies(category?: string): Promise<Policy[]> {
  * @returns Policy or null
  */
 export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/policies?filters[slug][$eq]=${slug}&populate=*`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching policy from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching policy from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -652,7 +675,7 @@ export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
           const url = fileData.url as string;
           fileUrl = url.startsWith("http")
             ? url
-            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
         } else {
           // Strapi v4: nested structure
           fileUrl = getStrapiImageUrlUtil(fileData) || undefined;
@@ -684,12 +707,13 @@ export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
  * @returns Contact page data or null
  */
 export async function getContactPageData(): Promise<ContactPageData | null> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/contact?populate=*`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching contact page data from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching contact page data from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any>(url);
@@ -762,12 +786,13 @@ export async function getContactPageData(): Promise<ContactPageData | null> {
  * @returns Homepage data or null if not available
  */
 export async function getHomepage(): Promise<Homepage | null> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/homepage?populate=*`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("🔍 Fetching homepage data from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("🔍 Fetching homepage data from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any>(url);
@@ -839,12 +864,13 @@ export async function getHomepage(): Promise<Homepage | null> {
  * @returns Theme data or null if not available
  */
 export async function getTheme(): Promise<Theme | null> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/theme?populate=*`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("🔍 Fetching theme data from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("🔍 Fetching theme data from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any>(url);
@@ -892,7 +918,7 @@ export async function getTheme(): Promise<Theme | null> {
           const url = (logoSource as any).url as string;
           logoUrl = url.startsWith("http")
             ? url
-            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
           
           if (process.env.NODE_ENV === "development") {
             console.log("✅ Logo URL extracted:", logoUrl);
@@ -914,7 +940,7 @@ export async function getTheme(): Promise<Theme | null> {
           const url = (logoDarkSource as any).url as string;
           logoDarkUrl = url.startsWith("http")
             ? url
-            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
         } else if (typeof logoDarkSource === "object" && logoDarkSource !== null && "data" in logoDarkSource) {
           const logoDarkData = (logoDarkSource as any).data;
           logoDarkUrl = getStrapiImageUrlUtil(logoDarkData) || undefined;
@@ -930,7 +956,7 @@ export async function getTheme(): Promise<Theme | null> {
           const url = (faviconSource as any).url as string;
           faviconUrl = url.startsWith("http")
             ? url
-            : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
         } else if (typeof faviconSource === "object" && faviconSource !== null && "data" in faviconSource) {
           const faviconData = (faviconSource as any).data;
           faviconUrl = getStrapiImageUrlUtil(faviconData) || undefined;
@@ -1067,14 +1093,15 @@ export async function getContactInfo(): Promise<ContactInfo[]> {
  * @returns Array of RWA members
  */
 export async function getRWAMembers(): Promise<RWAMember[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/rwas?populate=*&sort[0]=order:asc`;
       
       if (process.env.NODE_ENV === "development") {
         console.log("🔍 RWA: USE_STRAPI is true");
-        console.log("🔍 RWA: STRAPI_URL:", STRAPI_URL);
-        console.log("🔍 Fetching RWA members from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("🔍 RWA: STRAPI_URL:", strapiUrl);
+        console.log("🔍 Fetching RWA members from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -1125,7 +1152,7 @@ export async function getRWAMembers(): Promise<RWAMember[]> {
                 const url = photoAttributes.url as string;
                 photoUrl = url.startsWith("http")
                   ? url
-                  : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                  : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
               }
             }
           } else {
@@ -1134,7 +1161,7 @@ export async function getRWAMembers(): Promise<RWAMember[]> {
               const url = photoData.url as string;
               photoUrl = url.startsWith("http")
                 ? url
-                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             } else {
               // Try getStrapiImageUrlUtil as fallback
               photoUrl = getStrapiImageUrlUtil(photoData) || undefined;
@@ -1190,7 +1217,7 @@ export async function getRWAMembers(): Promise<RWAMember[]> {
   } else {
     if (process.env.NODE_ENV === "development") {
       console.warn("⚠️ RWA: USE_STRAPI is false, using JSON fallback");
-      console.warn("⚠️ RWA: STRAPI_URL is:", STRAPI_URL);
+      console.warn("⚠️ RWA: STRAPI_URL is:", getStrapiUrl());
     }
   }
 
@@ -1233,7 +1260,7 @@ export async function getAdvertisements(
   category?: string,
   limit?: number
 ): Promise<Advertisement[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       let url = `/api/advertisements?populate=*&sort[0]=publishedAt:desc`;
 
@@ -1242,7 +1269,8 @@ export async function getAdvertisements(
       }
 
       if (process.env.NODE_ENV === "development") {
-        console.log("Fetching advertisements from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("Fetching advertisements from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -1267,7 +1295,7 @@ export async function getAdvertisements(
                   const url = imageAttributes.url as string;
                   imageUrl = url.startsWith("http")
                     ? url
-                    : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                    : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
                 }
               }
             } else {
@@ -1276,7 +1304,7 @@ export async function getAdvertisements(
                 const url = imageData.url as string;
                 imageUrl = url.startsWith("http")
                   ? url
-                  : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                  : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
               } else if (imageData && typeof imageData === "object") {
                 // Try fallback method
                 imageUrl = getStrapiImageUrlUtil(imageData) || undefined;
@@ -1372,12 +1400,13 @@ export async function getAdvertisements(
  * @returns Advertisement or null
  */
 export async function getAdvertisementById(id: string): Promise<Advertisement | null> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       const url = `/api/advertisements/${id}?populate=*`;
       
       if (process.env.NODE_ENV === "development") {
-        console.log("🔍 Fetching advertisement by ID from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("🔍 Fetching advertisement by ID from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any>(url);
@@ -1432,7 +1461,7 @@ export async function getAdvertisementById(id: string): Promise<Advertisement | 
               const url = imageAttributes.url as string;
               imageUrl = url.startsWith("http")
                 ? url
-                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             }
           }
         } else {
@@ -1441,7 +1470,7 @@ export async function getAdvertisementById(id: string): Promise<Advertisement | 
             const url = imageData.url as string;
             imageUrl = url.startsWith("http")
               ? url
-              : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             
             if (process.env.NODE_ENV === "development") {
               console.log("✅ Extracted image URL:", imageUrl);
@@ -1510,7 +1539,7 @@ export async function getAdvertisementById(id: string): Promise<Advertisement | 
 export async function getServiceProviders(
   serviceType?: string,
 ): Promise<ServiceProvider[]> {
-  if (USE_STRAPI) {
+  if (shouldUseStrapi()) {
     try {
       let url = `/api/service-providers?populate=*&sort[0]=order:asc&sort[1]=name:asc`;
       
@@ -1519,7 +1548,8 @@ export async function getServiceProviders(
       }
 
       if (process.env.NODE_ENV === "development") {
-        console.log("🔍 Fetching service providers from Strapi:", `${STRAPI_URL}${url}`);
+        const strapiUrl = getStrapiUrl();
+        console.log("🔍 Fetching service providers from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any>(url);
@@ -1547,17 +1577,17 @@ export async function getServiceProviders(
               const url = imageData.formats.medium.url as string;
               imageUrl = url.startsWith("http")
                 ? url
-                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             } else if (imageData.formats?.small?.url) {
               const url = imageData.formats.small.url as string;
               imageUrl = url.startsWith("http")
                 ? url
-                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             } else if (imageData.url) {
               const url = imageData.url as string;
               imageUrl = url.startsWith("http")
                 ? url
-                : `${STRAPI_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
             } else {
               // Fallback to utility function
               imageUrl = getStrapiImageUrlUtil(imageData) || undefined;
