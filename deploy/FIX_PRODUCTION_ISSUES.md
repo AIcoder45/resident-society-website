@@ -201,13 +201,22 @@ ssh root@31.97.232.51
 # Navigate to app directory
 cd /var/www/greenwood-city
 
-# 1. Check if Strapi is connected
+# 1. Create .env.production file from template
+# Option A: Use the setup script (recommended)
+chmod +x deploy/setup-env-production.sh
+./deploy/setup-env-production.sh
+
+# Option B: Manual copy
+cp deploy/env.production.template .env.production
+chmod 600 .env.production
+
+# 2. Verify .env.production was created
+cat .env.production | grep STRAPI_URL
+
+# 3. Check if Strapi is connected
 pm2 env 0 | grep STRAPI_URL
 
-# 2. If not connected, add to .env.production
-echo "STRAPI_URL=https://admin.greenwoodscity.in" >> .env.production
-
-# 3. Restart PM2
+# 4. Restart PM2 to load environment variables
 pm2 restart greenwood-city --update-env
 
 # 4. Check logs
