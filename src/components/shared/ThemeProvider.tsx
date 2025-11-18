@@ -4,11 +4,6 @@ import * as React from "react";
 import type { Theme } from "@/types";
 import { validateThemeContrast } from "@/lib/utils/contrast";
 
-// Mobile-only theme constants
-const MOBILE_VIEWPORT_MAX_WIDTH = "480px";
-const MOBILE_VIEWPORT_MIN_WIDTH = "320px";
-const MOBILE_ACCENT_YELLOW = "#FFD700";
-
 interface ThemeProviderProps {
   theme: Theme | null;
   children: React.ReactNode;
@@ -31,22 +26,17 @@ export function useTheme() {
  * Injects CSS variables from Strapi theme data into the document
  * Also provides theme data via context for client components
  * Validates contrast ratios for WCAG compliance
- * Applies mobile-only theme constraints (320px - 480px)
  */
 export function ThemeProvider({ theme, children }: ThemeProviderProps) {
   React.useEffect(() => {
-    const root = document.documentElement;
-
-    // Apply mobile-only viewport constraint
-    root.style.setProperty("--viewport-max-width", MOBILE_VIEWPORT_MAX_WIDTH);
-    root.style.setProperty("--viewport-min-width", MOBILE_VIEWPORT_MIN_WIDTH);
-
     if (!theme) {
       // Use default theme if no theme data
       return;
     }
 
-    // Set CSS variables for colors from API theme
+    const root = document.documentElement;
+
+    // Set CSS variables for colors
     root.style.setProperty("--color-primary", theme.primaryColor);
     root.style.setProperty("--color-primary-dark", theme.primaryColorDark || theme.primaryColor);
     root.style.setProperty("--color-primary-light", theme.primaryColorLight || theme.primaryColor);
@@ -63,11 +53,8 @@ export function ThemeProvider({ theme, children }: ThemeProviderProps) {
     
     root.style.setProperty("--color-theme", theme.themeColor);
     
-    // Accent color from API or fallback to yellow from mobile theme
     if (theme.accentColor) {
       root.style.setProperty("--color-accent", theme.accentColor);
-    } else {
-      root.style.setProperty("--color-accent", MOBILE_ACCENT_YELLOW);
     }
     
     if (theme.errorColor) {
@@ -132,9 +119,8 @@ export function ThemeProvider({ theme, children }: ThemeProviderProps) {
 
   return (
     <ThemeContext.Provider value={theme}>
-      <div className="mobile-viewport-container">
-        {children}
-      </div>
+      {children}
     </ThemeContext.Provider>
   );
 }
+

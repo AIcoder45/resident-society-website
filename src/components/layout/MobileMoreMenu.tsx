@@ -58,44 +58,17 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-50 lg:hidden max-h-[80vh] overflow-y-auto safe-area-inset-bottom"
-            style={{
-              backgroundColor: 'var(--magazine-bg-default, #FFFFFF)',
-              borderTopLeftRadius: 'var(--magazine-radius-lg, 15px)',
-              borderTopRightRadius: 'var(--magazine-radius-lg, 15px)',
-            }}
+            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 lg:hidden max-h-[80vh] overflow-y-auto safe-area-inset-bottom"
           >
             <div className="flex flex-col">
               {/* Handle Bar */}
               <div className="flex justify-center pt-3 pb-2">
-                <div 
-                  className="w-12 h-1.5 rounded-full"
-                  style={{
-                    backgroundColor: 'var(--magazine-text-tertiary, #8B939C)',
-                  }}
-                />
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
               </div>
 
               {/* Header */}
-              <div 
-                className="flex items-center justify-between px-6 pb-4"
-                style={{
-                  borderBottom: '1px solid var(--magazine-bg-border, #DEE3EA)',
-                  paddingLeft: 'var(--magazine-spacing-3xl, 23px)',
-                  paddingRight: 'var(--magazine-spacing-3xl, 23px)',
-                }}
-              >
-                <h2 
-                  className="text-xl font-bold"
-                  style={{
-                    fontFamily: 'var(--magazine-font-heading, Gelasio, Arial)',
-                    fontSize: 'var(--magazine-font-5xl, 1.688rem)',
-                    fontWeight: 500,
-                    color: 'var(--magazine-text-primary, #000000)',
-                  }}
-                >
-                  More
-                </h2>
+              <div className="flex items-center justify-between px-6 pb-4 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-text">More</h2>
                 <button
                   onClick={onClose}
                   className="p-2 rounded-full hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
@@ -117,32 +90,21 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
                       key={item.name}
                       href={item.href}
                       onClick={onClose}
-                      className="flex items-center gap-4 min-h-[56px] transition-colors touch-manipulation"
-                      style={{
-                        padding: 'var(--magazine-spacing-2xl, 20px) var(--magazine-spacing-3xl, 23px)',
-                        backgroundColor: isActive ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
-                        borderLeft: isActive ? '4px solid var(--magazine-text-primary, #000000)' : 'none',
-                      }}
+                      className={cn(
+                        "flex items-center gap-4 px-6 py-4 min-h-[56px] transition-colors touch-manipulation",
+                        isActive 
+                          ? "bg-primary/10 border-l-4 border-primary text-primary" 
+                          : "hover:bg-gray-50 text-text"
+                      )}
                     >
-                      <Icon 
-                        className="h-6 w-6 flex-shrink-0"
-                        style={{
-                          color: isActive 
-                            ? 'var(--magazine-text-primary, #000000)' 
-                            : 'var(--magazine-text-tertiary, #8B939C)'
-                        }}
-                      />
-                      <span 
-                        className="flex-1"
-                        style={{
-                          fontFamily: 'var(--magazine-font-body, Fredoka, Arial)',
-                          fontSize: 'var(--magazine-font-lg, 0.938rem)',
-                          fontWeight: isActive ? 600 : 400,
-                          color: isActive 
-                            ? 'var(--magazine-text-primary, #000000)' 
-                            : 'var(--magazine-text-primary, #000000)'
-                        }}
-                      >
+                      <Icon className={cn(
+                        "h-6 w-6 flex-shrink-0",
+                        isActive ? "text-primary" : "text-gray-600"
+                      )} />
+                      <span className={cn(
+                        "font-medium flex-1",
+                        isActive && "font-semibold"
+                      )}>
                         {item.name}
                       </span>
                     </Link>

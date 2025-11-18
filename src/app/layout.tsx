@@ -24,12 +24,6 @@ export const metadata: Metadata = {
     title: "Block C",
   },
   manifest: "/manifest.json",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
 };
 
 export default async function RootLayout({
