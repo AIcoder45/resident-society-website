@@ -2,12 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["localhost"],
+    domains: ["localhost", "admin.greenwoodscity.in"],
     remotePatterns: [
       {
         protocol: "http",
         hostname: "localhost",
         port: "1337",
+      },
+      {
+        protocol: "https",
+        hostname: "admin.greenwoodscity.in",
       },
       {
         protocol: "https",

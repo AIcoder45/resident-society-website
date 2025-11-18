@@ -13,7 +13,9 @@ module.exports = {
     max_memory_restart: '1G',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000
+      PORT: 3000,
+      STRAPI_URL: 'https://admin.greenwoodscity.in',
+      STRAPI_API_TOKEN: process.env.STRAPI_API_TOKEN || ''
     },
     error_file: '/var/www/greenwood-city/logs/pm2-error.log',
     out_file: '/var/www/greenwood-city/logs/pm2-out.log',

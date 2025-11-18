@@ -54,7 +54,7 @@ src/
 🚀 **Strapi CMS Setup**: See [STRAPI_SETUP.md](./STRAPI_SETUP.md) for complete Strapi integration guide.
 
 **Current Setup:**
-- **Strapi Mode**: If `STRAPI_URL` is set in `.env.local`, the app uses Strapi CMS
+- **Strapi Mode**: If `STRAPI_URL` is set in `.env.local` or `.env`, the app uses Strapi CMS
 - **JSON Mode**: If `STRAPI_URL` is not set, the app uses JSON files from `src/data/`
 - The app automatically detects which mode to use
 
@@ -65,8 +65,10 @@ src/
 
 **Quick Start (Strapi Mode):**
 1. Set up Strapi (see STRAPI_SETUP.md)
-2. Add `STRAPI_URL=http://localhost:1337` to `.env.local`
+2. Add `STRAPI_URL=http://localhost:1337` to `.env.local` (or `.env`)
 3. Start Strapi and Next.js - content will load from Strapi automatically
+
+**Note**: You can use either `.env` or `.env.local` - both work! `.env.local` is the Next.js convention and has higher priority if both exist.
 
 ## Build
 

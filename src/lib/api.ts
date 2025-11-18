@@ -34,14 +34,14 @@ function getStrapiUrl(): string | undefined {
 function shouldUseStrapi(): boolean {
   const url = getStrapiUrl();
   const useStrapi = !!url;
-  
-  // Debug logging (remove in production)
-  if (process.env.NODE_ENV === "development") {
-    console.log("Strapi Configuration:", {
+
+// Debug logging (remove in production)
+if (process.env.NODE_ENV === "development") {
+  console.log("Strapi Configuration:", {
       STRAPI_URL: url,
       USE_STRAPI: useStrapi,
-      envKeys: Object.keys(process.env).filter((k) => k.includes("STRAPI")),
-    });
+    envKeys: Object.keys(process.env).filter((k) => k.includes("STRAPI")),
+  });
   }
   
   return useStrapi;

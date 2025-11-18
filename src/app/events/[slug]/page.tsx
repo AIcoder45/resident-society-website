@@ -91,6 +91,7 @@ export default async function EventDetailPage({ params }: Props) {
                   className="object-cover"
                   priority
                   sizes="(max-width: 768px) 100vw, 800px"
+                  unoptimized={event.coverImage.startsWith("/") && !event.coverImage.startsWith("http")}
                 />
               </div>
             )}
@@ -117,6 +118,7 @@ export default async function EventDetailPage({ params }: Props) {
                           fill
                           className="object-cover transition-transform duration-300 hover:scale-105"
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          unoptimized={imageUrl.startsWith("/") && !imageUrl.startsWith("http")}
                         />
                       </div>
                     ))}
