@@ -59,7 +59,10 @@ export function PWAInstallPrompt() {
     if (isIOS && isSafari) {
       // Show iOS install prompt after delay
       setTimeout(() => {
-        if (!isInstalled && !sessionStorage.getItem("pwa-install-dismissed")) {
+        // Check if still not installed and not dismissed
+        const stillNotInstalled = !window.matchMedia("(display-mode: standalone)").matches && 
+                                  !(window.navigator as any).standalone;
+        if (stillNotInstalled && !sessionStorage.getItem("pwa-install-dismissed")) {
           setShowPrompt(true);
         }
       }, 3000);
