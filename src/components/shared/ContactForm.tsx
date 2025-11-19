@@ -118,16 +118,16 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
   };
 
   return (
-    <Card className="w-full">
-      <CardContent className="p-4 sm:p-6 md:p-8">
-        <div className="space-y-6">
+    <Card className="w-full border border-gray-200/60 shadow-lg">
+      <CardContent className="p-5 sm:p-6 md:p-8">
+        <div className="space-y-5 sm:space-y-6">
           {/* Header */}
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-text mb-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text mb-3">
               Send us a Message
             </h2>
             {generalInquiryText && (
-              <p className="text-sm sm:text-base text-text-light mb-2">
+              <p className="text-sm sm:text-base text-text-light mb-2 leading-relaxed">
                 {generalInquiryText}
               </p>
             )}
@@ -162,7 +162,7 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
                   type="text"
                   name="name"
                   label="Your Name"
-                  placeholder="John Doe"
+                  placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
                   error={errors.name}
@@ -177,7 +177,7 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
                   type="email"
                   name="email"
                   label="Email Address"
-                  placeholder="john@example.com"
+                  placeholder="your.email@example.com"
                   value={formData.email}
                   onChange={handleChange}
                   error={errors.email}
