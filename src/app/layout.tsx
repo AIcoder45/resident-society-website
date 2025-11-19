@@ -22,7 +22,13 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Block C",
   },
+  // Next.js automatically links manifest.ts route as /manifest.json
+  // Explicitly setting it ensures proper PWA installation
   manifest: "/manifest.json",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default async function RootLayout({

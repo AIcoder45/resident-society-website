@@ -14,11 +14,24 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const icons: MetadataRoute.Manifest["icons"] = [];
 
   // Add icons - prefer favicon, fallback to logo from theme, then logo.png
+  // PWA requires both 192x192 and 512x512 icons for installation
   if (theme?.favicon) {
     icons.push(
       {
         src: theme.favicon,
         sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: theme.favicon,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: theme.favicon,
+        sizes: "512x512",
         type: "image/png",
         purpose: "any",
       },
@@ -40,17 +53,41 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
       },
       {
         src: theme.logo,
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: theme.logo,
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: theme.logo,
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
       }
     );
   } else {
-    // Final fallback to public/logo.png
+    // Final fallback to public/logo.png - ensure this always exists
     icons.push(
       {
         src: "/logo.png",
         sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/logo.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/logo.png",
+        sizes: "512x512",
         type: "image/png",
         purpose: "any",
       },
