@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, Megaphone, FileText, X, Image } from "lucide-react";
+import { Users, Megaphone, FileText, X, Image, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,7 @@ const moreNavItems = [
   { name: "RWA", href: "/rwa", icon: Users },
   { name: "Advertisements", href: "/advertisements", icon: Megaphone },
   { name: "Policies", href: "/policies", icon: FileText },
+  { name: "Contact Us", href: "/contact", icon: Phone },
 ];
 
 interface MobileMoreMenuProps {

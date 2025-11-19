@@ -28,7 +28,7 @@ const navigation = [
   { name: "Advertisements", href: "/advertisements", icon: Megaphone },
   { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "Policies", href: "/policies", icon: FileText },
-  { name: "Contact", href: "/contact", icon: Phone },
+  { name: "Contact Us", href: "/contact", icon: Phone },
 ];
 
 interface MobileMenuProps {
