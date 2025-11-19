@@ -44,7 +44,7 @@ export default async function NewsDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
       <Breadcrumb
         items={[
           { label: "News", href: "/news" },
@@ -53,22 +53,22 @@ export default async function NewsDetailPage({ params }: Props) {
       />
 
       <article>
-        <Section>
-          <div className="space-y-6">
+        <Section className="!pt-1 !pb-3 sm:!pt-2 sm:!pb-4">
+          <div className="space-y-2">
             <div>
-              <span className="text-sm font-semibold text-primary uppercase tracking-wide">
+              <span className="text-[9px] font-semibold text-primary uppercase tracking-wide">
                 {news.category}
               </span>
-              <h1 className="text-3xl md:text-4xl font-bold text-text mt-2 mb-4">
+              <h1 className="text-base sm:text-lg md:text-xl font-bold text-text mt-1 mb-1 leading-tight">
                 {news.title}
               </h1>
-              <p className="text-text-light">
+              <p className="text-[10px] sm:text-[11px] text-text-light">
                 Published on {formatDate(news.publishedAt, "long")}
               </p>
             </div>
 
             {news.image && (
-              <div className="relative w-full aspect-video overflow-hidden rounded-lg">
+              <div className="relative w-full aspect-video overflow-hidden rounded-lg mt-1.5">
                 <Image
                   src={news.image}
                   alt={news.title}
@@ -81,7 +81,7 @@ export default async function NewsDetailPage({ params }: Props) {
               </div>
             )}
 
-            <Separator />
+            <Separator className="my-2" />
 
             <RichTextContent content={news.content} />
           </div>

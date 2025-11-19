@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   // Fetch data for home page - Show 4 cards per category
-  const [latestNews, upcomingEvents, galleryItems, featuredAds] = await Promise.all([
+  const [latestNews, events, galleryItems, featuredAds] = await Promise.all([
     getNews(4), // Latest 4 news articles
-    getEvents(4, true), // Upcoming events only, limit 4
+    getEvents(4, false), // All events (upcoming badge will show for upcoming ones), limit 4
     getGallery(4), // Latest 4 gallery items
     getAdvertisements(undefined, 4), // Latest 4 advertisements
   ]);
@@ -25,7 +25,7 @@ export default async function HomePage() {
   // Get featured images from latest content
   const featuredImages = [
     ...latestNews.filter(item => item.image).slice(0, 2).map(item => ({ src: item.image!, alt: item.title, href: `/news/${item.slug}` })),
-    ...upcomingEvents.filter(event => event.coverImage).slice(0, 2).map(event => ({ src: event.coverImage!, alt: event.title, href: `/events/${event.slug}` })),
+    ...events.filter(event => event.coverImage).slice(0, 2).map(event => ({ src: event.coverImage!, alt: event.title, href: `/events/${event.slug}` })),
     ...galleryItems.filter(item => item.images && item.images.length > 0).slice(0, 2).map(item => ({ src: item.images[0], alt: item.title || 'Gallery Image', href: '/gallery' })),
   ].slice(0, 4); // Show max 4 featured images
 
@@ -81,21 +81,21 @@ export default async function HomePage() {
           )}
         </Section>
 
-        {/* Upcoming Events Section */}
+        {/* Events Section */}
         <Section 
-          title="Upcoming Events" 
+          title="Events" 
           subtitle="Join us for exciting community events and activities"
-          viewAllLink={upcomingEvents.length > 0 ? { href: "/events", label: "View All" } : undefined}
+          viewAllLink={events.length > 0 ? { href: "/events", label: "View All" } : undefined}
         >
-          {upcomingEvents.length > 0 ? (
+          {events.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
-              {upcomingEvents.slice(0, 4).map((event) => (
+              {events.slice(0, 4).map((event) => (
                 <EventCard key={event.id} event={event} compact />
               ))}
             </div>
           ) : (
             <div className="text-center py-8 sm:py-12">
-              <p className="text-sm sm:text-base text-text-light">No upcoming events scheduled at the moment.</p>
+              <p className="text-sm sm:text-base text-text-light">No events scheduled at the moment.</p>
             </div>
           )}
         </Section>

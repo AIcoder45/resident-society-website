@@ -52,7 +52,7 @@ export default async function PolicyDetailPage({ params }: Props) {
   const policyPath = `/policies/${slug}`;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <Breadcrumb
         items={[
           { label: "Policies", href: "/policies" },
@@ -62,28 +62,28 @@ export default async function PolicyDetailPage({ params }: Props) {
 
       <article>
         <Section>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
-              <Button asChild variant="ghost" className="mb-4">
+              <Button asChild variant="ghost" className="mb-3 sm:mb-4 text-sm sm:text-base">
                 <Link href="/policies">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Policies
                 </Link>
               </Button>
 
-              <div className="flex items-center gap-2 mb-4">
-                <FileText className="h-6 w-6 text-primary" />
-                <span className="text-sm font-semibold text-primary uppercase tracking-wide">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wide">
                   {policy.category}
                 </span>
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text mb-3 sm:mb-4 leading-tight">
                 {policy.title}
               </h1>
 
               {policy.updatedAt && (
-                <p className="text-text-light">
+                <p className="text-sm sm:text-base text-text-light">
                   Last updated: {formatDate(policy.updatedAt, "long")}
                 </p>
               )}
@@ -97,13 +97,13 @@ export default async function PolicyDetailPage({ params }: Props) {
               <>
                 <Separator />
                 <Card>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div>
-                        <h3 className="text-lg font-semibold text-text mb-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-text mb-2 leading-tight">
                           Document Download
                         </h3>
-                        <p className="text-sm text-text-light">
+                        <p className="text-xs sm:text-sm text-text-light">
                           Download the full policy document in PDF format.
                         </p>
                       </div>

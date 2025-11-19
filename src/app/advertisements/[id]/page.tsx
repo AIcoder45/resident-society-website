@@ -68,7 +68,7 @@ export default async function AdvertisementDetailPage({ params }: Props) {
     : false;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <Breadcrumb
         items={[
           { label: "Advertisements", href: "/advertisements" },
@@ -78,34 +78,34 @@ export default async function AdvertisementDetailPage({ params }: Props) {
 
       <article>
         <Section>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
-              <Button asChild variant="ghost" className="mb-4">
+              <Button asChild variant="ghost" className="mb-3 sm:mb-4 text-sm sm:text-base">
                 <Link href="/advertisements">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Advertisements
                 </Link>
               </Button>
 
-              <div className="flex items-center gap-2 mb-4">
-                <Badge variant="outline">{advertisement.category}</Badge>
+              <div className="flex items-center gap-2 mb-3 sm:mb-4 flex-wrap">
+                <Badge variant="outline" className="text-xs sm:text-sm">{advertisement.category}</Badge>
                 {isExpired && (
-                  <Badge variant="destructive">Expired</Badge>
+                  <Badge variant="destructive" className="text-xs sm:text-sm">Expired</Badge>
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text mb-3 sm:mb-4 leading-tight">
                 {advertisement.title}
               </h1>
 
               {advertisement.businessName && (
-                <p className="text-lg font-semibold text-primary mb-2">
+                <p className="text-base sm:text-lg font-semibold text-primary mb-2">
                   {advertisement.businessName}
                 </p>
               )}
 
               {advertisement.validUntil && (
-                <p className="text-sm text-text-light">
+                <p className="text-xs sm:text-sm text-text-light">
                   Valid until: {formatDate(advertisement.validUntil, "long")}
                 </p>
               )}
@@ -138,8 +138,8 @@ export default async function AdvertisementDetailPage({ params }: Props) {
               <>
                 <Separator />
                 <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold text-text mb-4">
+                  <CardContent className="p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-semibold text-text mb-3 sm:mb-4 leading-tight">
                       Special Offers
                     </h2>
                     <div className="space-y-3">
@@ -176,8 +176,8 @@ export default async function AdvertisementDetailPage({ params }: Props) {
               <>
                 <Separator />
                 <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold text-text mb-4">
+                  <CardContent className="p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-semibold text-text mb-3 sm:mb-4 leading-tight">
                       Contact Information
                     </h2>
                     <div className="space-y-3">

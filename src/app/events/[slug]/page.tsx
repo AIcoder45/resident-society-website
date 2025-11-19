@@ -48,7 +48,7 @@ export default async function EventDetailPage({ params }: Props) {
   const isUpcoming = eventDate >= new Date();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <Breadcrumb
         items={[
           { label: "Events", href: "/events" },
@@ -58,24 +58,24 @@ export default async function EventDetailPage({ params }: Props) {
 
       <article>
         <Section>
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
               {isUpcoming && (
-                <span className="inline-block bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold mb-4">
+                <span className="inline-block bg-primary text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
                   Upcoming Event
                 </span>
               )}
-              <h1 className="text-3xl md:text-4xl font-bold text-text mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text mb-3 sm:mb-4 leading-tight">
                 {event.title}
               </h1>
-              <div className="flex flex-col gap-3 text-text-light">
+              <div className="flex flex-col gap-2 sm:gap-3 text-sm sm:text-base text-text-light">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-primary" />
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
                   <span>{formatDate(event.eventDate, "long")}</span>
                 </div>
                 {event.location && (
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-primary" />
+                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
                     <span>{event.location}</span>
                   </div>
                 )}
@@ -105,7 +105,7 @@ export default async function EventDetailPage({ params }: Props) {
               <>
                 <Separator />
                 <div className="space-y-4">
-                  <h2 className="text-2xl font-bold text-text">Event Gallery</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-text leading-tight">Event Gallery</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
                     {event.gallery.map((imageUrl, index) => (
                       <div

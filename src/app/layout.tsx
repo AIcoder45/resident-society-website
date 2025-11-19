@@ -9,6 +9,7 @@ import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegi
 import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { OfflineHandler } from "@/components/shared/OfflineHandler";
+import { ShareButton } from "@/components/shared/ShareButton";
 import { getTheme } from "@/lib/api";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -56,6 +57,7 @@ export default async function RootLayout({
               <PWAInstallPrompt />
               <OfflineHandler />
         </div>
+        <ShareButton variant="floating" />
           </ThemeProvider>
         </ErrorBoundary>
       </body>
