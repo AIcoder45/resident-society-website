@@ -46,8 +46,10 @@ export default async function QuickContactPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Breadcrumb items={[{ label: "Quick Contact" }]} />
+    <div className="mx-auto max-w-7xl w-full">
+      <div className="px-4 sm:px-6 md:px-8 pt-2 sm:pt-3 md:pt-4">
+        <Breadcrumb items={[{ label: "Quick Contact" }]} />
+      </div>
 
       <Section
         title="Quick Contact - Service Providers"
@@ -60,13 +62,13 @@ export default async function QuickContactPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-12">
+          <div className="space-y-6 sm:space-y-8">
             {Object.entries(groupedProviders).map(([type, typeProviders]) => (
               <div key={type}>
-                <h2 className="text-2xl font-bold text-text mb-6">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-text mb-3 sm:mb-4">
                   {serviceTypeNames[type] || type.charAt(0).toUpperCase() + type.slice(1)}
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4 w-full">
                   {typeProviders.map((provider, index) => (
                     <ServiceProviderCard
                       key={provider.id}
