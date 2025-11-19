@@ -351,7 +351,7 @@ export function ShareButton({
                     onClick={option.onClick}
                     className="w-full flex items-center px-4 py-3 text-sm text-left hover:bg-gray-100 transition-colors touch-manipulation min-h-[44px]"
                   >
-                    <Icon className={cn("h-4 w-4 mr-3 flex-shrink-0", option.color)} />
+                    <Icon className={cn("h-4 w-4 mr-3 flex-shrink-0", option.iconColor)} />
                     <span>{option.label}</span>
                   </button>
                 );
