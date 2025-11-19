@@ -60,8 +60,9 @@ export async function fetchStrapi<T>(
   const strapiUrl = getStrapiUrl();
   const url = `${strapiUrl}${endpoint}`;
   
+  // Always log in development, log errors in production
   if (process.env.NODE_ENV === "development") {
-    console.log("Strapi fetchStrapi called:", {
+    console.log("🔍 [Strapi] Fetching:", {
       fullUrl: url,
       endpoint,
       STRAPI_URL: strapiUrl,
@@ -79,25 +80,82 @@ export async function fetchStrapi<T>(
     });
 
     if (process.env.NODE_ENV === "development") {
-      console.log("Strapi response status:", response.status, response.statusText);
+      console.log("✅ [Strapi] Response status:", response.status, response.statusText);
     }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Strapi API error details:", {
+      const errorDetails = {
         status: response.status,
         statusText: response.statusText,
-        errorText: errorText.substring(0, 200),
-      });
-      throw new Error(`Strapi API error: ${response.status} ${response.statusText}`);
+        url,
+        endpoint,
+        strapiUrl,
+        errorText: errorText.substring(0, 500),
+      };
+
+      // Always log errors (production and development)
+      console.error("❌ [Strapi] API Error:", errorDetails);
+      
+      // Provide actionable error messages
+      let errorMessage = `Strapi API error: ${response.status} ${response.statusText}`;
+      
+      if (response.status === 404) {
+        errorMessage += `\n⚠️  Endpoint not found: ${url}\n💡 Check if the collection type exists in Strapi and is published.`;
+      } else if (response.status === 403) {
+        errorMessage += `\n⚠️  Access forbidden: ${url}\n💡 Check Strapi API permissions (Settings → Users & Permissions → Roles → Public).`;
+      } else if (response.status === 0 || response.status === 500) {
+        errorMessage += `\n⚠️  Server error or CORS issue: ${url}\n💡 Check:\n   - Strapi is running\n   - CORS is configured (Settings → Security → CORS)\n   - SSL certificate is valid`;
+      }
+
+      throw new Error(errorMessage);
     }
 
     return response.json();
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("Strapi fetch error:", error);
+    // Always log errors (production and development)
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorDetails = {
+      error: errorMessage,
+      url,
+      endpoint,
+      strapiUrl,
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+    };
+
+    console.error("❌ [Strapi] Fetch Error:", errorDetails);
+
+    // Provide specific error messages for common issues
+    if (error instanceof TypeError && errorMessage.includes("fetch")) {
+      const enhancedError = new Error(
+        `❌ [Strapi] Network Error: Cannot connect to ${url}\n` +
+        `💡 Possible causes:\n` +
+        `   - Strapi server is down or unreachable\n` +
+        `   - Network connectivity issue\n` +
+        `   - DNS resolution failed for ${strapiUrl}\n` +
+        `   - Firewall blocking connection\n` +
+        `   - SSL certificate issue\n` +
+        `\n🔧 Action: Check Strapi server status and network connectivity.`
+      );
+      throw enhancedError;
     }
-    throw error;
+
+    if (error instanceof Error && errorMessage.includes("CORS")) {
+      const enhancedError = new Error(
+        `❌ [Strapi] CORS Error: ${errorMessage}\n` +
+        `💡 Fix: Add ${process.env.NEXT_PUBLIC_SITE_URL || 'https://greenwoodscity.in'} to Strapi CORS allowed origins\n` +
+        `   (Strapi Admin → Settings → Security → CORS)`
+      );
+      throw enhancedError;
+    }
+
+    // Re-throw with enhanced message if it's already an Error
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    // Wrap unknown errors
+    throw new Error(`Strapi fetch failed: ${errorMessage}`);
   }
 }
 

@@ -45,7 +45,7 @@ export function GalleryGrid({
 
   return (
     <>
-      <div className={cn("grid gap-4 w-full", gridCols[columns], className)}>
+      <div className={cn("grid gap-3 sm:gap-4 md:gap-5 w-full", gridCols[columns], className)}>
         {items.map((item, index) => (
           <motion.div
             key={item.id}
@@ -55,7 +55,7 @@ export function GalleryGrid({
             transition={{ duration: 0.3, delay: index * 0.1 }}
             className="w-full min-w-0"
           >
-            <Card className="w-full h-full overflow-hidden hover:shadow-lg transition-shadow">
+            <Card className="w-full h-full overflow-hidden hover:shadow-lg transition-shadow active:scale-[0.98] sm:active:scale-100">
               {item.images[0] && (
                 <div
                   className="relative w-full aspect-square overflow-hidden cursor-pointer touch-manipulation"
@@ -74,7 +74,7 @@ export function GalleryGrid({
                         e.stopPropagation();
                         handleImageClick(item, 0);
                       }}
-                      className="absolute top-2 right-2 bg-primary text-white px-3 py-2 rounded text-xs font-semibold hover:bg-primary/90 transition-colors touch-manipulation touch-target tap-feedback"
+                      className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-primary text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded text-xs font-semibold hover:bg-primary/90 transition-colors touch-manipulation min-h-[32px] min-w-[32px] flex items-center justify-center"
                       aria-label={`View ${item.images.length} images`}
                     >
                       +{item.images.length - 1}
@@ -82,10 +82,10 @@ export function GalleryGrid({
                   )}
                 </div>
               )}
-              <div className="p-4">
-                <h3 className="font-semibold text-text mb-1">{item.title}</h3>
+              <div className="p-3 sm:p-4 md:p-5">
+                <h3 className="font-semibold text-base sm:text-lg text-text mb-1.5 sm:mb-2 leading-tight">{item.title}</h3>
                 {item.description && (
-                  <p className="text-sm text-text-light line-clamp-2">
+                  <p className="text-xs sm:text-sm text-text-light line-clamp-2 leading-relaxed">
                     {item.description}
                   </p>
                 )}
