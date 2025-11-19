@@ -123,7 +123,7 @@ export default async function ContactPage() {
                 <CardContent className="p-5 sm:p-6 md:p-7 flex flex-col items-center text-center">
                   {/* Icon Container */}
                   <div className="mb-4 p-4 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
-                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" strokeWidth={2} />
+                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
                   </div>
                   
                   {/* Title */}
