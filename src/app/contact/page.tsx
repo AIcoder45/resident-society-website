@@ -106,7 +106,7 @@ export default async function ContactPage() {
   const urgentMattersText = contactPageData?.urgentMattersText ||
     "For urgent matters, please call our emergency hotline or contact the security office.";
   return (
-    <div className="mx-auto max-w-6xl px-4 py-4 sm:py-6 md:py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-4 sm:py-6 md:py-8 sm:px-6 lg:px-8">
       <Breadcrumb items={[{ label: "Contact" }]} />
 
       <Section
@@ -114,33 +114,34 @@ export default async function ContactPage() {
         subtitle={pageSubtitle}
         className="!pt-2 !pb-4 sm:!pt-4 sm:!pb-6"
       >
-        {/* Contact Information Cards */}
+        {/* Contact Information Cards - Improved Card View */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 w-full mb-8 sm:mb-10 md:mb-12">
           {contactInfo.map((info, index) => {
             const Icon = info.icon;
             const content = (
-              <Card className="h-full w-full overflow-hidden border border-gray-200/60 hover:border-primary/30 transition-all duration-300 hover:shadow-lg group">
-                <CardContent className="p-4 sm:p-5 md:p-6">
-                  <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                    <div className="p-2.5 sm:p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors flex-shrink-0">
-                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-text mb-1.5 sm:mb-2 text-sm sm:text-base">
-                        {info.title}
-                      </h3>
-                      {info.link ? (
-                        <a
-                          href={info.link}
-                          className="text-text-light hover:text-primary transition-colors text-sm sm:text-base break-words block touch-manipulation"
-                        >
-                          {info.content}
-                        </a>
-                      ) : (
-                        <p className="text-text-light text-sm sm:text-base break-words">{info.content}</p>
-                      )}
-                    </div>
+              <Card className="h-full w-full overflow-hidden border border-gray-200/60 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group bg-white">
+                <CardContent className="p-5 sm:p-6 md:p-7 flex flex-col items-center text-center">
+                  {/* Icon Container */}
+                  <div className="mb-4 p-4 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
+                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" strokeWidth={2} />
                   </div>
+                  
+                  {/* Title */}
+                  <h3 className="font-bold text-text mb-3 text-base sm:text-lg md:text-xl">
+                    {info.title}
+                  </h3>
+                  
+                  {/* Content */}
+                  {info.link ? (
+                    <a
+                      href={info.link}
+                      className="text-text-light hover:text-primary transition-colors text-sm sm:text-base break-words block touch-manipulation w-full"
+                    >
+                      {info.content}
+                    </a>
+                  ) : (
+                    <p className="text-text-light text-sm sm:text-base break-words leading-relaxed">{info.content}</p>
+                  )}
                 </CardContent>
               </Card>
             );
@@ -153,8 +154,8 @@ export default async function ContactPage() {
           })}
         </div>
 
-        {/* Contact Form */}
-        <div className="w-full">
+        {/* Contact Form Section */}
+        <div className="w-full mt-8 sm:mt-10 md:mt-12">
           <ContactForm
             generalInquiryText={generalInquiryText}
             urgentMattersText={urgentMattersText}
