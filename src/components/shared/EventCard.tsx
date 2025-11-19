@@ -100,8 +100,8 @@ export function EventCard({ event, className, compact = false }: EventCardProps)
                   compact ? "h-2.5 w-2.5" : "h-3 w-3"
                 )} />
                 <span className="leading-tight whitespace-nowrap">{formatDate(event.eventDate, "short")}</span>
-              </div>
-              {event.location && (
+                </div>
+                {event.location && (
                 <>
                   <span className="text-gray-400">•</span>
                   <div className="flex items-center gap-1 text-text-light/80">
@@ -122,8 +122,8 @@ export function EventCard({ event, className, compact = false }: EventCardProps)
                 "line-clamp-3",
                 compact ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs"
               )}>{displayDescription}</p>
-            )}
-          </div>
+                )}
+              </div>
         </Card>
       </Link>
     </motion.div>

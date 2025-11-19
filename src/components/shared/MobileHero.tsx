@@ -47,7 +47,7 @@ export function MobileHero({
   return (
     <section
       className={cn(
-        "bg-primary text-white",
+        "bg-primary text-white relative z-10",
         "py-3 sm:py-4 md:py-5", // Further reduced vertical padding
         "px-4 sm:px-6", // Horizontal padding optimized for mobile
         className

@@ -109,31 +109,22 @@ export function AdvertisementCard({
 
         <div className={cn(
           "flex flex-col flex-1",
-          compact ? "p-2" : "p-2.5 sm:p-3"
+          compact ? "p-1.5 sm:p-2" : "p-2.5 sm:p-3"
         )}>
           <Link href={`/advertisements/${advertisement.id}`} className="hover:text-primary transition-colors touch-manipulation">
-            <div className={cn(
-              "flex items-start justify-between gap-1 sm:gap-2 mb-1"
-            )}>
-              <CardTitle className={cn(
-                "line-clamp-2 leading-tight flex-1 font-semibold text-text",
-                "group-hover:text-primary transition-colors duration-200",
-                compact ? "text-[10px] sm:text-xs" : "text-xs sm:text-sm"
-              )}>{advertisement.title}</CardTitle>
-              {!compact && (
-                <Badge variant="outline" className="ml-1 flex-shrink-0 text-[9px]">
-                  {advertisement.category}
-                </Badge>
-              )}
-            </div>
+            <CardTitle className={cn(
+              "line-clamp-2 leading-tight font-semibold text-text mb-0",
+              "group-hover:text-primary transition-colors duration-200",
+              compact ? "text-[10px] sm:text-xs" : "text-xs sm:text-sm"
+            )}>{advertisement.title}</CardTitle>
             {advertisement.businessName && !compact && (
-              <p className="text-[9px] sm:text-[10px] font-semibold text-primary mb-1">{advertisement.businessName}</p>
+              <p className="text-[9px] sm:text-[10px] font-semibold text-primary mb-1 mt-0">{advertisement.businessName}</p>
             )}
           </Link>
           {displayDescription && (
             <p className={cn(
-              "text-text-light leading-snug flex-1",
-              "line-clamp-3",
+              "text-text-light leading-tight flex-1 mt-0",
+              "line-clamp-2",
               compact ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs"
             )}>{displayDescription}</p>
           )}
@@ -143,72 +134,72 @@ export function AdvertisementCard({
           <CardContent className="flex-1 flex flex-col px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6">
             <Link href={`/advertisements/${advertisement.id}`} className="block mb-3 sm:mb-4 touch-manipulation">
               <p className="text-sm sm:text-base text-text-light line-clamp-3 hover:text-primary transition-colors leading-relaxed">
-                {advertisement.description}
-              </p>
-            </Link>
+              {advertisement.description}
+            </p>
+          </Link>
 
-            {/* Offers and Discounts */}
-            {(advertisement.discount || advertisement.offer) && (
-              <div className="mb-4 space-y-2">
-                {advertisement.discount && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Tag className="h-4 w-4 text-primary" />
-                    <span className="font-semibold text-primary">Discount: {advertisement.discount}</span>
-                  </div>
-                )}
-                {advertisement.offer && (
-                  <div className="flex items-center gap-2 text-sm text-text-light">
-                    <Tag className="h-4 w-4 text-primary" />
-                    <span>{advertisement.offer}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Contact Information */}
-            <div className="space-y-2 mb-4">
-              {advertisement.contactPhone && (
-                <a
-                  href={`tel:${advertisement.contactPhone.replace(/\s+/g, "")}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
-                >
-                  <Phone className="h-4 w-4" />
-                  <span>{advertisement.contactPhone}</span>
-                </a>
+          {/* Offers and Discounts */}
+          {(advertisement.discount || advertisement.offer) && (
+            <div className="mb-4 space-y-2">
+              {advertisement.discount && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Tag className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-primary">Discount: {advertisement.discount}</span>
+                </div>
               )}
-              {advertisement.contactEmail && (
-                <a
-                  href={`mailto:${advertisement.contactEmail}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
-                >
-                  <Mail className="h-4 w-4" />
-                  <span>{advertisement.contactEmail}</span>
-                </a>
-              )}
-              {advertisement.website && (
-                <a
-                  href={advertisement.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
-                >
-                  <Globe className="h-4 w-4" />
-                  <span className="truncate">{advertisement.website.replace(/^https?:\/\//, "")}</span>
-                </a>
+              {advertisement.offer && (
+                <div className="flex items-center gap-2 text-sm text-text-light">
+                  <Tag className="h-4 w-4 text-primary" />
+                  <span>{advertisement.offer}</span>
+                </div>
               )}
             </div>
+          )}
 
-            {/* Valid Until */}
-            {advertisement.validUntil && (
-              <div className="flex items-center gap-2 text-xs text-text-light mt-auto pt-2 border-t">
-                <Calendar className="h-3 w-3" />
-                <span>Valid until: {formatDate(advertisement.validUntil, "short")}</span>
-              </div>
+          {/* Contact Information */}
+          <div className="space-y-2 mb-4">
+            {advertisement.contactPhone && (
+              <a
+                href={`tel:${advertisement.contactPhone.replace(/\s+/g, "")}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
+              >
+                <Phone className="h-4 w-4" />
+                <span>{advertisement.contactPhone}</span>
+              </a>
             )}
-          </CardContent>
+            {advertisement.contactEmail && (
+              <a
+                href={`mailto:${advertisement.contactEmail}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
+              >
+                <Mail className="h-4 w-4" />
+                <span>{advertisement.contactEmail}</span>
+              </a>
+            )}
+            {advertisement.website && (
+              <a
+                href={advertisement.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
+              >
+                <Globe className="h-4 w-4" />
+                <span className="truncate">{advertisement.website.replace(/^https?:\/\//, "")}</span>
+              </a>
+            )}
+          </div>
+
+          {/* Valid Until */}
+          {advertisement.validUntil && (
+            <div className="flex items-center gap-2 text-xs text-text-light mt-auto pt-2 border-t">
+              <Calendar className="h-3 w-3" />
+              <span>Valid until: {formatDate(advertisement.validUntil, "short")}</span>
+            </div>
+          )}
+        </CardContent>
         )}
       </Card>
     </motion.div>

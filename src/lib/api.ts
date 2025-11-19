@@ -848,7 +848,7 @@ export async function getHomepage(): Promise<Homepage | null> {
         heroWelcomeText: homepageData.heroWelcomeText || response.data.heroWelcomeText || "Welcome to",
         heroTitleText: homepageData.heroTitleText || response.data.heroTitleText || "Greenwood City",
         heroSubtitleText: homepageData.heroSubtitleText || response.data.heroSubtitleText || "Block C",
-        heroDescription: homepageData.heroDescription || response.data.heroDescription || "Building a stronger community together. Stay connected and informed with the latest news, events, and updates.",
+        heroDescription: homepageData.heroDescription || response.data.heroDescription || "Building a stronger community together..",
         heroDescriptionMobile: homepageData.heroDescriptionMobile || response.data.heroDescriptionMobile || null,
         newsSectionTitle: homepageData.newsSectionTitle || response.data.newsSectionTitle || "Latest News",
         newsSectionSubtitle: homepageData.newsSectionSubtitle || response.data.newsSectionSubtitle || "Stay informed with the latest community updates",

@@ -15,12 +15,12 @@ export default async function GalleryPage() {
   return (
     <div className="mx-auto max-w-7xl w-full">
       <div className="px-4 sm:px-6 md:px-8 pt-2 sm:pt-3 md:pt-4">
-        <Breadcrumb items={[{ label: "Gallery" }]} />
+      <Breadcrumb items={[{ label: "Gallery" }]} />
       </div>
 
       <Section title="Photo Gallery" subtitle="Memorable moments from our community events and activities">
         {gallery.length > 0 ? (
-          <GalleryGrid items={gallery} columns={3} />
+              <GalleryGrid items={gallery} columns={3} />
         ) : (
           <div className="text-center py-8 sm:py-12">
             <p className="text-sm sm:text-base text-text-light">No gallery items available at the moment.</p>

@@ -50,14 +50,14 @@ export function NoticeBanner({ notification, className }: NoticeBannerProps) {
         <div className="flex-1 min-w-0">
           {/* Header: Title + Badge */}
           <div className="flex items-start justify-between gap-2 mb-1.5 sm:mb-2">
-            <h3
-              className={cn(
+          <h3
+            className={cn(
                 "font-semibold text-sm sm:text-base leading-tight flex-1",
                 isUrgent ? "text-red-900" : "text-text",
-              )}
-            >
-              {notification.title}
-            </h3>
+            )}
+          >
+            {notification.title}
+          </h3>
             {isUrgent && (
               <span className="flex-shrink-0 bg-red-500 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded uppercase tracking-wider">
                 Urgent

@@ -48,56 +48,56 @@ export function MobileBottomNav() {
     <>
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200/60 shadow-lg lg:hidden safe-area-inset-bottom">
         <div className="grid grid-cols-6 h-14 sm:h-16">
-          {mobileNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href || 
+        {mobileNavItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href || 
               (item.href !== "/" && item.href !== "#" && pathname.startsWith(item.href));
             const isNotifications = item.name === "Notifications";
             const isMore = item.href === "#";
-
+          
             if (isMore) {
-              return (
-                <React.Fragment key={item.name}>
-                  <button
-                    onClick={() => setMoreMenuOpen(true)}
-                    className={cn(
+            return (
+              <React.Fragment key={item.name}>
+                <button
+                  onClick={() => setMoreMenuOpen(true)}
+                  className={cn(
                       "flex flex-col items-center justify-center min-h-[44px] touch-manipulation transition-all duration-200",
                       moreMenuOpen && "bg-primary/5"
-                    )}
+                  )}
                     aria-label="More options"
-                  >
-                    <Icon className={cn(
+                >
+                  <Icon className={cn(
                       "h-4 w-4 sm:h-5 sm:w-5 mb-0.5 sm:mb-1 transition-all duration-200",
                       moreMenuOpen ? "text-primary scale-110" : "text-gray-500"
-                    )} />
-                    <span className={cn(
+                  )} />
+                  <span className={cn(
                       "text-[9px] sm:text-[10px] font-medium transition-colors leading-tight",
                       moreMenuOpen ? "text-primary font-semibold" : "text-gray-600"
-                    )}>
-                      {item.name}
-                    </span>
-                  </button>
-                  <MobileMoreMenu isOpen={moreMenuOpen} onClose={() => setMoreMenuOpen(false)} />
-                </React.Fragment>
-              );
-            }
+                  )}>
+                    {item.name}
+                  </span>
+                </button>
+                <MobileMoreMenu isOpen={moreMenuOpen} onClose={() => setMoreMenuOpen(false)} />
+              </React.Fragment>
+            );
+          }
 
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
                   "flex flex-col items-center justify-center min-h-[44px] touch-manipulation transition-all duration-200 relative",
-                  isActive && "bg-primary/5"
-                )}
+                isActive && "bg-primary/5"
+              )}
                 aria-label={`Navigate to ${item.name}${isNotifications && notificationCount > 0 ? ` (${notificationCount} new)` : ""}`}
-                aria-current={isActive ? "page" : undefined}
-              >
+              aria-current={isActive ? "page" : undefined}
+            >
                 <div className="relative">
-                  <Icon className={cn(
+              <Icon className={cn(
                     "h-4 w-4 sm:h-5 sm:w-5 mb-0.5 sm:mb-1 transition-all duration-200",
                     isActive ? "text-primary scale-110" : "text-gray-500"
-                  )} />
+              )} />
                   {isNotifications && notificationCount > 0 && (
                     <span className={cn(
                       "absolute -top-1 -right-1 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-[8px] sm:text-[9px] min-w-[14px] sm:min-w-[16px] h-[14px] sm:h-[16px] px-1",
@@ -107,17 +107,17 @@ export function MobileBottomNav() {
                     </span>
                   )}
                 </div>
-                <span className={cn(
+              <span className={cn(
                   "text-[9px] sm:text-[10px] font-medium transition-colors leading-tight",
                   isActive ? "text-primary font-semibold" : "text-gray-600"
-                )}>
-                  {item.name}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+              )}>
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
     </>
   );
 }
