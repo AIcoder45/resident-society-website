@@ -81,7 +81,7 @@ export function Header() {
         </div>
 
         {/* Navigation links in the center/right */}
-        <div className="hidden lg:flex lg:gap-x-6 flex-1 justify-end">
+        <div className="hidden lg:flex lg:gap-x-6 flex-1 justify-end items-center">
           {navigation.map((item) => (
             <Link
               key={item.name}

@@ -16,6 +16,7 @@ export interface SectionProps {
     href: string;
     label: string;
   };
+  headerAction?: React.ReactNode;
 }
 
 /**
@@ -29,6 +30,7 @@ export function Section({
   className,
   id,
   viewAllLink,
+  headerAction,
 }: SectionProps) {
   return (
     <section
@@ -47,22 +49,25 @@ export function Section({
         transition={{ duration: 0.5 }}
         className="w-full"
       >
-        {(title || subtitle || viewAllLink) && (
+        {(title || subtitle || viewAllLink || headerAction) && (
           <div className="mb-4 sm:mb-5 md:mb-6">
             {title && (
               <div className="flex items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-2.5">
                 <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-text leading-tight flex-1">
                 {title}
               </h2>
-                {viewAllLink && (
-                  <Link
-                    href={viewAllLink.href}
-                    className="flex items-center gap-1 text-xs sm:text-sm text-primary hover:text-primary-dark font-medium transition-colors whitespace-nowrap touch-manipulation min-h-[32px] px-2"
-                  >
-                    <span>{viewAllLink.label}</span>
-                    <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Link>
-                )}
+                <div className="flex items-center gap-2">
+                  {headerAction}
+                  {viewAllLink && (
+                    <Link
+                      href={viewAllLink.href}
+                      className="flex items-center gap-1 text-xs sm:text-sm text-primary hover:text-primary-dark font-medium transition-colors whitespace-nowrap touch-manipulation min-h-[32px] px-2"
+                    >
+                      <span>{viewAllLink.label}</span>
+                      <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                    </Link>
+                  )}
+                </div>
               </div>
             )}
             {subtitle && (

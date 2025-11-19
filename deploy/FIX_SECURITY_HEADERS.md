@@ -271,3 +271,4 @@ Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
 Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: http://admin.greenwoodscity.in https://admin.greenwoodscity.in http://localhost:1337 https:; connect-src 'self' http://admin.greenwoodscity.in https://admin.greenwoodscity.in http://localhost:1337 https:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
 ```
 
+
