@@ -8,7 +8,15 @@ import { getTheme } from "@/lib/api";
  */
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   // Fetch theme data to get dynamic colors and favicon
-  const theme = await getTheme();
+  // Wrap in try-catch to ensure manifest always returns valid data
+  let theme;
+  try {
+    theme = await getTheme();
+  } catch (error) {
+    // Log error but continue with fallback values
+    console.error("[Manifest] Failed to fetch theme data:", error);
+    theme = null;
+  }
   
   // Build icons array first
   const icons: MetadataRoute.Manifest["icons"] = [];
