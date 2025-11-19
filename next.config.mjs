@@ -28,11 +28,6 @@ const nextConfig = {
   compress: true,
   // Optimize production builds
   swcMinify: true,
-  // Enable experimental features for better performance
-    // Disabled optimizeCss to avoid critters dependency issue
-    // experimental: {
-    //   optimizeCss: true,
-    // },
   // PWA configuration - service worker headers
   async headers() {
     return [
@@ -47,6 +42,26 @@ const nextConfig = {
             key: "Service-Worker-Allowed",
             value: "/",
           },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
+          },
+        ],
+      },
+      {
+        // Cache static chunks with versioning
+        source: "/_next/static/chunks/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Don't cache HTML
+        source: "/:path*.html",
+        headers: [
           {
             key: "Cache-Control",
             value: "public, max-age=0, must-revalidate",

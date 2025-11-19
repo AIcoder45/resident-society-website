@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "@/components/shared/ThemeProvider";
+import { ShareButton } from "@/components/shared/ShareButton";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -38,7 +39,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between py-1.5 sm:py-2 md:py-2.5 px-4 lg:px-8" aria-label="Global">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between py-1.5 sm:py-1.5 md:py-2 px-4 lg:px-8" aria-label="Global">
         {/* Icon/Logo and Site Name on the left */}
         <div className="flex items-center gap-2 sm:gap-3 flex-1 lg:flex-none">
           {(logoUrl || faviconUrl) && (
@@ -72,6 +73,11 @@ export function Header() {
               </h1>
             </Link>
           )}
+        </div>
+
+        {/* Share button - Mobile only */}
+        <div className="lg:hidden flex items-center">
+          <ShareButton variant="icon" size="sm" />
         </div>
 
         {/* Navigation links in the center/right */}

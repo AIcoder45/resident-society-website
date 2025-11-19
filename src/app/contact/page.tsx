@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedCard } from "@/components/shared/AnimatedCard";
+import { ContactForm } from "@/components/shared/ContactForm";
 import { getContactPageData, getContactInfo } from "@/lib/api";
 import type { ContactInfo, ContactPageData } from "@/types";
 
@@ -105,36 +106,38 @@ export default async function ContactPage() {
   const urgentMattersText = contactPageData?.urgentMattersText ||
     "For urgent matters, please call our emergency hotline or contact the security office.";
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 py-4 sm:py-6 md:py-8 sm:px-6 lg:px-8">
       <Breadcrumb items={[{ label: "Contact" }]} />
 
       <Section
         title={pageTitle}
         subtitle={pageSubtitle}
+        className="!pt-2 !pb-4 sm:!pt-4 sm:!pb-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        {/* Contact Information Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 w-full mb-8 sm:mb-10 md:mb-12">
           {contactInfo.map((info, index) => {
             const Icon = info.icon;
-              const content = (
-              <Card className="h-full w-full overflow-hidden">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-primary/10 rounded-lg">
-                      <Icon className="h-6 w-6 text-primary" />
+            const content = (
+              <Card className="h-full w-full overflow-hidden border border-gray-200/60 hover:border-primary/30 transition-all duration-300 hover:shadow-lg group">
+                <CardContent className="p-4 sm:p-5 md:p-6">
+                  <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                    <div className="p-2.5 sm:p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors flex-shrink-0">
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-text mb-1">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-text mb-1.5 sm:mb-2 text-sm sm:text-base">
                         {info.title}
                       </h3>
                       {info.link ? (
                         <a
                           href={info.link}
-                          className="text-text-light hover:text-primary transition-colors"
+                          className="text-text-light hover:text-primary transition-colors text-sm sm:text-base break-words block touch-manipulation"
                         >
                           {info.content}
                         </a>
                       ) : (
-                        <p className="text-text-light">{info.content}</p>
+                        <p className="text-text-light text-sm sm:text-base break-words">{info.content}</p>
                       )}
                     </div>
                   </div>
@@ -150,20 +153,12 @@ export default async function ContactPage() {
           })}
         </div>
 
-        <div className="mt-12">
-          <Card>
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-text mb-4">
-                Send us a Message
-              </h2>
-              <p className="text-text-light mb-6">
-                {generalInquiryText}
-              </p>
-              <p className="text-text-light">
-                {urgentMattersText}
-              </p>
-            </CardContent>
-          </Card>
+        {/* Contact Form */}
+        <div className="w-full">
+          <ContactForm
+            generalInquiryText={generalInquiryText}
+            urgentMattersText={urgentMattersText}
+          />
         </div>
       </Section>
     </div>

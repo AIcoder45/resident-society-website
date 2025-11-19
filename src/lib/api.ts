@@ -232,7 +232,8 @@ export async function getEvents(
 ): Promise<Event[]> {
   if (shouldUseStrapi()) {
     try {
-      let url = `/api/events?populate=*&sort[0]=eventDate:asc`;
+      // Sort by event date (upcoming first for better UX)
+      let url = `/api/events?populate=*&sort[0]=eventDate:asc&pagination[pageSize]=100`;
 
       if (upcomingOnly) {
         const now = new Date().toISOString();
@@ -852,7 +853,7 @@ export async function getHomepage(): Promise<Homepage | null> {
         heroDescriptionMobile: homepageData.heroDescriptionMobile || response.data.heroDescriptionMobile || null,
         newsSectionTitle: homepageData.newsSectionTitle || response.data.newsSectionTitle || "Latest News",
         newsSectionSubtitle: homepageData.newsSectionSubtitle || response.data.newsSectionSubtitle || "Stay informed with the latest community updates",
-        eventsSectionTitle: homepageData.eventsSectionTitle || response.data.eventsSectionTitle || "Upcoming Events",
+        eventsSectionTitle: homepageData.eventsSectionTitle || response.data.eventsSectionTitle || "Events",
         eventsSectionSubtitle: homepageData.eventsSectionSubtitle || response.data.eventsSectionSubtitle || "Join us for exciting community events and activities",
         gallerySectionTitle: homepageData.gallerySectionTitle || response.data.gallerySectionTitle || "Photo Gallery",
         gallerySectionSubtitle: homepageData.gallerySectionSubtitle || response.data.gallerySectionSubtitle || "Memorable moments from our community events and activities",
