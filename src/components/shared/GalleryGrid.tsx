@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ImageCarousel } from "@/components/shared/ImageCarousel";
+import { GalleryCardCarousel } from "@/components/shared/GalleryCardCarousel";
 import type { GalleryItem } from "@/types";
 
 export interface GalleryGridProps {
@@ -56,30 +56,16 @@ export function GalleryGrid({
             className="w-full min-w-0"
           >
             <Card className="w-full h-full overflow-hidden hover:shadow-lg transition-shadow active:scale-[0.98] sm:active:scale-100">
-              {item.images[0] && (
+              {item.images && item.images.length > 0 && (
                 <div
                   className="relative w-full aspect-square overflow-hidden cursor-pointer touch-manipulation"
                   onClick={() => handleImageClick(item, 0)}
                 >
-                  <Image
-                    src={item.images[0]}
+                  <GalleryCardCarousel
+                    images={item.images}
                     alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-300 hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    autoPlayInterval={3000}
                   />
-                  {item.images.length > 1 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleImageClick(item, 0);
-                      }}
-                      className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-primary text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded text-xs font-semibold hover:bg-primary/90 transition-colors touch-manipulation min-h-[32px] min-w-[32px] flex items-center justify-center"
-                      aria-label={`View ${item.images.length} images`}
-                    >
-                      +{item.images.length - 1}
-                    </button>
-                  )}
                 </div>
               )}
               <div className="p-3 sm:p-4 md:p-5">

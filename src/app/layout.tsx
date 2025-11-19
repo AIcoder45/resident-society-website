@@ -9,7 +9,6 @@ import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegi
 import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { OfflineHandler } from "@/components/shared/OfflineHandler";
-import { ContrastValidator } from "@/components/shared/ContrastValidator";
 import { getTheme } from "@/lib/api";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -50,7 +49,6 @@ export default async function RootLayout({
               <MobileBottomNav />
               <PWAInstallPrompt />
               <OfflineHandler />
-              <ContrastValidator />
         </div>
           </ThemeProvider>
         </ErrorBoundary>

@@ -62,7 +62,7 @@ export function AdvertisementCard({
         )}
       >
         {/* Image */}
-        <Link href={`/advertisements/${advertisement.id}`} className="block touch-manipulation">
+        <Link href={`/advertisements/${advertisement.id}`} className="block touch-manipulation flex-shrink-0">
           {advertisement.image ? (
             <div className={cn(
               "relative w-full overflow-hidden cursor-pointer",
@@ -89,7 +89,7 @@ export function AdvertisementCard({
           ) : (
             <div className={cn(
               "relative w-full overflow-hidden bg-primary/10 flex items-center justify-center cursor-pointer",
-              compact ? "h-18 sm:h-20 md:h-22" : "h-24 sm:h-26 md:h-28"
+              compact ? "h-[72px] sm:h-[80px] md:h-[88px]" : "h-[96px] sm:h-[104px] md:h-[112px]"
             )}>
               <Tag className={cn(
                 compact ? "h-4 w-4 sm:h-5 sm:w-5" : "h-6 w-6 sm:h-8 sm:w-8",
@@ -107,17 +107,16 @@ export function AdvertisementCard({
           )}
         </Link>
 
-        <CardHeader className={cn(
-          compact ? "p-1.5 sm:p-2 pb-0" : "p-2 sm:p-2.5 md:p-3 pb-0",
-          "space-y-1"
+        <div className={cn(
+          "flex flex-col flex-1",
+          compact ? "p-2" : "p-2.5 sm:p-3"
         )}>
           <Link href={`/advertisements/${advertisement.id}`} className="hover:text-primary transition-colors touch-manipulation">
             <div className={cn(
-              "flex items-start justify-between gap-1 sm:gap-2",
-              compact ? "mb-0" : "mb-0"
+              "flex items-start justify-between gap-1 sm:gap-2 mb-1"
             )}>
               <CardTitle className={cn(
-                "line-clamp-2 leading-tight flex-1 font-semibold text-text mb-0",
+                "line-clamp-2 leading-tight flex-1 font-semibold text-text",
                 "group-hover:text-primary transition-colors duration-200",
                 compact ? "text-[10px] sm:text-xs" : "text-xs sm:text-sm"
               )}>{advertisement.title}</CardTitle>
@@ -128,23 +127,17 @@ export function AdvertisementCard({
               )}
             </div>
             {advertisement.businessName && !compact && (
-              <p className="text-[9px] sm:text-[10px] font-semibold text-primary">{advertisement.businessName}</p>
+              <p className="text-[9px] sm:text-[10px] font-semibold text-primary mb-1">{advertisement.businessName}</p>
             )}
           </Link>
-        </CardHeader>
-
-        {displayDescription && (
-          <CardContent className={cn(
-            "pt-0",
-            compact ? "px-1.5 sm:px-2 pb-1.5 sm:pb-2" : "px-2 sm:px-2.5 md:px-3 pb-2 sm:pb-2.5 md:pb-3"
-          )}>
+          {displayDescription && (
             <p className={cn(
-              "text-text-light leading-snug mt-0",
+              "text-text-light leading-snug flex-1",
               "line-clamp-3",
               compact ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs"
             )}>{displayDescription}</p>
-          </CardContent>
-        )}
+          )}
+        </div>
 
         {!compact && (
           <CardContent className="flex-1 flex flex-col px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6">

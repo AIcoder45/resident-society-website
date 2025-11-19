@@ -11,11 +11,17 @@ import { cn } from "@/lib/utils";
 import type { Event } from "@/types";
 
 /**
- * Limit text to approximately 30 words
+ * Strip HTML tags and limit text to approximately 30 words
+ * Returns plain text (same as ContentCard and AdvertisementCard)
  */
 function limitWords(text: string, maxWords: number = 30): string {
-  const words = text.split(" ");
-  if (words.length <= maxWords) return text;
+  if (!text) return "";
+  
+  // Strip HTML tags and convert to plain text
+  const textWithoutHtml = text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const words = textWithoutHtml.split(/\s+/).filter(word => word.length > 0);
+  
+  if (words.length <= maxWords) return textWithoutHtml;
   return words.slice(0, maxWords).join(" ") + "...";
 }
 
@@ -43,10 +49,10 @@ export function EventCard({ event, className, compact = false }: EventCardProps)
       className={cn("w-full min-w-0", className)}
     >
       <Link href={`/events/${event.slug}`} className="block h-full w-full touch-manipulation tap-feedback">
-        <Card className="h-full w-full overflow-hidden active:scale-[0.98] sm:active:scale-100 bg-white border border-gray-200/60 rounded-xl transition-all duration-300 ease-out hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/30 group cursor-pointer">
+        <Card className="h-full w-full overflow-hidden active:scale-[0.98] sm:active:scale-100 bg-white border border-gray-200/60 rounded-xl transition-all duration-300 ease-out hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/30 group cursor-pointer flex flex-col">
           {event.coverImage && (
             <div className={cn(
-              "relative w-full overflow-hidden",
+              "relative w-full overflow-hidden flex-shrink-0",
               compact ? "h-[72px] sm:h-[80px] md:h-[88px]" : "h-[96px] sm:h-[104px] md:h-[112px]",
               "bg-gradient-to-br from-gray-100 to-gray-200"
             )}>
@@ -73,44 +79,51 @@ export function EventCard({ event, className, compact = false }: EventCardProps)
               )}
             </div>
           )}
-          <CardHeader className={cn(
-            compact ? "p-1.5 sm:p-2 pb-0" : "p-2 sm:p-2.5 md:p-3 pb-0",
-            "space-y-1"
+          <div className={cn(
+            "flex flex-col flex-1",
+            compact ? "p-2" : "p-2.5 sm:p-3"
           )}>
             <CardTitle className={cn(
-              "line-clamp-2 leading-tight font-semibold text-text mb-0",
+              "line-clamp-2 leading-tight font-semibold text-text mb-1",
               "group-hover:text-primary transition-colors duration-200",
               compact ? "text-[10px] sm:text-xs" : "text-xs sm:text-sm"
             )}>{event.title}</CardTitle>
-          </CardHeader>
-          {displayDescription && (
-            <CardContent className={cn(
-              "pt-0",
-              compact ? "px-1.5 sm:px-2 pb-1.5 sm:pb-2" : "px-2 sm:px-2.5 md:px-3 pb-2 sm:pb-2.5 md:pb-3"
+            
+            {/* Date and Location - Compact Inline Display */}
+            <div className={cn(
+              "flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1",
+              compact ? "text-[8px] sm:text-[9px]" : "text-[9px] sm:text-[10px]"
             )}>
+              <div className="flex items-center gap-1 text-text-light/80">
+                <Calendar className={cn(
+                  "text-primary flex-shrink-0",
+                  compact ? "h-2.5 w-2.5" : "h-3 w-3"
+                )} />
+                <span className="leading-tight whitespace-nowrap">{formatDate(event.eventDate, "short")}</span>
+              </div>
+              {event.location && (
+                <>
+                  <span className="text-gray-400">•</span>
+                  <div className="flex items-center gap-1 text-text-light/80">
+                    <MapPin className={cn(
+                      "text-primary flex-shrink-0",
+                      compact ? "h-2.5 w-2.5" : "h-3 w-3"
+                    )} />
+                    <span className="leading-tight line-clamp-1">{event.location}</span>
+                  </div>
+                </>
+              )}
+            </div>
+            
+            {/* Description - Plain Text (Same as ContentCard) */}
+            {displayDescription && (
               <p className={cn(
-                "text-text-light leading-snug mt-0",
+                "text-text-light leading-snug flex-1",
                 "line-clamp-3",
                 compact ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs"
               )}>{displayDescription}</p>
-            </CardContent>
-          )}
-          {!compact && (
-            <CardContent className="pt-0 px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6">
-              <div className="flex flex-col gap-2.5 sm:gap-3">
-                <div className="flex items-start gap-2 sm:gap-2.5 text-sm sm:text-base text-text-light">
-                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="leading-relaxed">{formatDate(event.eventDate, "long")}</span>
-                </div>
-                {event.location && (
-                  <div className="flex items-start gap-2 sm:gap-2.5 text-sm sm:text-base text-text-light">
-                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="leading-relaxed">{event.location}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          )}
+            )}
+          </div>
         </Card>
       </Link>
     </motion.div>

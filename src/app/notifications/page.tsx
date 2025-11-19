@@ -22,19 +22,21 @@ export default async function NotificationsPage() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      <Breadcrumb items={[{ label: "Notifications" }]} />
+    <div className="mx-auto max-w-7xl w-full">
+      <div className="px-4 sm:px-6 md:px-8 pt-2 sm:pt-3 md:pt-4">
+        <Breadcrumb items={[{ label: "Notifications" }]} />
+      </div>
 
       <Section title="Notifications" subtitle="Important announcements and updates for residents">
         {sortedNotifications.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-3">
             {sortedNotifications.map((notification) => (
               <NoticeBanner key={notification.id} notification={notification} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-text-light">No active notifications at the moment.</p>
+          <div className="text-center py-8 sm:py-12">
+            <p className="text-sm sm:text-base text-text-light">No active notifications at the moment.</p>
           </div>
         )}
       </Section>

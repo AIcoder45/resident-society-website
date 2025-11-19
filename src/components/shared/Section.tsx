@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +12,10 @@ export interface SectionProps {
   children: React.ReactNode;
   className?: string;
   id?: string;
+  viewAllLink?: {
+    href: string;
+    label: string;
+  };
 }
 
 /**
@@ -22,13 +28,14 @@ export function Section({
   children,
   className,
   id,
+  viewAllLink,
 }: SectionProps) {
   return (
     <section
       id={id}
       className={cn(
         "w-full",
-        "py-8 sm:py-10 md:py-12 lg:py-16", // Mobile-first spacing
+        "pt-4 pb-8 sm:pt-6 sm:pb-10 md:pt-8 md:pb-12 lg:pt-12 lg:pb-16", // Mobile-first spacing - reduced top padding
         "px-4 sm:px-6 md:px-8", // Horizontal padding for mobile
         className
       )}
@@ -40,15 +47,26 @@ export function Section({
         transition={{ duration: 0.5 }}
         className="w-full"
       >
-        {(title || subtitle) && (
-          <div className="mb-6 sm:mb-7 md:mb-8 text-center sm:text-left">
+        {(title || subtitle || viewAllLink) && (
+          <div className="mb-4 sm:mb-5 md:mb-6">
             {title && (
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-text mb-2 sm:mb-3 leading-tight">
-                {title}
-              </h2>
+              <div className="flex items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-2.5">
+                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-text leading-tight flex-1">
+                  {title}
+                </h2>
+                {viewAllLink && (
+                  <Link
+                    href={viewAllLink.href}
+                    className="flex items-center gap-1 text-xs sm:text-sm text-primary hover:text-primary-dark font-medium transition-colors whitespace-nowrap touch-manipulation min-h-[32px] px-2"
+                  >
+                    <span>{viewAllLink.label}</span>
+                    <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                  </Link>
+                )}
+              </div>
             )}
             {subtitle && (
-              <p className="text-sm sm:text-base md:text-lg text-text-light max-w-2xl mx-auto sm:mx-0 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-text-light max-w-2xl leading-relaxed">
                 {subtitle}
               </p>
             )}

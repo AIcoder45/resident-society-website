@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Section } from "@/components/shared/Section";
 import { MobileHero } from "@/components/shared/MobileHero";
 import { ContentCard } from "@/components/shared/ContentCard";
 import { EventCard } from "@/components/shared/EventCard";
 import { GalleryGrid } from "@/components/shared/GalleryGrid";
 import { AdvertisementCard } from "@/components/shared/AdvertisementCard";
+import { FeaturedImageCarousel } from "@/components/shared/FeaturedImageCarousel";
 import { getNews, getEvents, getGallery, getAdvertisements } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -23,6 +22,13 @@ export default async function HomePage() {
     getAdvertisements(undefined, 6), // Latest 6 advertisements
   ]);
 
+  // Get featured images from latest content
+  const featuredImages = [
+    ...latestNews.filter(item => item.image).slice(0, 2).map(item => ({ src: item.image!, alt: item.title, href: `/news/${item.slug}` })),
+    ...upcomingEvents.filter(event => event.coverImage).slice(0, 2).map(event => ({ src: event.coverImage!, alt: event.title, href: `/events/${event.slug}` })),
+    ...galleryItems.filter(item => item.images && item.images.length > 0).slice(0, 2).map(item => ({ src: item.images[0], alt: item.title || 'Gallery Image', href: '/gallery' })),
+  ].slice(0, 4); // Show max 4 featured images
+
   return (
     <div className="w-full min-h-screen">
       {/* Hero Section - Mobile Optimized */}
@@ -34,10 +40,25 @@ export default async function HomePage() {
         descriptionMobile="Building a stronger community together. Stay connected and informed with the latest news, events, and updates."
       />
 
+      {/* Featured Images Carousel */}
+      {featuredImages.length > 0 && (
+        <div className="w-full px-0">
+          <FeaturedImageCarousel 
+            images={featuredImages} 
+            autoPlayInterval={5000}
+            className="w-full"
+          />
+        </div>
+      )}
+
       {/* Main Content - Mobile First Layout */}
       <div className="mx-auto max-w-7xl w-full">
         {/* Latest News Section */}
-        <Section title="Latest News" subtitle="Stay informed with the latest community updates">
+        <Section 
+          title="Latest News" 
+          subtitle="Stay informed with the latest community updates"
+          viewAllLink={latestNews.length > 0 ? { href: "/news", label: "View All" } : undefined}
+        >
           {latestNews.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
               {latestNews.map((item) => (
@@ -58,17 +79,14 @@ export default async function HomePage() {
               <p className="text-sm sm:text-base text-text-light">No news articles available at the moment.</p>
             </div>
           )}
-          {latestNews.length > 0 && (
-            <div className="mt-6 sm:mt-8 text-center">
-              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
-                <Link href="/news">View All News</Link>
-              </Button>
-            </div>
-          )}
         </Section>
 
         {/* Upcoming Events Section */}
-        <Section title="Upcoming Events" subtitle="Join us for exciting community events and activities">
+        <Section 
+          title="Upcoming Events" 
+          subtitle="Join us for exciting community events and activities"
+          viewAllLink={upcomingEvents.length > 0 ? { href: "/events", label: "View All" } : undefined}
+        >
           {upcomingEvents.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
               {upcomingEvents.map((event) => (
@@ -80,17 +98,14 @@ export default async function HomePage() {
               <p className="text-sm sm:text-base text-text-light">No upcoming events scheduled at the moment.</p>
             </div>
           )}
-          {upcomingEvents.length > 0 && (
-            <div className="mt-6 sm:mt-8 text-center">
-              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
-                <Link href="/events">View All Events</Link>
-              </Button>
-            </div>
-          )}
         </Section>
 
         {/* Gallery Section */}
-        <Section title="Photo Gallery" subtitle="Memorable moments from our community events and activities">
+        <Section 
+          title="Photo Gallery" 
+          subtitle="Memorable moments from our community events and activities"
+          viewAllLink={galleryItems.length > 0 ? { href: "/gallery", label: "View All" } : undefined}
+        >
           {galleryItems.length > 0 ? (
             <GalleryGrid items={galleryItems} columns={2} />
           ) : (
@@ -98,17 +113,14 @@ export default async function HomePage() {
               <p className="text-sm sm:text-base text-text-light">No gallery items available at the moment.</p>
             </div>
           )}
-          {galleryItems.length > 0 && (
-            <div className="mt-6 sm:mt-8 text-center">
-              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
-                <Link href="/gallery">View Full Gallery</Link>
-              </Button>
-            </div>
-          )}
         </Section>
 
         {/* Featured Advertisements Section */}
-        <Section title="Local Advertisements" subtitle="Discover offers and services from local residents">
+        <Section 
+          title="Local Advertisements" 
+          subtitle="Discover offers and services from local residents"
+          viewAllLink={featuredAds.length > 0 ? { href: "/advertisements", label: "View All" } : undefined}
+        >
           {featuredAds.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
               {featuredAds.map((ad, index) => (
@@ -123,13 +135,6 @@ export default async function HomePage() {
           ) : (
             <div className="text-center py-8 sm:py-12">
               <p className="text-sm sm:text-base text-text-light">No advertisements available at the moment.</p>
-            </div>
-          )}
-          {featuredAds.length > 0 && (
-            <div className="mt-6 sm:mt-8 text-center">
-              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
-                <Link href="/advertisements">View All Advertisements</Link>
-              </Button>
             </div>
           )}
         </Section>
