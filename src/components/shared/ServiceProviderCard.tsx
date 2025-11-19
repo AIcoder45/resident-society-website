@@ -11,17 +11,6 @@ import {
   MapPin,
   CheckCircle2,
   AlertCircle,
-  Wrench,
-  Zap,
-  TreePine,
-  Hammer,
-  Paintbrush,
-  Car,
-  Wind,
-  Sparkles,
-  Shield,
-  Key,
-  Refrigerator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ServiceProvider } from "@/types";
@@ -33,45 +22,14 @@ export interface ServiceProviderCardProps {
 }
 
 /**
- * Icon mapping for different service types
- */
-const serviceIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  plumber: Wrench,
-  electrician: Zap,
-  gardener: TreePine,
-  landscaper: TreePine,
-  carpenter: Hammer,
-  painter: Paintbrush,
-  mechanic: Car,
-  "ac-repair": Wind,
-  "ac-repairer": Wind,
-  hvac: Wind,
-  cleaner: Sparkles,
-  cleaning: Sparkles,
-  security: Shield,
-  locksmith: Key,
-  "appliance-repair": Refrigerator,
-  default: Wrench,
-};
-
-/**
- * Get icon for service type
- */
-function getServiceIcon(serviceType: string) {
-  const normalizedType = serviceType.toLowerCase().replace(/\s+/g, "-");
-  return serviceIcons[normalizedType] || serviceIcons.default;
-}
-
-/**
  * Service Provider Card Component
- * Displays service provider information with appropriate icon
+ * Displays service provider information
  */
 export function ServiceProviderCard({
   provider,
   className,
   index = 0,
 }: ServiceProviderCardProps) {
-  const Icon = getServiceIcon(provider.serviceType);
   const [isCalling, setIsCalling] = React.useState(false);
 
   const handleCall = () => {
@@ -132,12 +90,7 @@ export function ServiceProviderCard({
 
         <CardContent className="p-5 flex-1 flex flex-col">
           {/* Header Section */}
-          <div className="flex items-start gap-4 mb-4">
-            {/* Service Icon */}
-            <div className="p-3 bg-primary/10 rounded-lg flex-shrink-0 border border-primary/20">
-              <Icon className="h-6 w-6 text-primary" />
-            </div>
-
+          <div className="mb-4">
             {/* Name and Badges */}
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-lg text-text mb-2 line-clamp-1">

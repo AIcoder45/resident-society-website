@@ -50,6 +50,10 @@ Update the `env` section to include:
 env: {
   NODE_ENV: 'production',
   PORT: 3000,
+  // IMPORTANT: Do NOT include /admin or /api in STRAPI_URL
+  // The code automatically appends /api/ when making requests
+  // ✅ Correct: 'https://admin.greenwoodscity.in'
+  // ❌ Wrong:   'https://admin.greenwoodscity.in/admin'
   STRAPI_URL: 'https://admin.greenwoodscity.in',
   STRAPI_API_TOKEN: 'd3b1c47723bbfc0bfdf5c5b61e77af81d53a2c7b8619d3614b6f0c1cabc25b487aaf7ce0a07d0a0e0e7eac7ae7792fd4f23235df124728c64a50d433e96eb7426b369c611a6c9ff5d25c39d837b6e1466b8f2705153e495d230151b7f2e975f514eb4abae8d7b44a8096edbdaad6f0d258d5f5028b23cb6b998f3e256e6520d2'  // Optional, if needed
 }
@@ -143,6 +147,9 @@ Add:
 ```env
 NODE_ENV=production
 PORT=3000
+# IMPORTANT: Do NOT include /admin or /api in STRAPI_URL
+# ✅ Correct: STRAPI_URL=https://admin.greenwoodscity.in
+# ❌ Wrong:   STRAPI_URL=https://admin.greenwoodscity.in/admin
 STRAPI_URL=https://admin.greenwoodscity.in
 STRAPI_API_TOKEN=your-strapi-api-token-here
 ```

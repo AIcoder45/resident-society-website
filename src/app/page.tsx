@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/shared/Section";
+import { MobileHero } from "@/components/shared/MobileHero";
 import { ContentCard } from "@/components/shared/ContentCard";
 import { EventCard } from "@/components/shared/EventCard";
 import { GalleryGrid } from "@/components/shared/GalleryGrid";
@@ -23,49 +24,22 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="w-full">
-      {/* Hero Section */}
-      <section className="bg-primary text-white py-6 md:py-8 lg:py-10">
-        <div className="mx-auto max-w-[90%] sm:max-w-[80%] md:max-w-[70%] lg:max-w-[60%] px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 md:space-y-5 lg:space-y-6">
-            <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white">
-                Welcome to
-              </h1>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-white">
-                Greenwood City{" "}
-                <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal opacity-90">
-                  Block C
-                </span>
-              </h1>
-            </div>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed px-2 md:px-0">
-              <span className="hidden md:inline">
-                Building a stronger community together. Stay connected and informed with the latest
-                news, events, and updates.
-              </span>
-              <span className="md:hidden">
-                Building a stronger community together.
-              </span>
-            </p>
-            <div className="hidden md:flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-2">
-              <Button asChild size="default" className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all">
-                <Link href="/news">Latest News</Link>
-              </Button>
-              <Button asChild size="default" variant="outline" className="border-2 border-white text-white hover:bg-white/10 hover:border-white/80 transition-all">
-                <Link href="/events">Upcoming Events</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="w-full min-h-screen">
+      {/* Hero Section - Mobile Optimized */}
+      <MobileHero
+        welcomeText="Welcome to"
+        title="Greenwood City"
+        subtitle="Block C"
+        description="Building a stronger community together. Stay connected and informed with the latest news, events, and updates."
+        descriptionMobile="Building a stronger community together. Stay connected and informed with the latest news, events, and updates."
+      />
 
-      {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-6">
+      {/* Main Content - Mobile First Layout */}
+      <div className="mx-auto max-w-7xl w-full">
         {/* Latest News Section */}
         <Section title="Latest News" subtitle="Stay informed with the latest community updates">
           {latestNews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
               {latestNews.map((item) => (
                 <ContentCard
                   key={item.id}
@@ -75,17 +49,18 @@ export default async function HomePage() {
                   href={`/news/${item.slug}`}
                   date={item.publishedAt}
                   category={item.category}
+                  compact
                 />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-text-light">No news articles available at the moment.</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-sm sm:text-base text-text-light">No news articles available at the moment.</p>
             </div>
           )}
           {latestNews.length > 0 && (
-            <div className="mt-8 text-center">
-              <Button asChild variant="outline">
+            <div className="mt-6 sm:mt-8 text-center">
+              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
                 <Link href="/news">View All News</Link>
               </Button>
             </div>
@@ -95,19 +70,19 @@ export default async function HomePage() {
         {/* Upcoming Events Section */}
         <Section title="Upcoming Events" subtitle="Join us for exciting community events and activities">
           {upcomingEvents.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
               {upcomingEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
+                <EventCard key={event.id} event={event} compact />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-text-light">No upcoming events scheduled at the moment.</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-sm sm:text-base text-text-light">No upcoming events scheduled at the moment.</p>
             </div>
           )}
           {upcomingEvents.length > 0 && (
-            <div className="mt-8 text-center">
-              <Button asChild variant="outline">
+            <div className="mt-6 sm:mt-8 text-center">
+              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
                 <Link href="/events">View All Events</Link>
               </Button>
             </div>
@@ -119,13 +94,13 @@ export default async function HomePage() {
           {galleryItems.length > 0 ? (
             <GalleryGrid items={galleryItems} columns={2} />
           ) : (
-            <div className="text-center py-12">
-              <p className="text-text-light">No gallery items available at the moment.</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-sm sm:text-base text-text-light">No gallery items available at the moment.</p>
             </div>
           )}
           {galleryItems.length > 0 && (
-            <div className="mt-8 text-center">
-              <Button asChild variant="outline">
+            <div className="mt-6 sm:mt-8 text-center">
+              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
                 <Link href="/gallery">View Full Gallery</Link>
               </Button>
             </div>
@@ -135,23 +110,24 @@ export default async function HomePage() {
         {/* Featured Advertisements Section */}
         <Section title="Local Advertisements" subtitle="Discover offers and services from local residents">
           {featuredAds.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
               {featuredAds.map((ad, index) => (
                 <AdvertisementCard
                   key={ad.id}
                   advertisement={ad}
                   index={index}
+                  compact
                 />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-text-light">No advertisements available at the moment.</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-sm sm:text-base text-text-light">No advertisements available at the moment.</p>
             </div>
           )}
           {featuredAds.length > 0 && (
-            <div className="mt-8 text-center">
-              <Button asChild variant="outline">
+            <div className="mt-6 sm:mt-8 text-center">
+              <Button asChild variant="outline" size="default" className="w-full sm:w-auto min-w-[200px]">
                 <Link href="/advertisements">View All Advertisements</Link>
               </Button>
             </div>

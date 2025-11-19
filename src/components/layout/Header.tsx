@@ -38,22 +38,22 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between py-2.5 px-4 lg:px-8" aria-label="Global">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between py-1.5 sm:py-2 md:py-2.5 px-4 lg:px-8" aria-label="Global">
         {/* Icon/Logo and Site Name on the left */}
-        <div className="flex items-center gap-3 flex-1 lg:flex-none">
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 lg:flex-none">
           {(logoUrl || faviconUrl) && (
             <Link
               href="/"
-              className="flex items-center touch-manipulation"
+              className="flex items-center touch-manipulation min-h-[44px] min-w-[44px]"
               aria-label="Go to homepage"
             >
-              <div className="relative h-[54px] w-[54px] sm:h-[68px] sm:w-[68px] flex-shrink-0">
+              <div className="relative h-[40px] w-[40px] sm:h-[54px] sm:w-[54px] md:h-[68px] md:w-[68px] flex-shrink-0">
                 <Image
                   src={logoUrl || faviconUrl || ""}
                   alt={theme?.siteName || "Logo"}
                   fill
                   className="object-contain"
-                  sizes="(max-width: 640px) 54px, 68px"
+                  sizes="(max-width: 640px) 40px, (max-width: 768px) 54px, 68px"
                   priority
                 />
               </div>
@@ -67,7 +67,7 @@ export function Header() {
               className="lg:hidden"
               aria-label="Go to homepage"
             >
-              <h1 className="text-sm font-semibold text-text truncate max-w-[200px]">
+              <h1 className="text-xs sm:text-sm font-semibold text-text truncate max-w-[200px]">
                 {siteName}
               </h1>
             </Link>

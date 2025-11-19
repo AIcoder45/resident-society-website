@@ -35,13 +35,24 @@ function shouldUseStrapi(): boolean {
   const url = getStrapiUrl();
   const useStrapi = !!url;
 
-// Debug logging (remove in production)
-if (process.env.NODE_ENV === "development") {
-  console.log("Strapi Configuration:", {
+  // Log configuration status (always, but more verbose in development)
+  if (process.env.NODE_ENV === "development") {
+    console.log("🔧 [Strapi] Configuration:", {
       STRAPI_URL: url,
       USE_STRAPI: useStrapi,
-    envKeys: Object.keys(process.env).filter((k) => k.includes("STRAPI")),
-  });
+      envKeys: Object.keys(process.env).filter((k) => k.includes("STRAPI")),
+    });
+  } else {
+    // Production: Log only if Strapi is not configured (warning)
+    if (!useStrapi) {
+      console.warn("⚠️  [Strapi] STRAPI_URL not configured - using JSON fallback");
+    } else {
+      // Log successful configuration on startup (once)
+      if (!(global as any).__strapiConfigLogged) {
+        console.log(`✅ [Strapi] Connected to: ${url}`);
+        (global as any).__strapiConfigLogged = true;
+      }
+    }
   }
   
   return useStrapi;
@@ -72,10 +83,10 @@ export async function getNews(limit?: number): Promise<News[]> {
   if (shouldUseStrapi()) {
     try {
       const url = `/api/news-articles?populate=*&sort[0]=publishedAt:desc`;
+      const strapiUrl = getStrapiUrl();
       
       if (process.env.NODE_ENV === "development") {
-        const strapiUrl = getStrapiUrl();
-        console.log("Fetching news from Strapi:", `${strapiUrl}${url}`);
+        console.log("🔍 [News] Fetching from Strapi:", `${strapiUrl}${url}`);
       }
 
       const response = await fetchStrapi<any[]>(url);
@@ -115,13 +126,29 @@ export async function getNews(limit?: number): Promise<News[]> {
       });
 
       if (process.env.NODE_ENV === "development") {
-        console.log(`Successfully fetched ${news.length} news articles from Strapi`);
+        console.log(`✅ [News] Successfully fetched ${news.length} articles from Strapi`);
+      } else {
+        // Log success in production too (less verbose)
+        console.log(`✅ [News] Fetched ${news.length} articles from Strapi`);
       }
 
       return limit ? news.slice(0, limit) : news;
     } catch (error) {
-      console.error("Error fetching news from Strapi:", error);
+      // Always log errors (production and development)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("❌ [News] Strapi connection failed:", {
+        error: errorMessage,
+        strapiUrl: getStrapiUrl(),
+        endpoint: "/api/news-articles",
+        action: "Falling back to JSON files",
+      });
+      console.error("❌ [News] Full error details:", error);
       // Fallback to JSON on error
+    }
+  } else {
+    // Log when Strapi is not configured
+    if (process.env.NODE_ENV === "production") {
+      console.warn("⚠️  [News] STRAPI_URL not set, using JSON fallback");
     }
   }
 
