@@ -3,7 +3,7 @@ import { Section } from "@/components/shared/Section";
 import { MobileHero } from "@/components/shared/MobileHero";
 import { ContentCard } from "@/components/shared/ContentCard";
 import { EventCard } from "@/components/shared/EventCard";
-import { GalleryGrid } from "@/components/shared/GalleryGrid";
+import { GalleryCard } from "@/components/shared/GalleryCard";
 import { AdvertisementCard } from "@/components/shared/AdvertisementCard";
 import { FeaturedImageCarousel } from "@/components/shared/FeaturedImageCarousel";
 import { getNews, getEvents, getGallery, getAdvertisements } from "@/lib/api";
@@ -107,7 +107,11 @@ export default async function HomePage() {
           viewAllLink={galleryItems.length > 0 ? { href: "/gallery", label: "View All" } : undefined}
         >
           {galleryItems.length > 0 ? (
-            <GalleryGrid items={galleryItems.slice(0, 4)} columns={2} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
+              {galleryItems.slice(0, 4).map((item) => (
+                <GalleryCard key={item.id} item={item} compact />
+              ))}
+            </div>
           ) : (
             <div className="text-center py-8 sm:py-12">
               <p className="text-sm sm:text-base text-text-light">No gallery items available at the moment.</p>
