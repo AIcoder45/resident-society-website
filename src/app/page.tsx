@@ -14,12 +14,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  // Fetch data for home page
+  // Fetch data for home page - Show 4 cards per category
   const [latestNews, upcomingEvents, galleryItems, featuredAds] = await Promise.all([
-    getNews(6), // Latest 6 news articles
-    getEvents(6, true), // Upcoming events only, limit 6
-    getGallery(6), // Latest 6 gallery items
-    getAdvertisements(undefined, 6), // Latest 6 advertisements
+    getNews(4), // Latest 4 news articles
+    getEvents(4, true), // Upcoming events only, limit 4
+    getGallery(4), // Latest 4 gallery items
+    getAdvertisements(undefined, 4), // Latest 4 advertisements
   ]);
 
   // Get featured images from latest content
@@ -36,13 +36,13 @@ export default async function HomePage() {
         welcomeText="Welcome to"
         title="Greenwood City"
         subtitle="Block C"
-        description="Building a stronger community together. Stay connected and informed with the latest news, events, and updates."
-        descriptionMobile="Building a stronger community together. Stay connected and informed with the latest news, events, and updates."
+        description="Building a stronger community together.."
+        descriptionMobile="Building a stronger community together.."
       />
 
       {/* Featured Images Carousel */}
       {featuredImages.length > 0 && (
-        <div className="w-full px-0">
+        <div className="w-full px-0 relative z-0">
           <FeaturedImageCarousel 
             images={featuredImages} 
             autoPlayInterval={5000}
@@ -61,7 +61,7 @@ export default async function HomePage() {
         >
           {latestNews.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
-              {latestNews.map((item) => (
+              {latestNews.slice(0, 4).map((item) => (
                 <ContentCard
                   key={item.id}
                   title={item.title}
@@ -89,7 +89,7 @@ export default async function HomePage() {
         >
           {upcomingEvents.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
-              {upcomingEvents.map((event) => (
+              {upcomingEvents.slice(0, 4).map((event) => (
                 <EventCard key={event.id} event={event} compact />
               ))}
             </div>
@@ -107,7 +107,7 @@ export default async function HomePage() {
           viewAllLink={galleryItems.length > 0 ? { href: "/gallery", label: "View All" } : undefined}
         >
           {galleryItems.length > 0 ? (
-            <GalleryGrid items={galleryItems} columns={2} />
+            <GalleryGrid items={galleryItems.slice(0, 4)} columns={2} />
           ) : (
             <div className="text-center py-8 sm:py-12">
               <p className="text-sm sm:text-base text-text-light">No gallery items available at the moment.</p>
@@ -123,7 +123,7 @@ export default async function HomePage() {
         >
           {featuredAds.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 w-full">
-              {featuredAds.map((ad, index) => (
+              {featuredAds.slice(0, 4).map((ad, index) => (
                 <AdvertisementCard
                   key={ad.id}
                   advertisement={ad}

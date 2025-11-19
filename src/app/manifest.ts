@@ -13,7 +13,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
   // Build icons array first
   const icons: MetadataRoute.Manifest["icons"] = [];
 
-  // Add icons - prefer favicon, fallback to logo
+  // Add icons - prefer favicon, fallback to logo from theme, then logo.png
   if (theme?.favicon) {
     icons.push(
       {
@@ -30,7 +30,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
       }
     );
   } else if (theme?.logo) {
-    // Fallback to logo if favicon not available
+    // Fallback to logo from theme if favicon not available
     icons.push(
       {
         src: theme.logo,
@@ -45,20 +45,17 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
         purpose: "maskable",
       }
     );
-  }
-
-  // Ensure at least one icon exists for PWA installation
-  if (icons.length === 0) {
-    // Add placeholder icons (these should be created)
+  } else {
+    // Final fallback to public/logo.png
     icons.push(
       {
-        src: "/icon-192.png",
+        src: "/logo.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icon-512.png",
+        src: "/logo.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",

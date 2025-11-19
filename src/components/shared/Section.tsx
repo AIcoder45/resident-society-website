@@ -52,8 +52,8 @@ export function Section({
             {title && (
               <div className="flex items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-2.5">
                 <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-text leading-tight flex-1">
-                  {title}
-                </h2>
+                {title}
+              </h2>
                 {viewAllLink && (
                   <Link
                     href={viewAllLink.href}

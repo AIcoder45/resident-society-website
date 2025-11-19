@@ -24,7 +24,7 @@ export default async function NotificationsPage() {
   return (
     <div className="mx-auto max-w-7xl w-full">
       <div className="px-4 sm:px-6 md:px-8 pt-2 sm:pt-3 md:pt-4">
-        <Breadcrumb items={[{ label: "Notifications" }]} />
+      <Breadcrumb items={[{ label: "Notifications" }]} />
       </div>
 
       <Section title="Notifications" subtitle="Important announcements and updates for residents">
