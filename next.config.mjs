@@ -28,9 +28,62 @@ const nextConfig = {
   compress: true,
   // Optimize production builds
   swcMinify: true,
-  // PWA configuration - service worker headers
+  // Security headers and PWA configuration
   async headers() {
+    // Check if we're in development mode
+    const isDevelopment = process.env.NODE_ENV === "development";
+    
+    // Build CSP directives
+    const cspDirectives = [
+      "default-src 'self'",
+      // Next.js requires unsafe-inline for hydration scripts
+      // unsafe-eval is only needed in development for React Fast Refresh
+      isDevelopment
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+        : "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Tailwind inline styles + Google Fonts
+      "font-src 'self' https://fonts.gstatic.com data:", // Google Fonts + data URIs for font loading
+      "img-src 'self' data: blob: http://admin.greenwoodscity.in https://admin.greenwoodscity.in http://localhost:1337 https:", // Images from Strapi (HTTP/HTTPS) and HTTPS sources
+      "connect-src 'self' http://admin.greenwoodscity.in https://admin.greenwoodscity.in http://localhost:1337 https:", // API connections to Strapi (HTTP/HTTPS)
+      "worker-src 'self' blob:", // Service worker
+      "manifest-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'",
+      "upgrade-insecure-requests",
+    ];
+
     return [
+      {
+        // Apply security headers to all routes
+        source: "/:path*",
+        headers: [
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: cspDirectives.join("; "),
+          },
+        ],
+      },
       {
         source: "/sw.js",
         headers: [
