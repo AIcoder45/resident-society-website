@@ -9,6 +9,9 @@ export interface News {
   shortDescription: string;
   content: string;
   image?: string;
+  video?: string; // Direct video URL from Strapi uploads
+  youtubeUrl?: string; // YouTube video URL
+  instagramUrl?: string; // Instagram post/reel URL
   category: string;
   publishedAt: string;
 }
@@ -22,6 +25,8 @@ export interface Event {
   location: string;
   coverImage?: string;
   gallery?: string[];
+  youtubeUrl?: string;
+  instagramUrl?: string;
 }
 
 export interface GalleryItem {
@@ -31,6 +36,8 @@ export interface GalleryItem {
   images: string[];
   eventId?: string;
   createdAt: string;
+  youtubeUrl?: string;
+  instagramUrl?: string;
 }
 
 export interface Notification {
@@ -42,13 +49,20 @@ export interface Notification {
   createdAt: string;
 }
 
+export interface PolicyDocument {
+  id: string;
+  documentName: string;
+  file: string; // Full URL to the file
+  mime?: string;
+  size?: number;
+}
+
 export interface Policy {
   id: string;
   title: string;
-  slug: string;
-  description: string;
-  file?: string;
-  category: string;
+  description?: string | null;
+  category?: string | null;
+  documents?: PolicyDocument[];
   updatedAt: string;
 }
 

@@ -11,6 +11,29 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
+ * Normalizes a date to start of day (midnight) for consistent comparisons
+ * @param date - Date string or Date object
+ * @returns Date object normalized to start of day
+ */
+export function normalizeDateToStartOfDay(date: string | Date): Date {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const normalized = new Date(dateObj);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+}
+
+/**
+ * Checks if an event date is upcoming (today or future)
+ * @param eventDate - Event date string or Date object
+ * @returns true if event is upcoming, false otherwise
+ */
+export function isEventUpcoming(eventDate: string | Date): boolean {
+  const eventDateNormalized = normalizeDateToStartOfDay(eventDate);
+  const todayNormalized = normalizeDateToStartOfDay(new Date());
+  return eventDateNormalized >= todayNormalized;
+}
+
+/**
  * Formats a date to a readable string
  * @param date - Date string or Date object
  * @param format - Format type ('short' | 'long' | 'relative')

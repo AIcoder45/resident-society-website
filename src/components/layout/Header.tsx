@@ -4,7 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "@/components/shared/ThemeProvider";
-import { ShareButton } from "@/components/shared/ShareButton";
+import { HeaderMarquee } from "./HeaderMarquee";
+import type { Event } from "@/types";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -23,65 +24,82 @@ export function Header() {
   const theme = useTheme();
   const logoUrl = theme?.logo;
   const faviconUrl = theme?.favicon;
-  const siteName = theme?.siteName || "Greenwood City Block C";
-  const [isScrolled, setIsScrolled] = React.useState(false);
+  const [upcomingEvents, setUpcomingEvents] = React.useState<Event[]>([]);
 
-  // Detect scroll position for mobile
+  // Fetch upcoming events on mount
   React.useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 20);
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("/api/events/upcoming");
+        if (response.ok) {
+          const data = await response.json();
+          setUpcomingEvents(data.events || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch upcoming events:", error);
+      }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    fetchEvents();
   }, []);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between py-0 px-4 lg:px-8" aria-label="Global">
-        {/* Icon/Logo and Site Name on the left */}
-        <div className="flex items-center gap-1.5 sm:gap-2 flex-1 lg:flex-none">
+      <nav className="mx-auto flex max-w-[640px] items-center justify-center py-1 sm:py-1 lg:py-0 px-4 lg:px-8" aria-label="Global">
+        {/* Mobile Layout: Logo + Marquee centered */}
+        <div className="flex lg:hidden items-center justify-center flex-1 min-w-0 gap-2">
+          {/* Icon/Logo */}
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           {(logoUrl || faviconUrl) && (
             <Link
               href="/"
-              className="flex items-center touch-manipulation min-h-[24px] min-w-[24px]"
+                className="flex items-center touch-manipulation min-h-[32px] min-w-[32px]"
               aria-label="Go to homepage"
             >
-              <div className="relative h-[20px] w-[20px] sm:h-[24px] sm:w-[24px] md:h-[28px] md:w-[28px] flex-shrink-0">
+                <div className="relative h-[60px] w-[60px] sm:h-[72px] sm:w-[72px] md:h-[84px] md:w-[84px] flex-shrink-0">
                 <Image
                   src={logoUrl || faviconUrl || ""}
                   alt={theme?.siteName || "Logo"}
                   fill
                   className="object-contain"
-                  sizes="(max-width: 640px) 20px, (max-width: 768px) 24px, 28px"
+                    sizes="(max-width: 640px) 60px, (max-width: 768px) 72px, (max-width: 1024px) 84px"
                   priority
                 />
               </div>
           </Link>
           )}
+          </div>
           
-          {/* Site Name - shown on mobile when scrolled */}
-          {isScrolled && (
-            <Link
-              href="/"
-              className="lg:hidden"
-              aria-label="Go to homepage"
-            >
-              <h1 className="text-[10px] sm:text-xs font-semibold text-text truncate max-w-[200px]">
-                {siteName}
-              </h1>
-            </Link>
-          )}
+          {/* Marquee for upcoming events - Mobile only */}
+          <HeaderMarquee events={upcomingEvents} />
         </div>
 
-        {/* Share button - Mobile only */}
-        <div className="lg:hidden flex items-center">
-          <ShareButton variant="icon" size="sm" />
+        {/* Desktop Layout: Logo + Navigation centered */}
+        <div className="hidden lg:flex items-center justify-center gap-6 w-full">
+          {/* Icon/Logo */}
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            {(logoUrl || faviconUrl) && (
+          <Link
+            href="/"
+                className="flex items-center touch-manipulation min-h-[20px] min-w-[20px]"
+            aria-label="Go to homepage"
+          >
+                <div className="relative h-[66px] w-[66px] flex-shrink-0">
+                  <Image
+                    src={logoUrl || faviconUrl || ""}
+                    alt={theme?.siteName || "Logo"}
+                    fill
+                    className="object-contain"
+                    sizes="66px"
+                    priority
+                  />
+                </div>
+          </Link>
+            )}
         </div>
 
-        {/* Navigation links in the center/right */}
-        <div className="hidden lg:flex lg:gap-x-6 flex-1 justify-end items-center">
+          {/* Navigation links */}
+          <div className="flex gap-x-6 items-center">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -92,6 +110,7 @@ export function Header() {
               {item.name}
             </Link>
           ))}
+          </div>
         </div>
       </nav>
     </header>

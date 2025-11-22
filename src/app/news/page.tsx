@@ -28,6 +28,8 @@ export default async function NewsPage() {
                 href={`/news/${item.slug}`}
                 date={item.publishedAt}
                 category={item.category}
+                youtubeUrl={item.youtubeUrl}
+                instagramUrl={item.instagramUrl}
               />
             ))}
           </div>

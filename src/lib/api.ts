@@ -4,6 +4,7 @@ import type {
   GalleryItem,
   Notification,
   Policy,
+  PolicyDocument,
   ContactInfo,
   ContactPageData,
   RWAMember,
@@ -113,6 +114,36 @@ export async function getNews(limit?: number): Promise<News[]> {
           }
         }
 
+        // Extract video - handle both v4 and v5 structures
+        const videoData = isV4Structure ? newsData.video : item.video;
+        let videoUrl: string | undefined = undefined;
+
+        if (videoData) {
+          if (typeof videoData === "object" && "data" in videoData && videoData.data) {
+            // Strapi v4/v5: nested structure with data
+            const videoAttributes = videoData.data?.attributes || videoData.data;
+            const url = videoAttributes?.url || videoData.data?.url;
+            if (url) {
+              videoUrl = url.startsWith("http")
+                ? url
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+            }
+          } else if (typeof videoData === "object" && "url" in videoData) {
+            // Strapi v5: direct object with url property
+            const url = videoData.url as string;
+            videoUrl = url.startsWith("http")
+              ? url
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+          } else {
+            // Strapi v4: nested structure
+            videoUrl = getStrapiImageUrlUtil(videoData) || undefined;
+          }
+        }
+
+        // Extract YouTube and Instagram URLs
+        const youtubeUrl = newsData.youtubeUrl || item.youtubeUrl || undefined;
+        const instagramUrl = newsData.instagramUrl || item.instagramUrl || undefined;
+
         return {
           id: item.id.toString(),
           title: newsData.title || item.title,
@@ -120,6 +151,9 @@ export async function getNews(limit?: number): Promise<News[]> {
           shortDescription: newsData.shortDescription || item.shortDescription || "",
           content: newsData.content || item.content || "",
           image: imageUrl,
+          video: videoUrl,
+          youtubeUrl: youtubeUrl,
+          instagramUrl: instagramUrl,
           category: newsData.category || item.category || "",
           publishedAt: newsData.publishedAt || item.publishedAt,
         };
@@ -199,6 +233,36 @@ export async function getNewsBySlug(slug: string): Promise<News | null> {
         }
       }
 
+      // Extract video - handle both v4 and v5 structures
+      const videoData = isV4Structure ? newsData.video : item.video;
+      let videoUrl: string | undefined = undefined;
+
+      if (videoData) {
+        if (typeof videoData === "object" && "data" in videoData && videoData.data) {
+          // Strapi v4/v5: nested structure with data
+          const videoAttributes = videoData.data?.attributes || videoData.data;
+          const url = videoAttributes?.url || videoData.data?.url;
+          if (url) {
+            videoUrl = url.startsWith("http")
+              ? url
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+          }
+        } else if (typeof videoData === "object" && "url" in videoData) {
+          // Strapi v5: direct object with url property
+          const url = videoData.url as string;
+          videoUrl = url.startsWith("http")
+            ? url
+            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+        } else {
+          // Strapi v4: nested structure
+          videoUrl = getStrapiImageUrlUtil(videoData) || undefined;
+        }
+      }
+
+      // Extract YouTube and Instagram URLs
+      const youtubeUrl = newsData.youtubeUrl || item.youtubeUrl || undefined;
+      const instagramUrl = newsData.instagramUrl || item.instagramUrl || undefined;
+
       return {
         id: item.id.toString(),
         title: newsData.title || item.title,
@@ -206,6 +270,9 @@ export async function getNewsBySlug(slug: string): Promise<News | null> {
         shortDescription: newsData.shortDescription || item.shortDescription || "",
         content: newsData.content || item.content || "",
         image: imageUrl,
+        video: videoUrl,
+        youtubeUrl: youtubeUrl,
+        instagramUrl: instagramUrl,
         category: newsData.category || item.category || "",
         publishedAt: newsData.publishedAt || item.publishedAt,
       };
@@ -317,6 +384,10 @@ export async function getEvents(
           });
         }
 
+        // Extract YouTube and Instagram URLs
+        const youtubeUrl = eventData.youtubeUrl || item.youtubeUrl || undefined;
+        const instagramUrl = eventData.instagramUrl || item.instagramUrl || undefined;
+
         return {
           id: item.id.toString(),
           title: eventData.title || item.title,
@@ -326,6 +397,8 @@ export async function getEvents(
           location: eventData.location || item.location || "",
           coverImage: coverImageUrl,
           gallery: galleryUrls,
+          youtubeUrl: youtubeUrl,
+          instagramUrl: instagramUrl,
         };
       });
 
@@ -423,6 +496,10 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
         }).filter((url: string | null): url is string => url !== null));
       }
 
+      // Extract YouTube and Instagram URLs
+      const youtubeUrl = eventData.youtubeUrl || item.youtubeUrl || undefined;
+      const instagramUrl = eventData.instagramUrl || item.instagramUrl || undefined;
+
       return {
         id: item.id.toString(),
         title: eventData.title || item.title,
@@ -432,6 +509,8 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
         location: eventData.location || item.location || "",
         coverImage: coverImageUrl,
         gallery: galleryUrls,
+        youtubeUrl: youtubeUrl,
+        instagramUrl: instagramUrl,
       };
     } catch (error) {
       console.error("Error fetching event from Strapi:", error);
@@ -493,6 +572,21 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
           : item.event?.data || item.event;
         const eventId = eventData?.id?.toString() || undefined;
 
+        // Extract YouTube and Instagram URLs
+        const youtubeUrl = galleryData.youtubeUrl || item.youtubeUrl || undefined;
+        const instagramUrl = galleryData.instagramUrl || item.instagramUrl || undefined;
+
+        // Debug logging in development
+        if (process.env.NODE_ENV === "development" && (youtubeUrl || instagramUrl)) {
+          console.log(`Gallery item ${item.id}:`, {
+            title: galleryData.title || item.title,
+            youtubeUrl,
+            instagramUrl,
+            hasYoutubeUrl: !!youtubeUrl,
+            hasInstagramUrl: !!instagramUrl,
+          });
+        }
+
         return {
           id: item.id.toString(),
           title: galleryData.title || item.title || "",
@@ -500,6 +594,8 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
           images: imageUrls,
           eventId,
           createdAt: galleryData.createdAt || item.createdAt,
+          youtubeUrl: youtubeUrl,
+          instagramUrl: instagramUrl,
         };
       });
 
@@ -587,17 +683,12 @@ export async function getNotifications(): Promise<Notification[]> {
 
 /**
  * Fetches all policies
- * @param category - Optional category filter
  * @returns Array of policies
  */
-export async function getPolicies(category?: string): Promise<Policy[]> {
+export async function getPolicies(): Promise<Policy[]> {
   if (shouldUseStrapi()) {
     try {
-      let url = `/api/policies?populate=*&sort[0]=updatedAt:desc`;
-
-      if (category) {
-        url += `&filters[category][$eq]=${encodeURIComponent(category)}`;
-      }
+      const url = `/api/policies?populate=*`;
 
       if (process.env.NODE_ENV === "development") {
         const strapiUrl = getStrapiUrl();
@@ -606,68 +697,89 @@ export async function getPolicies(category?: string): Promise<Policy[]> {
 
       const response = await fetchStrapi<any[]>(url);
 
-      // Handle both Strapi v4 (with attributes) and v5/flat structure
+      // Handle both Strapi v4 (with attributes) and v5 (flat structure)
       const policies: Policy[] = (response.data || []).map((item: any) => {
-        const isV4Structure = item.attributes !== undefined;
-        const policyData = isV4Structure ? item.attributes : item;
+        // Extract data - handle both v4 (with attributes) and v5 (flat)
+        const itemData = item.attributes ? item.attributes : item;
+        const itemId = item.id || "";
 
-        // Extract file - handle both v4 and v5 structures
-        const fileData = isV4Structure ? policyData.file : item.file;
-        let fileUrl: string | undefined = undefined;
+        // Extract documents array
+        const documentsData = itemData.documents || [];
+        const documents: PolicyDocument[] = [];
 
-        if (fileData) {
-          if (typeof fileData === "object" && "url" in fileData) {
-            // Strapi v5: direct object with url property
-            const url = fileData.url as string;
-            fileUrl = url.startsWith("http")
-              ? url
-              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
-          } else {
-            // Strapi v4: nested structure
-            fileUrl = getStrapiImageUrlUtil(fileData) || undefined;
-          }
+        if (Array.isArray(documentsData) && documentsData.length > 0) {
+          documents.push(...documentsData.map((doc: any) => {
+            // Extract file URL - handle multiple structures:
+            // Strapi v4: file.data.attributes.url
+            // Strapi v5: file.url
+            // Direct: file.url (string)
+            let fileUrl = "";
+            let fileSize: number | undefined = undefined;
+            let fileMime: string | undefined = undefined;
+
+            // Priority 1: Strapi v4 nested structure - file.data.attributes.url
+            if (doc.file?.data?.attributes?.url) {
+              const url = doc.file.data.attributes.url as string;
+              fileUrl = url.startsWith("http")
+                ? url
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+              fileSize = doc.file.data.attributes.size;
+              fileMime = doc.file.data.attributes.mime;
+            }
+            // Priority 2: Strapi v5 flat structure - file.url
+            else if (doc.file?.url) {
+              const url = doc.file.url as string;
+              fileUrl = url.startsWith("http")
+                ? url
+                : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+              fileSize = doc.file.size;
+              fileMime = doc.file.mime;
+            }
+            // Priority 3: Direct string URL
+            else if (typeof doc.file === "string" && doc.file.length > 0) {
+              fileUrl = doc.file.startsWith("http")
+                ? doc.file
+                : `${getStrapiUrl()}${doc.file.startsWith("/") ? "" : "/"}${doc.file}`;
+            }
+
+            return {
+              id: doc.id?.toString() || "",
+              documentName: doc.documentName || "Document",
+              file: fileUrl,
+              mime: fileMime,
+              size: fileSize,
+            };
+          }).filter((doc: PolicyDocument) => doc.file && doc.file.length > 0)); // Only include documents with valid file URLs
         }
 
+        // Ensure we always have a valid ID
+        const policyId = itemId != null ? String(itemId) : "";
+
         return {
-          id: item.id.toString(),
-          title: policyData.title || item.title,
-          slug: policyData.slug || item.slug || item.id.toString(),
-          description: policyData.description || item.description || "",
-          file: fileUrl,
-          category: policyData.category || item.category || "",
-          updatedAt: policyData.updatedAt || item.updatedAt,
+          id: policyId,
+          title: itemData.title || "Untitled Policy",
+          description: itemData.description || null,
+          category: itemData.category || null,
+          documents: documents.length > 0 ? documents : undefined,
+          updatedAt: itemData.updatedAt || itemData.createdAt || itemData.publishedAt || new Date().toISOString(),
         };
       });
 
       if (process.env.NODE_ENV === "development") {
         console.log(`Successfully fetched ${policies.length} policies from Strapi`);
+        if (policies.length > 0) {
+          console.log("Sample policy IDs:", policies.slice(0, 3).map(p => ({ id: p.id, title: p.title })));
+        }
       }
 
       return policies;
     } catch (error) {
       console.error("Error fetching policies from Strapi:", error);
-      // Fallback to JSON
+      return [];
     }
   }
 
-  // Fallback to JSON files
-  const policiesData = await import("@/data/policies.json");
-  let policies: Policy[] = (policiesData.default as any[]).map((item) => ({
-    ...item,
-    slug: item.slug || item.id.toString(),
-  }));
-
-  if (category) {
-    policies = policies.filter((policy) => policy.category === category);
-  }
-
-  // Sort by updated date (newest first)
-  policies = policies.sort(
-    (a, b) =>
-      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-  );
-
-  return policies;
+  return [];
 }
 
 /**
@@ -678,56 +790,316 @@ export async function getPolicies(category?: string): Promise<Policy[]> {
 export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
   if (shouldUseStrapi()) {
     try {
-      const url = `/api/policies?filters[slug][$eq]=${slug}&populate=*`;
-      
+      const url = `/api/policies?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`;
+
       if (process.env.NODE_ENV === "development") {
         const strapiUrl = getStrapiUrl();
-        console.log("Fetching policy from Strapi:", `${strapiUrl}${url}`);
+        console.log("🔍 [getPolicyBySlug] Fetching policy from Strapi:", {
+          slug,
+          url: `${strapiUrl}${url}`,
+          fullUrl: `${strapiUrl}${url}`,
+        });
       }
 
-      const response = await fetchStrapi<any[]>(url);
-
-      if (!response.data || response.data.length === 0) return null;
-
-      const item = response.data[0];
-      const isV4Structure = item.attributes !== undefined;
-      const policyData = isV4Structure ? item.attributes : item;
-
-      // Extract file - handle both v4 and v5 structures
-      const fileData = isV4Structure ? policyData.file : item.file;
-      let fileUrl: string | undefined = undefined;
-
-      if (fileData) {
-        if (typeof fileData === "object" && "url" in fileData) {
-          // Strapi v5: direct object with url property
-          const url = fileData.url as string;
-          fileUrl = url.startsWith("http")
-            ? url
-            : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
-        } else {
-          // Strapi v4: nested structure
-          fileUrl = getStrapiImageUrlUtil(fileData) || undefined;
+      let response;
+      try {
+        response = await fetchStrapi<any[]>(url);
+      } catch (error) {
+        // Handle 404 and other API errors gracefully
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("❌ [getPolicyBySlug] API Error for slug:", slug, {
+            error: errorMessage,
+            url: `${getStrapiUrl()}${url}`,
+          });
         }
+        // If it's a 404, the policy doesn't exist - return null
+        if (errorMessage.includes("404") || errorMessage.includes("not found")) {
+          return null;
+        }
+        // For other errors, re-throw or return null
+        return null;
       }
 
-      return {
-        id: item.id.toString(),
-        title: policyData.title || item.title,
-        slug: policyData.slug || item.slug || item.id.toString(),
-        description: policyData.description || item.description || "",
-        file: fileUrl,
-        category: policyData.category || item.category || "",
-        updatedAt: policyData.updatedAt || item.updatedAt,
+      if (process.env.NODE_ENV === "development") {
+        console.log("📦 [getPolicyBySlug] Response received:", {
+          hasResponse: !!response,
+          hasData: !!response?.data,
+          dataLength: Array.isArray(response?.data) ? response.data.length : 0,
+          dataType: typeof response?.data,
+          fullResponse: JSON.stringify(response, null, 2).substring(0, 1000),
+        });
+      }
+
+      if (!response || !response.data || !Array.isArray(response.data) || response.data.length === 0) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ [getPolicyBySlug] No data in response for slug:", slug);
+        }
+        return null;
+      }
+
+      // Get the first (and should be only) policy from the filtered results
+      const item = response.data[0];
+      const itemData = item.attributes ? item.attributes : item;
+      const itemId = item.id || "";
+
+      // Extract documents array
+      const documentsData = itemData.documents || [];
+      const documents: PolicyDocument[] = [];
+
+      if (Array.isArray(documentsData) && documentsData.length > 0) {
+        documents.push(...documentsData.map((doc: any) => {
+          // Extract file URL - handle multiple structures:
+          // Strapi v4: file.data.attributes.url
+          // Strapi v5: file.url
+          // Direct: file.url (string)
+          let fileUrl = "";
+          let fileSize: number | undefined = undefined;
+          let fileMime: string | undefined = undefined;
+
+          // Priority 1: Strapi v4 nested structure - file.data.attributes.url
+          if (doc.file?.data?.attributes?.url) {
+            const url = doc.file.data.attributes.url as string;
+            fileUrl = url.startsWith("http")
+              ? url
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+            fileSize = doc.file.data.attributes.size;
+            fileMime = doc.file.data.attributes.mime;
+          }
+          // Priority 2: Strapi v5 flat structure - file.url
+          else if (doc.file?.url) {
+            const url = doc.file.url as string;
+            fileUrl = url.startsWith("http")
+              ? url
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+            fileSize = doc.file.size;
+            fileMime = doc.file.mime;
+          }
+          // Priority 3: Direct string URL
+          else if (typeof doc.file === "string" && doc.file.length > 0) {
+            fileUrl = doc.file.startsWith("http")
+              ? doc.file
+              : `${getStrapiUrl()}${doc.file.startsWith("/") ? "" : "/"}${doc.file}`;
+          }
+
+          return {
+            id: doc.id?.toString() || "",
+            documentName: doc.documentName || "Document",
+            file: fileUrl,
+            mime: fileMime,
+            size: fileSize,
+          };
+        }).filter((doc: PolicyDocument) => doc.file && doc.file.length > 0));
+      }
+
+      // Ensure we always have a valid ID
+      const policyId = itemId != null ? String(itemId) : "";
+
+      const policy = {
+        id: policyId,
+        title: itemData.title || "Untitled Policy",
+        description: itemData.description || null,
+        category: itemData.category || null,
+        documents: documents.length > 0 ? documents : undefined,
+        updatedAt: itemData.updatedAt || itemData.createdAt || itemData.publishedAt || new Date().toISOString(),
       };
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("✅ [getPolicyBySlug] Policy extracted:", {
+          id: policy.id,
+          title: policy.title,
+          documentsCount: policy.documents?.length || 0,
+        });
+      }
+
+      return policy;
     } catch (error) {
-      console.error("Error fetching policy from Strapi:", error);
-      // Fallback to JSON
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("❌ [getPolicyBySlug] Error fetching policy from Strapi:", {
+        slug,
+        error: errorMessage,
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+      });
+      return null;
     }
   }
 
-  // Fallback to JSON files
-  const policies = await getPolicies();
-  return policies.find((item) => item.slug === slug) || null;
+  return null;
+}
+
+/**
+ * Fetches a single policy by ID
+ * @param id - Policy ID
+ * @returns Policy or null
+ */
+export async function getPolicyById(id: string): Promise<Policy | null> {
+  if (shouldUseStrapi()) {
+    try {
+      const url = `/api/policies/${id}?populate=*`;
+
+      if (process.env.NODE_ENV === "development") {
+        const strapiUrl = getStrapiUrl();
+        console.log("🔍 [getPolicyById] Fetching policy from Strapi:", {
+          id,
+          url: `${strapiUrl}${url}`,
+          fullUrl: `${strapiUrl}${url}`,
+        });
+      }
+
+      let response;
+      try {
+        response = await fetchStrapi<any>(url);
+      } catch (error) {
+        // Handle 404 and other API errors gracefully
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("❌ [getPolicyById] API Error for ID:", id, {
+            error: errorMessage,
+            url: `${getStrapiUrl()}${url}`,
+          });
+        }
+        // If it's a 404, the policy doesn't exist - return null
+        if (errorMessage.includes("404") || errorMessage.includes("not found")) {
+          return null;
+        }
+        // For other errors, re-throw or return null
+        return null;
+      }
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("📦 [getPolicyById] Response received:", {
+          hasResponse: !!response,
+          hasData: !!response?.data,
+          dataType: typeof response?.data,
+          dataKeys: response?.data ? Object.keys(response.data) : [],
+          hasAttributes: !!response?.data?.attributes,
+          attributesKeys: response?.data?.attributes ? Object.keys(response.data.attributes) : [],
+          responseId: response?.data?.id,
+          responseSlug: response?.data?.attributes?.slug || response?.data?.slug,
+          fullResponse: JSON.stringify(response, null, 2).substring(0, 1500),
+        });
+      }
+
+      if (!response || !response.data) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ [getPolicyById] No data in response for ID:", id);
+        }
+        return null;
+      }
+
+      // Handle both Strapi v4 (with attributes) and v5 (flat structure)
+      const item = response.data.attributes ? response.data.attributes : response.data;
+      const itemId = response.data.id || id;
+      
+      // Check if slug exists in the response
+      const itemSlug = item.slug || response.data.slug;
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔍 [getPolicyById] Extracted data:", {
+          requestedId: id,
+          responseId: itemId,
+          itemSlug: itemSlug,
+          hasAttributes: !!response.data.attributes,
+          itemKeys: Object.keys(item),
+        });
+      }
+
+      // Extract documents array
+      const documentsData = item.documents || [];
+      const documents: PolicyDocument[] = [];
+
+      if (Array.isArray(documentsData) && documentsData.length > 0) {
+        documents.push(...documentsData.map((doc: any) => {
+          // Extract file URL - handle multiple structures:
+          // Strapi v4: file.data.attributes.url
+          // Strapi v5: file.url
+          // Direct: file.url (string)
+          let fileUrl = "";
+          let fileSize: number | undefined = undefined;
+          let fileMime: string | undefined = undefined;
+
+          // Priority 1: Strapi v4 nested structure - file.data.attributes.url
+          if (doc.file?.data?.attributes?.url) {
+            const url = doc.file.data.attributes.url as string;
+            fileUrl = url.startsWith("http")
+              ? url
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+            fileSize = doc.file.data.attributes.size;
+            fileMime = doc.file.data.attributes.mime;
+          }
+          // Priority 2: Strapi v5 flat structure - file.url
+          else if (doc.file?.url) {
+            const url = doc.file.url as string;
+            fileUrl = url.startsWith("http")
+              ? url
+              : `${getStrapiUrl()}${url.startsWith("/") ? "" : "/"}${url}`;
+            fileSize = doc.file.size;
+            fileMime = doc.file.mime;
+          }
+          // Priority 3: Direct string URL
+          else if (typeof doc.file === "string" && doc.file.length > 0) {
+            fileUrl = doc.file.startsWith("http")
+              ? doc.file
+              : `${getStrapiUrl()}${doc.file.startsWith("/") ? "" : "/"}${doc.file}`;
+          }
+
+          return {
+            id: doc.id?.toString() || "",
+            documentName: doc.documentName || "Document",
+            file: fileUrl,
+            mime: fileMime,
+            size: fileSize,
+          };
+        }).filter((doc: PolicyDocument) => doc.file && doc.file.length > 0));
+      }
+
+      // Ensure we always have a valid ID
+      const policyId = itemId != null ? String(itemId) : id;
+
+      const policy = {
+        id: policyId,
+        title: item.title || "Untitled Policy",
+        description: item.description || null,
+        category: item.category || null,
+        documents: documents.length > 0 ? documents : undefined,
+        updatedAt: item.updatedAt || item.createdAt || item.publishedAt || new Date().toISOString(),
+      };
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("✅ [getPolicyById] Policy extracted:", {
+          requestedId: id,
+          extractedId: policy.id,
+          responseId: itemId,
+          itemSlug: itemSlug,
+          title: policy.title,
+          documentsCount: policy.documents?.length || 0,
+          hasSlug: !!itemSlug,
+        });
+        
+        // Warn if ID doesn't match requested ID and slug matches
+        if (String(policy.id) !== String(id) && itemSlug === id) {
+          console.warn("⚠️ [getPolicyById] ID mismatch detected - requested ID might be a slug:", {
+            requestedId: id,
+            extractedId: policy.id,
+            slug: itemSlug,
+            message: "The requested ID appears to be a slug. Consider using getPolicyBySlug() instead.",
+          });
+        }
+      }
+
+      return policy;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("❌ [getPolicyById] Error fetching policy from Strapi:", {
+        id,
+        error: errorMessage,
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+      });
+      return null;
+    }
+  }
+
+  return null;
 }
 
 /**

@@ -28,17 +28,75 @@ export function FeaturedImageCarousel({
   autoPlayInterval = 3000, // 3 seconds default
 }: FeaturedImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const [touchStart, setTouchStart] = React.useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = React.useState<number | null>(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+
+  const goToNext = React.useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setIsPaused(true);
+    // Resume auto-play after 5 seconds of inactivity
+    setTimeout(() => setIsPaused(false), 5000);
+  }, [images.length]);
+
+  const goToPrevious = React.useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setIsPaused(true);
+    // Resume auto-play after 5 seconds of inactivity
+    setTimeout(() => setIsPaused(false), 5000);
+  }, [images.length]);
 
   // Auto-play functionality
   React.useEffect(() => {
-    if (images.length <= 1) return;
+    if (images.length <= 1 || isPaused) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
-  }, [images.length, autoPlayInterval]);
+  }, [images.length, autoPlayInterval, isPaused]);
+
+  // Touch handlers for swipe
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrevious();
+    }
+  };
+
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        goToPrevious();
+      } else if (e.key === "ArrowRight") {
+        goToNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [goToNext, goToPrevious]);
 
   if (images.length === 0) return null;
 
@@ -46,7 +104,12 @@ export function FeaturedImageCarousel({
 
   return (
     <div className={cn("relative w-full overflow-hidden flex justify-center z-0 lg:mt-[10px]", className)}>
-      <div className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/9] w-full lg:w-[54%] lg:aspect-[16/5.4]">
+      <div 
+        className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/9] w-full lg:w-[54%] lg:aspect-[16/5.4]"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -79,25 +142,6 @@ export function FeaturedImageCarousel({
             </Link>
           </motion.div>
         </AnimatePresence>
-
-        {/* Dots indicator */}
-        {images.length > 1 && (
-          <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={cn(
-                  "rounded-full transition-all duration-300",
-                  currentIndex === index
-                    ? "w-6 sm:w-8 h-1.5 sm:h-2 bg-white"
-                    : "w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/50 hover:bg-white/75"
-                )}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
