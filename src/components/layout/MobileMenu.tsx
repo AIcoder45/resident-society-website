@@ -11,7 +11,7 @@ import {
   Users, 
   Megaphone, 
   Bell, 
-  FileText, 
+  FileText,
   Phone,
   X,
   ChevronRight

@@ -27,7 +27,6 @@ function getContentUrl(model: string, entry: any): string {
     "api::news.news": `/news/${entry.slug || entry.id}`,
     "api::event.event": `/events/${entry.slug || entry.id}`,
     "api::notification.notification": `/notifications`,
-    "api::policy.policy": `/policies/${entry.slug || entry.id}`,
     "api::advertisement.advertisement": `/advertisements/${entry.id}`,
     "api::rwa.rwa": `/rwa`,
   };

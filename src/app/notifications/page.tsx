@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { NoticeBanner } from "@/components/shared/NoticeBanner";
+import PushNotificationButton from "@/components/shared/PushNotificationButton";
 import { getNotifications } from "@/lib/api";
 
 export const metadata: Metadata = {
@@ -27,7 +28,11 @@ export default async function NotificationsPage() {
       <Breadcrumb items={[{ label: "Notifications" }]} />
       </div>
 
-      <Section title="Notifications" subtitle="Important announcements and updates for residents">
+      <Section 
+        title="Notifications" 
+        subtitle="Important announcements and updates for residents"
+        headerAction={<PushNotificationButton />}
+      >
         {sortedNotifications.length > 0 ? (
           <div className="space-y-2 sm:space-y-3">
             {sortedNotifications.map((notification) => (

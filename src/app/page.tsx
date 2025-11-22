@@ -6,7 +6,7 @@ import { EventCard } from "@/components/shared/EventCard";
 import { GalleryCard } from "@/components/shared/GalleryCard";
 import { AdvertisementCard } from "@/components/shared/AdvertisementCard";
 import { FeaturedImageCarousel } from "@/components/shared/FeaturedImageCarousel";
-import { getNews, getEvents, getGallery, getAdvertisements } from "@/lib/api";
+import { getNews, getEvents, getGallery, getAdvertisements, getHomepage } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Greenwood City - Building Community Together",
@@ -15,12 +15,37 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   // Fetch data for home page - Show 4 cards per category
-  const [latestNews, events, galleryItems, featuredAds] = await Promise.all([
+  const [latestNews, allEvents, galleryItems, featuredAds, homepage] = await Promise.all([
     getNews(4), // Latest 4 news articles
-    getEvents(4, false), // All events (upcoming badge will show for upcoming ones), limit 4
+    getEvents(20, false), // Fetch more events to sort properly
     getGallery(4), // Latest 4 gallery items
     getAdvertisements(undefined, 4), // Latest 4 advertisements
+    getHomepage(), // Homepage content from Strapi
   ]);
+
+  // Sort events: upcoming events first (ascending by date), then past events (descending by date)
+  // Normalize dates to start of day to avoid hydration mismatches
+  const now = new Date();
+  now.setHours(0, 0, 0, 0); // Reset to start of day for consistent comparison
+  
+  const upcomingEvents = allEvents
+    .filter(event => {
+      const eventDate = new Date(event.eventDate);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate >= now;
+    })
+    .sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
+  
+  const pastEvents = allEvents
+    .filter(event => {
+      const eventDate = new Date(event.eventDate);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate < now;
+    })
+    .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
+  
+  // Combine: upcoming first, then past events, limit to 4
+  const events = [...upcomingEvents, ...pastEvents].slice(0, 4);
 
   // Get featured images from latest content
   const featuredImages = [
@@ -29,15 +54,22 @@ export default async function HomePage() {
     ...galleryItems.filter(item => item.images && item.images.length > 0).slice(0, 2).map(item => ({ src: item.images[0], alt: item.title || 'Gallery Image', href: '/gallery' })),
   ].slice(0, 4); // Show max 4 featured images
 
+  // Use homepage data from Strapi if available, otherwise use defaults
+  const heroWelcomeText = homepage?.heroWelcomeText || "Welcome to";
+  const heroTitleText = homepage?.heroTitleText || "Greenwood City";
+  const heroSubtitleText = homepage?.heroSubtitleText || "Block C";
+  const heroDescription = homepage?.heroDescription || "Building a stronger community together..";
+  const heroDescriptionMobile = homepage?.heroDescriptionMobile || heroDescription;
+
   return (
     <div className="w-full min-h-screen">
       {/* Hero Section - Mobile Optimized */}
       <MobileHero
-        welcomeText="Welcome to"
-        title="Greenwood City"
-        subtitle="Block C"
-        description="Building a stronger community together.."
-        descriptionMobile="Building a stronger community together.."
+        welcomeText={heroWelcomeText}
+        title={heroTitleText}
+        subtitle={heroSubtitleText}
+        description={heroDescription}
+        descriptionMobile={heroDescriptionMobile}
       />
 
       {/* Featured Images Carousel */}
@@ -55,8 +87,8 @@ export default async function HomePage() {
       <div className="mx-auto max-w-7xl w-full">
         {/* Latest News Section */}
         <Section 
-          title="Latest News" 
-          subtitle="Stay informed with the latest community updates"
+          title={homepage?.newsSectionTitle || "Latest News"} 
+          subtitle={homepage?.newsSectionSubtitle || "Stay informed with the latest community updates"}
           viewAllLink={latestNews.length > 0 ? { href: "/news", label: "View All" } : undefined}
         >
           {latestNews.length > 0 ? (
@@ -70,6 +102,8 @@ export default async function HomePage() {
                   href={`/news/${item.slug}`}
                   date={item.publishedAt}
                   category={item.category}
+                  youtubeUrl={item.youtubeUrl}
+                  instagramUrl={item.instagramUrl}
                   compact
                 />
               ))}
@@ -83,8 +117,8 @@ export default async function HomePage() {
 
         {/* Events Section */}
         <Section 
-          title="Events" 
-          subtitle="Join us for exciting community events and activities"
+          title={homepage?.eventsSectionTitle || "Events"} 
+          subtitle={homepage?.eventsSectionSubtitle || "Join us for exciting community events and activities"}
           viewAllLink={events.length > 0 ? { href: "/events", label: "View All" } : undefined}
         >
           {events.length > 0 ? (
@@ -102,8 +136,8 @@ export default async function HomePage() {
 
         {/* Gallery Section */}
         <Section 
-          title="Photo Gallery" 
-          subtitle="Memorable moments from our community events and activities"
+          title={homepage?.gallerySectionTitle || "Photo Gallery"} 
+          subtitle={homepage?.gallerySectionSubtitle || "Memorable moments from our community events and activities"}
           viewAllLink={galleryItems.length > 0 ? { href: "/gallery", label: "View All" } : undefined}
         >
           {galleryItems.length > 0 ? (
@@ -121,8 +155,8 @@ export default async function HomePage() {
 
         {/* Featured Advertisements Section */}
         <Section 
-          title="Local Advertisements" 
-          subtitle="Discover offers and services from local residents"
+          title={homepage?.advertisementsSectionTitle || "Local Advertisements"} 
+          subtitle={homepage?.advertisementsSectionSubtitle || "Discover offers and services from local residents"}
           viewAllLink={featuredAds.length > 0 ? { href: "/advertisements", label: "View All" } : undefined}
         >
           {featuredAds.length > 0 ? (

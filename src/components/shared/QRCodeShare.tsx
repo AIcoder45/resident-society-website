@@ -58,7 +58,7 @@ export function QRCodeShare({ url, title }: QRCodeShareProps) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.download = `qrcode-${title ? title.toLowerCase().replace(/\s+/g, "-") : "policy"}.png`;
+            link.download = `qrcode-${title ? title.toLowerCase().replace(/\s+/g, "-") : "page"}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -73,51 +73,59 @@ export function QRCodeShare({ url, title }: QRCodeShareProps) {
 
   return (
     <Card>
-      <CardContent className="p-6">
-        <div className="flex flex-col items-center text-center space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <QrCode className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-semibold text-text">
-              Share this Policy
-            </h3>
-          </div>
-          
-          <p className="text-sm text-text-light max-w-md">
-            Scan this QR code to quickly access this policy document on your mobile device.
-          </p>
-
-          {fullUrl ? (
-            <div
-              ref={qrRef}
-              className="bg-white p-4 rounded-lg shadow-sm"
-              style={{ display: "inline-block" }}
+      <CardContent className="p-2 sm:p-2.5">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* QR Code Section */}
+          <div className="flex flex-col items-center flex-shrink-0">
+            {fullUrl ? (
+              <div
+                ref={qrRef}
+                className="bg-white p-1 rounded border border-gray-200"
+                style={{ display: "inline-block" }}
+              >
+                <QRCode
+                  value={fullUrl}
+                  size={70}
+                  style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                  viewBox="0 0 256 256"
+                />
+              </div>
+            ) : (
+              <div className="bg-white p-1 rounded border border-gray-200 w-[70px] h-[70px] flex items-center justify-center">
+                <div className="text-[7px] text-text-light text-center">Loading...</div>
+              </div>
+            )}
+            <Button
+              onClick={downloadQRCode}
+              variant="outline"
+              size="sm"
+              className="mt-1 text-[9px] h-5 px-1.5 py-0 border-green-600 text-green-600 hover:bg-green-50"
             >
-              <QRCode
-                value={fullUrl}
-                size={200}
-                style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                viewBox="0 0 256 256"
-              />
-            </div>
-          ) : (
-            <div className="bg-white p-4 rounded-lg shadow-sm w-[200px] h-[200px] flex items-center justify-center">
-              <div className="text-text-light">Loading QR Code...</div>
-            </div>
-          )}
+              <Download className="h-2.5 w-2.5 mr-0.5" />
+              Download
+            </Button>
+          </div>
 
-          <Button
-            onClick={downloadQRCode}
-            variant="outline"
-            size="sm"
-            className="w-full sm:w-auto"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download QR Code
-          </Button>
-
-          <p className="text-xs text-text-light mt-2">
-            The QR code can be included in PDF documents for easy sharing.
-          </p>
+          {/* Info Section */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1 mb-0.5">
+              <QrCode className="h-3 w-3 text-primary flex-shrink-0" />
+              <h3 className="text-[10px] sm:text-xs font-semibold text-text">
+                Share this Document
+              </h3>
+            </div>
+            <p className="text-[8px] sm:text-[9px] text-text-light leading-tight mb-1.5">
+              Scan QR code to access on mobile device.
+            </p>
+            <div className="flex flex-wrap gap-1">
+              <div className="text-[7px] sm:text-[8px] text-text-light bg-gray-50 px-1 py-0.5 rounded">
+                📱 Mobile
+              </div>
+              <div className="text-[7px] sm:text-[8px] text-text-light bg-gray-50 px-1 py-0.5 rounded">
+                🔗 Quick
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
