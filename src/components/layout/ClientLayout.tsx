@@ -30,13 +30,13 @@ export function ClientLayout({ theme, children }: ClientLayoutProps) {
         <PullToRefresh>
           <div className="flex min-h-screen flex-col">
             <Header />
-            <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+            <main className="flex-1 pb-14 sm:pb-16 lg:pb-0">{children}</main>
             <Footer />
-            <MobileBottomNav />
             <PWAInstallPrompt />
             <OfflineHandler />
           </div>
         </PullToRefresh>
+        <MobileBottomNav />
         <ShareButton variant="floating" />
         <Toaster 
           position="top-center" 
