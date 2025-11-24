@@ -14,7 +14,7 @@ const footerLinks = {
   about: [
     { name: "RWA", href: "/rwa", icon: Users },
     { name: "Advertisements", href: "/advertisements", icon: Megaphone },
-    { name: "Policies", href: "/policies", icon: FileText },
+    { name: "Policies and Documents", href: "/policies", icon: FileText },
   ],
   contact: [
     { name: "Quick Contact", href: "/quick-contact", icon: Phone },

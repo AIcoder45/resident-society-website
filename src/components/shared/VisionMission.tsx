@@ -76,11 +76,47 @@ export function VisionMission({
           {/* Content */}
           <div className="max-w-lg mx-auto py-1 sm:py-1.5">
             <div className="px-1 sm:px-1.5 md:px-2">
-              <div className="text-[10px] sm:text-[14px] md:text-[16px] text-text leading-relaxed text-center font-medium">
-                <div className="[&_p]:text-center [&_p]:mb-1 [&_p:last-child]:mb-0 [&_p]:text-[10px] [&_p]:sm:text-[14px] [&_p]:md:text-[16px] [&_*]:text-[10px] [&_*]:sm:text-[14px] [&_*]:md:text-[16px]">
-                  <RichTextContent content={cleanContent} />
+              <motion.div
+                className="relative overflow-hidden rounded-lg px-2 py-1"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                {/* Pulsing glow background */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-green-100/20 via-emerald-100/30 to-green-100/20 rounded-lg"
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
+                {/* Shimmer highlight animation */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none rounded-lg"
+                  animate={{
+                    x: ['-100%', '200%'],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatDelay: 2.5,
+                    ease: 'easeInOut',
+                  }}
+                  style={{
+                    width: '60%',
+                  }}
+                />
+                <div className="text-[10px] sm:text-[14px] md:text-[16px] text-text leading-relaxed text-center font-medium relative z-10">
+                  <div className="[&_p]:text-center [&_p]:mb-1 [&_p:last-child]:mb-0 [&_p]:text-[10px] [&_p]:sm:text-[14px] [&_p]:md:text-[16px] [&_*]:text-[10px] [&_*]:sm:text-[14px] [&_*]:md:text-[16px]">
+                    <RichTextContent content={cleanContent} />
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </motion.div>
