@@ -1,9 +1,9 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
 import { RichTextContent } from "./RichTextContent";
 import { cn } from "@/lib/utils";
-import { Quote } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface VisionMissionProps {
@@ -17,8 +17,8 @@ export interface VisionMissionProps {
 }
 
 /**
- * Vision section component - Testimonial style
- * Displays vision in an elegant, testimonial-like format
+ * Vision section component - Clean and simple display
+ * Displays vision content clearly without decorative quotes
  */
 export function VisionMission({
   visionTitle,
@@ -26,6 +26,31 @@ export function VisionMission({
   visionImage,
   className,
 }: VisionMissionProps) {
+  // Clean content - remove leading/trailing quotes and extra whitespace
+  const cleanContent = React.useMemo(() => {
+    if (!visionContent) return "";
+    
+    // Check if content is HTML
+    const isHTML = /<[^>]+>/g.test(visionContent);
+    
+    if (isHTML) {
+      // For HTML content, clean quotes from text nodes only
+      // Remove quotes that appear at the start/end of paragraph content
+      return visionContent
+        .replace(/<p[^>]*>["'""\s]+/gi, '<p>') // Remove quotes at start of paragraphs
+        .replace(/["'""\s]+<\/p>/gi, '</p>') // Remove quotes at end of paragraphs
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+    } else {
+      // For plain text, remove all leading/trailing quotes
+      return visionContent
+        .trim()
+        .replace(/^["'""]+|["'""]+$/g, '') // Remove leading/trailing quotes
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+    }
+  }, [visionContent]);
+
   return (
     <section className={cn("w-full bg-gradient-to-b from-background to-gray-50/50 py-1 sm:py-1.5 md:py-2", className)}>
       <div className="mx-auto max-w-lg px-2 sm:px-2.5 lg:px-3">
@@ -48,25 +73,14 @@ export function VisionMission({
             </div>
           )}
 
-          {/* Quote-style Content */}
-          <div className="relative max-w-lg mx-auto py-1 sm:py-1.5">
-            {/* Decorative Quote Mark - Top Left */}
-            <div className="absolute -top-0.5 -left-0.5 sm:-top-1 sm:-left-0.5 text-primary/15">
-              <Quote className="h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-2.5 md:w-2.5 rotate-180" />
-            </div>
-
-            {/* Content */}
-            <div className="relative px-1 sm:px-1.5 md:px-2">
+          {/* Content */}
+          <div className="max-w-lg mx-auto py-1 sm:py-1.5">
+            <div className="px-1 sm:px-1.5 md:px-2">
               <div className="text-[10px] sm:text-[14px] md:text-[16px] text-text leading-relaxed text-center font-medium">
                 <div className="[&_p]:text-center [&_p]:mb-1 [&_p:last-child]:mb-0 [&_p]:text-[10px] [&_p]:sm:text-[14px] [&_p]:md:text-[16px] [&_*]:text-[10px] [&_*]:sm:text-[14px] [&_*]:md:text-[16px]">
-                  <RichTextContent content={visionContent} />
+                  <RichTextContent content={cleanContent} />
                 </div>
               </div>
-            </div>
-
-            {/* Closing Quote Mark - Bottom Right */}
-            <div className="absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-0.5 text-primary/15">
-              <Quote className="h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-2.5 md:w-2.5" />
             </div>
           </div>
         </motion.div>
