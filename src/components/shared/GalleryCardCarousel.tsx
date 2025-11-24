@@ -24,6 +24,9 @@ export function GalleryCardCarousel({
 }: GalleryCardCarouselProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isPaused, setIsPaused] = React.useState(false);
+  const touchStartX = React.useRef<number | null>(null);
+  const touchStartY = React.useRef<number | null>(null);
+  const isSwiping = React.useRef(false);
 
   // Auto-play functionality
   React.useEffect(() => {
@@ -53,15 +56,69 @@ export function GalleryCardCarousel({
 
   const currentImage = images[currentIndex];
 
+  // Handle swipe gestures
+  const handleTouchStart = React.useCallback((e: React.TouchEvent) => {
+    setIsPaused(true);
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isSwiping.current = false;
+  }, []);
+
+  const handleTouchMove = React.useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    const deltaX = touchX - touchStartX.current;
+    const deltaY = touchY - touchStartY.current;
+
+    // Determine if this is a horizontal swipe
+    if (!isSwiping.current) {
+      const isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10;
+      if (isHorizontalSwipe) {
+        isSwiping.current = true;
+      }
+    }
+  }, []);
+
+  const handleTouchEnd = React.useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) {
+      touchStartX.current = null;
+      touchStartY.current = null;
+      setTimeout(() => setIsPaused(false), autoPlayInterval * 2);
+      return;
+    }
+
+    if (isSwiping.current) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaX = touchEndX - touchStartX.current;
+      const threshold = 30; // Minimum swipe distance
+
+      if (Math.abs(deltaX) > threshold) {
+        if (deltaX > 0) {
+          // Swipe right - go to previous
+          setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+        } else {
+          // Swipe left - go to next
+          setCurrentIndex((prev) => (prev + 1) % images.length);
+        }
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+    isSwiping.current = false;
+    setTimeout(() => setIsPaused(false), autoPlayInterval * 2);
+  }, [images.length, autoPlayInterval]);
+
   return (
     <div
-      className={cn("relative w-full h-full overflow-hidden", className)}
+      className={cn("relative w-full h-full overflow-hidden touch-pan-y", className)}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => {
-        setTimeout(() => setIsPaused(false), autoPlayInterval * 2);
-      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <AnimatePresence mode="wait">
         <motion.div

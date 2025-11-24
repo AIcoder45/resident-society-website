@@ -111,17 +111,10 @@ export default function PushNotificationButton() {
       const registration = await navigator.serviceWorker.register('/sw.js');
       await navigator.serviceWorker.ready;
 
-      // 2. Get VAPID public key from Strapi
-      const keyResponse = await fetch(`${STRAPI_URL}/api/push-subscriptions/public-key`);
-      if (!keyResponse.ok) {
-        throw new Error('Failed to get VAPID public key');
-      }
-      
-      const { data } = await keyResponse.json();
-      const vapidPublicKey = data.publicKey;
-
+      // 2. Get VAPID public key from environment variable
+      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!vapidPublicKey) {
-        throw new Error('VAPID public key not found in response');
+        throw new Error('VAPID public key not configured. Please check your environment variables.');
       }
 
       // 3. Convert VAPID key to Uint8Array
