@@ -57,9 +57,15 @@ export function toastWarning(message: string, description?: string): void {
 /**
  * Show a loading toast notification
  * @param message - The message to display
- * @returns A function to update or dismiss the toast
+ * @returns Toast ID that can be used to update or dismiss the toast
+ * @example
+ * const toastId = toastLoading("Loading...");
+ * // Later, update to success:
+ * toast.success(toastId, "Done!");
+ * // Or dismiss:
+ * toast.dismiss(toastId);
  */
-export function toastLoading(message: string): (message?: string) => void {
+export function toastLoading(message: string): string | number {
   return sonnerToast.loading(message, {
     duration: Infinity, // Loading toasts don't auto-dismiss
   });
