@@ -75,6 +75,7 @@ export function toastLoading(message: string): string | number {
  * Show a promise toast notification
  * @param promise - The promise to track
  * @param messages - Messages for loading, success, and error states
+ * @returns The original promise (for chaining)
  */
 export function toastPromise<T>(
   promise: Promise<T>,
@@ -84,12 +85,14 @@ export function toastPromise<T>(
     error: string | ((error: Error) => string);
   }
 ): Promise<T> {
-  return sonnerToast.promise(promise, {
+  sonnerToast.promise(promise, {
     loading: messages.loading,
     success: messages.success,
     error: messages.error,
     duration: 5000,
   });
+  // Return the original promise for chaining
+  return promise;
 }
 
 // Re-export the main toast function for custom usage
