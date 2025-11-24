@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download } from "lucide-react";
+import { X, Download, Share2, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toastSuccess, toastInfo, toastError } from "@/lib/utils/toast";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -17,11 +18,17 @@ interface BeforeInstallPromptEvent extends Event {
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = React.useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = React.useState(false);
+  const [showIOSInstructions, setShowIOSInstructions] = React.useState(false);
   const [isInstalled, setIsInstalled] = React.useState(false);
+  const [isIOS, setIsIOS] = React.useState(false);
 
   React.useEffect(() => {
     // Only run on client side
     if (typeof window === "undefined") return;
+
+    // Detect iOS
+    const iosCheck = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(iosCheck);
 
     // Check if app is already installed
     if (window.matchMedia("(display-mode: standalone)").matches) {
@@ -56,11 +63,20 @@ export function PWAInstallPrompt() {
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
+    // Listen for app installed event (Android/Chrome)
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setShowPrompt(false);
+      setShowIOSInstructions(false);
+      toastSuccess("App installed!", "The app has been added to your home screen.");
+    };
+
+    window.addEventListener("appinstalled", handleAppInstalled);
+
     // For iOS Safari, show manual install instructions after delay
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     
-    if (isIOS && isSafari) {
+    if (iosCheck && isSafari) {
       // Show iOS install prompt after delay
       setTimeout(() => {
         // Check if still not installed and not dismissed
@@ -72,8 +88,47 @@ export function PWAInstallPrompt() {
       }, 3000);
     }
 
+    // Periodic check for installation status (useful for iOS)
+    const checkInstallationStatus = () => {
+      const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+      const isIOSStandalone = (window.navigator as any).standalone === true;
+      
+      if (isStandalone || isIOSStandalone) {
+        setIsInstalled(true);
+        setShowPrompt(false);
+        setShowIOSInstructions(false);
+        // Only show toast if we detect installation (not on initial load)
+        if (!window.matchMedia("(display-mode: standalone)").matches && 
+            !(window.navigator as any).standalone) {
+          // This won't run on initial check, only on subsequent checks
+        }
+      }
+    };
+
+    // Check on page visibility change (user might have installed and returned)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+        const isIOSStandalone = (window.navigator as any).standalone === true;
+        
+        if (isStandalone || isIOSStandalone) {
+          setIsInstalled(true);
+          setShowPrompt(false);
+          setShowIOSInstructions(false);
+          toastSuccess("App installed!", "Welcome! The app is now installed on your device.");
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Initial check (silent, no toast)
+    checkInstallationStatus();
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
@@ -89,6 +144,7 @@ export function PWAInstallPrompt() {
         if (outcome === "accepted") {
           setShowPrompt(false);
           setIsInstalled(true);
+          toastSuccess("App installed!", "The app has been added to your home screen.");
           // Clear deferred prompt after successful installation
           setDeferredPrompt(null);
         } else {
@@ -96,25 +152,25 @@ export function PWAInstallPrompt() {
           setShowPrompt(false);
           setDeferredPrompt(null);
         }
-      } else {
-        // For iOS Safari or other browsers, show instructions
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-        if (isIOS) {
-          alert("To install this app:\n1. Tap the Share button (square with arrow)\n2. Select 'Add to Home Screen'\n3. Tap 'Add'");
-        } else {
-          // For Android browsers without beforeinstallprompt
-          alert("To install this app:\n1. Tap the menu (⋮)\n2. Select 'Add to Home Screen' or 'Install App'");
-        }
+      } else if (isIOS) {
+        // For iOS Safari, show visual instructions
         setShowPrompt(false);
+        setShowIOSInstructions(true);
+        toastInfo("Installation Instructions", "Follow the steps shown below to add the app to your home screen.");
+      } else {
+        // For Android browsers without beforeinstallprompt
+        setShowPrompt(false);
+        toastInfo("Installation Instructions", "Tap the menu (⋮) → Select 'Add to Home Screen' or 'Install App'");
       }
     } catch (error) {
       console.error("Error installing PWA:", error);
       // Fallback: show manual instructions
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       if (isIOS) {
-        alert("To install this app:\n1. Tap the Share button (square with arrow)\n2. Select 'Add to Home Screen'\n3. Tap 'Add'");
+        setShowPrompt(false);
+        setShowIOSInstructions(true);
+        toastError("Installation failed", "Please follow the manual steps shown below.");
       } else {
-        alert("To install this app:\n1. Tap the menu (⋮)\n2. Select 'Add to Home Screen' or 'Install App'");
+        toastError("Installation failed", "Please try installing from the browser menu.");
       }
       setShowPrompt(false);
       setDeferredPrompt(null);
@@ -123,13 +179,108 @@ export function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShowPrompt(false);
+    setShowIOSInstructions(false);
     // Remember dismissal for this session
     sessionStorage.setItem("pwa-install-dismissed", "true");
   };
 
-  // Don't show if already installed or dismissed this session
+  const handleCloseIOSInstructions = () => {
+    setShowIOSInstructions(false);
+    sessionStorage.setItem("pwa-install-dismissed", "true");
+  };
+
+  // Don't show if already installed
+  if (isInstalled) {
+    return null;
+  }
+
+  // iOS Installation Instructions Modal
+  if (showIOSInstructions) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 z-[60] flex items-end lg:hidden"
+          onClick={handleCloseIOSInstructions}
+        >
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="bg-white rounded-t-2xl w-full max-w-md mx-auto safe-area-inset-bottom"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-text">Install App</h3>
+                <button
+                  onClick={handleCloseIOSInstructions}
+                  className="p-2 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5 text-gray-500" />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-primary font-semibold text-sm">1</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-text font-medium mb-1">Tap the Share button</p>
+                    <p className="text-xs text-text-light">Look for the share icon at the bottom of Safari</p>
+                    <div className="mt-2 flex items-center gap-2 text-primary">
+                      <Share2 className="h-4 w-4" />
+                      <span className="text-xs">Share icon</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-primary font-semibold text-sm">2</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-text font-medium mb-1">Select "Add to Home Screen"</p>
+                    <p className="text-xs text-text-light">Scroll down in the share menu to find this option</p>
+                    <div className="mt-2 flex items-center gap-2 text-primary">
+                      <Plus className="h-4 w-4" />
+                      <span className="text-xs">Add to Home Screen</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-primary font-semibold text-sm">3</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-text font-medium mb-1">Tap "Add"</p>
+                    <p className="text-xs text-text-light">Confirm the installation to add the app icon to your home screen</p>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleCloseIOSInstructions}
+                className="w-full mt-6 touch-manipulation"
+                size="sm"
+              >
+                Got it!
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
+  // Don't show prompt if dismissed this session
   if (
-    isInstalled ||
     !showPrompt ||
     (typeof window !== "undefined" && sessionStorage.getItem("pwa-install-dismissed") === "true")
   ) {
@@ -137,9 +288,7 @@ export function PWAInstallPrompt() {
   }
 
   // Only show if we have deferredPrompt (Android/Chrome) or on iOS Safari
-  // Check iOS only on client side
   if (typeof window !== "undefined") {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     if (!deferredPrompt && !isIOS) {
       return null;
     }

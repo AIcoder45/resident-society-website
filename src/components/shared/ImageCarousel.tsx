@@ -30,6 +30,11 @@ export function ImageCarousel({
 }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = React.useState(initialIndex);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [swipeOffset, setSwipeOffset] = React.useState(0);
+  const touchStartX = React.useRef<number | null>(null);
+  const touchStartY = React.useRef<number | null>(null);
+  const isSwiping = React.useRef(false);
+  const swipeOffsetRef = React.useRef(0);
 
   const goToNext = React.useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -56,6 +61,66 @@ export function ImageCarousel({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goToNext, goToPrevious, onClose]);
+
+  // Handle touch/swipe gestures
+  const handleTouchStart = React.useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isSwiping.current = false;
+  }, []);
+
+  const handleTouchMove = React.useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    const deltaX = touchX - touchStartX.current;
+    const deltaY = touchY - touchStartY.current;
+
+    // Determine if this is a horizontal swipe (more horizontal than vertical)
+    if (!isSwiping.current) {
+      const isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10;
+      if (isHorizontalSwipe) {
+        isSwiping.current = true;
+      }
+    }
+
+    if (isSwiping.current && images.length > 1) {
+      e.preventDefault();
+      swipeOffsetRef.current = deltaX;
+      setSwipeOffset(deltaX);
+    }
+  }, [images.length]);
+
+  const handleTouchEnd = React.useCallback(() => {
+    if (!isSwiping.current || touchStartX.current === null) {
+      touchStartX.current = null;
+      touchStartY.current = null;
+      swipeOffsetRef.current = 0;
+      setSwipeOffset(0);
+      return;
+    }
+
+    const threshold = 50; // Minimum swipe distance to trigger navigation
+    const swipeDistance = swipeOffsetRef.current;
+
+    if (Math.abs(swipeDistance) > threshold) {
+      if (swipeDistance > 0) {
+        // Swipe right - go to previous
+        goToPrevious();
+      } else {
+        // Swipe left - go to next
+        goToNext();
+      }
+    }
+
+    // Reset
+    touchStartX.current = null;
+    touchStartY.current = null;
+    isSwiping.current = false;
+    swipeOffsetRef.current = 0;
+    setSwipeOffset(0);
+  }, [goToNext, goToPrevious]);
 
   const currentImage = images[currentIndex];
 
@@ -88,27 +153,43 @@ export function ImageCarousel({
         )}
 
         {/* Image */}
-        <div className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center">
+        <div 
+          className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center touch-none"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                x: swipeOffset,
+              }}
               exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
+              transition={{ 
+                duration: isSwiping.current ? 0 : 0.3,
+                ease: "easeOut"
+              }}
               className="relative w-full h-full flex items-center justify-center"
+              style={{
+                cursor: isSwiping.current ? 'grabbing' : 'grab',
+              }}
             >
               <Image
                 src={currentImage}
                 alt={title ? `${title} - Image ${currentIndex + 1}` : `Gallery image ${currentIndex + 1}`}
                 fill
                 className={cn(
-                  "object-contain",
+                  "object-contain select-none",
                   isLoading && "opacity-0"
                 )}
                 sizes="(max-width: 768px) 100vw, 90vw"
                 priority={currentIndex < 3}
                 onLoad={() => setIsLoading(false)}
+                draggable={false}
               />
             </motion.div>
           </AnimatePresence>

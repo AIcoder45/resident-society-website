@@ -22,6 +22,13 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Block C",
   },
+  // Additional iOS meta tags for better PWA installation
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-title": "Block C",
+    "mobile-web-app-capable": "yes",
+  },
   // Next.js automatically links manifest.ts route as /manifest.json
   // Explicitly setting it ensures proper PWA installation
   manifest: "/manifest.json",
