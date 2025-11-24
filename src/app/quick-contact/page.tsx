@@ -53,7 +53,7 @@ export default async function QuickContactPage() {
 
       <Section
         title="Quick Contact - Service Providers"
-        subtitle="Find trusted service providers in your community. All providers are verified by the RWA."
+        subtitle="Greenwood City RWA is not responsible for the performance, actions, commitments, delays, or service quality of any external service providers. The information shared is solely for resident awareness and convenience. All services are provided directly by the respective vendors at their own responsibility."
       >
         {providers.length === 0 ? (
           <div className="text-center py-12">
