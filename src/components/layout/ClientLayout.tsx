@@ -10,6 +10,7 @@ import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
 import { OfflineHandler } from "@/components/shared/OfflineHandler";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { PullToRefresh } from "@/components/shared/PullToRefresh";
 import type { Theme } from "@/types";
 
 interface ClientLayoutProps {
@@ -26,14 +27,16 @@ export function ClientLayout({ theme, children }: ClientLayoutProps) {
   return (
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1 pb-16 lg:pb-0">{children}</main>
-          <Footer />
-          <MobileBottomNav />
-          <PWAInstallPrompt />
-          <OfflineHandler />
-        </div>
+        <PullToRefresh>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+            <Footer />
+            <MobileBottomNav />
+            <PWAInstallPrompt />
+            <OfflineHandler />
+          </div>
+        </PullToRefresh>
         <ShareButton variant="floating" />
         <Toaster 
           position="top-center" 
