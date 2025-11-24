@@ -30,6 +30,13 @@
     --grid-base: 8px;
   }
 
+  /* Reduce all text sizes by 20% on mobile */
+  @media (max-width: 768px) {
+    html {
+      font-size: 12.8px; /* 16px * 0.8 = 12.8px (20% reduction) */
+    }
+  }
+
   body {
     @apply bg-background text-text;
     font-size: 1rem; /* 16px base */

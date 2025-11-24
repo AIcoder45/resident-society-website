@@ -5,7 +5,7 @@ import { ContentCard } from "@/components/shared/ContentCard";
 import { getNews } from "@/lib/api";
 
 export const metadata: Metadata = {
-  title: "News - Greenwood City",
+  title: "Society's Updates - Greenwood City",
   description: "Stay updated with the latest news and announcements from Greenwood City.",
 };
 
@@ -14,9 +14,9 @@ export default async function NewsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Breadcrumb items={[{ label: "News" }]} />
+      <Breadcrumb items={[{ label: "Society's Updates" }]} />
       
-      <Section title="All News" subtitle="Latest updates and announcements from our community">
+      <Section title="Society's Updates" subtitle="Latest updates and announcements from our community">
         {news.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {news.map((item) => (

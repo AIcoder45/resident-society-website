@@ -5,12 +5,11 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedCard } from "@/components/shared/AnimatedCard";
-import { ContactForm } from "@/components/shared/ContactForm";
 import { getContactPageData, getContactInfo } from "@/lib/api";
 import type { ContactInfo, ContactPageData } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Contact - Greenwood City",
+  title: "Contact Us - Greenwood City",
   description: "Get in touch with Greenwood City management and committee.",
 };
 
@@ -27,7 +26,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   hours: Clock,
 };
 
-// Default fallback contact info if Strapi is not available
+// Default fallback contact info if Bemo CMS is not available
 const defaultContactInfo: Array<{
   icon: React.ComponentType<{ className?: string }>;
   title: string;
@@ -66,14 +65,14 @@ export default async function ContactPage() {
   
   // Debug logging
   if (process.env.NODE_ENV === "development") {
-    console.log("Contact page - Strapi data:", {
+    console.log("Contact page - Bemo CMS data:", {
       hasContactPageData: !!contactPageData,
       contactInfoCount: strapiContactInfo.length,
       items: strapiContactInfo,
     });
   }
   
-  // Use Strapi data if available, otherwise use default
+  // Use Bemo CMS data if available, otherwise use default
   const contactInfo = strapiContactInfo.length > 0
     ? strapiContactInfo.map((item) => {
         const iconName = item.icon?.toLowerCase().trim() || "";
@@ -96,18 +95,16 @@ export default async function ContactPage() {
       })
     : defaultContactInfo;
 
-  // Use page title and subtitle from Strapi if available
+  // Use page title and subtitle from Bemo CMS if available
   const pageTitle = contactPageData?.pageTitle || "Contact Us";
   const pageSubtitle = contactPageData?.pageSubtitle || "Get in touch with our management team or committee members";
   
   // Use custom inquiry text if available
-  const generalInquiryText = contactPageData?.generalInquiryText || 
-    "For general inquiries, suggestions, or feedback, please reach out to us using the contact information above or visit our office during business hours.";
-  const urgentMattersText = contactPageData?.urgentMattersText ||
-    "For urgent matters, please call our emergency hotline or contact the security office.";
+  const generalInquiryText = contactPageData?.generalInquiryText || null;
+  const urgentMattersText = contactPageData?.urgentMattersText || null;
   return (
     <div className="mx-auto max-w-7xl px-4 py-4 sm:py-6 md:py-8 sm:px-6 lg:px-8">
-      <Breadcrumb items={[{ label: "Contact" }]} />
+      <Breadcrumb items={[{ label: "Contact Us" }]} />
 
       <Section
         title={pageTitle}
@@ -115,19 +112,19 @@ export default async function ContactPage() {
         className="!pt-2 !pb-4 sm:!pt-4 sm:!pb-6"
       >
         {/* Contact Information Cards - Improved Card View */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 w-full mb-8 sm:mb-10 md:mb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6 w-full mb-6 sm:mb-10 md:mb-12">
           {contactInfo.map((info, index) => {
             const Icon = info.icon;
             const content = (
               <Card className="h-full w-full overflow-hidden border border-gray-200/60 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group bg-white">
-                <CardContent className="p-5 sm:p-6 md:p-7 flex flex-col items-center text-center">
+                <CardContent className="p-2 sm:p-5 md:p-7 flex flex-col items-center text-center">
                   {/* Icon Container */}
-                  <div className="mb-4 p-4 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
-                    <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
+                  <div className="mb-2 sm:mb-4 p-2 sm:p-4 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
+                    <Icon className="h-4 w-4 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary" />
                   </div>
                   
                   {/* Title */}
-                  <h3 className="font-bold text-text mb-3 text-base sm:text-lg md:text-xl">
+                  <h3 className="font-bold text-text mb-1 sm:mb-3 text-xs sm:text-base md:text-lg leading-tight">
                     {info.title}
                   </h3>
                   
@@ -135,12 +132,12 @@ export default async function ContactPage() {
                   {info.link ? (
                     <a
                       href={info.link}
-                      className="text-text-light hover:text-primary transition-colors text-sm sm:text-base break-words block touch-manipulation w-full"
+                      className="text-text-light hover:text-primary transition-colors text-xs sm:text-sm md:text-base break-words block touch-manipulation w-full leading-tight"
                     >
                       {info.content}
                     </a>
                   ) : (
-                    <p className="text-text-light text-sm sm:text-base break-words leading-relaxed">{info.content}</p>
+                    <p className="text-text-light text-xs sm:text-sm md:text-base break-words leading-tight">{info.content}</p>
                   )}
                 </CardContent>
               </Card>
@@ -154,13 +151,32 @@ export default async function ContactPage() {
           })}
         </div>
 
-        {/* Contact Form Section */}
-        <div className="w-full mt-8 sm:mt-10 md:mt-12">
-          <ContactForm
-            generalInquiryText={generalInquiryText}
-            urgentMattersText={urgentMattersText}
-          />
-        </div>
+        {/* Information Section */}
+        {(generalInquiryText || urgentMattersText) && (
+          <div className="w-full mt-8 sm:mt-10 md:mt-12">
+            <Card className="w-full border border-gray-200/60 shadow-lg">
+              <CardContent className="p-5 sm:p-6 md:p-8">
+                <div className="space-y-4 sm:space-y-5">
+                  {contactPageData?.messageSectionTitle && (
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text mb-3">
+                      {contactPageData.messageSectionTitle}
+                    </h2>
+                  )}
+                  {generalInquiryText && (
+                    <p className="text-sm sm:text-base text-text-light leading-relaxed">
+                      {generalInquiryText}
+                    </p>
+                  )}
+                  {urgentMattersText && (
+                    <p className="text-xs sm:text-sm text-text-light/80 italic">
+                      {urgentMattersText}
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </Section>
     </div>
   );

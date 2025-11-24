@@ -6,7 +6,8 @@ import { EventCard } from "@/components/shared/EventCard";
 import { GalleryCard } from "@/components/shared/GalleryCard";
 import { AdvertisementCard } from "@/components/shared/AdvertisementCard";
 import { FeaturedImageCarousel } from "@/components/shared/FeaturedImageCarousel";
-import { getNews, getEvents, getGallery, getAdvertisements, getHomepage } from "@/lib/api";
+import { VisionMission } from "@/components/shared/VisionMission";
+import { getNews, getEvents, getGallery, getAdvertisements, getHomepage, getVisionMission } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Greenwood City - Building Community Together",
@@ -15,12 +16,13 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   // Fetch data for home page - Show 4 cards per category
-  const [latestNews, allEvents, galleryItems, featuredAds, homepage] = await Promise.all([
+  const [latestNews, allEvents, galleryItems, featuredAds, homepage, visionMission] = await Promise.all([
     getNews(4), // Latest 4 news articles
     getEvents(20, false), // Fetch more events to sort properly
     getGallery(4), // Latest 4 gallery items
     getAdvertisements(undefined, 4), // Latest 4 advertisements
     getHomepage(), // Homepage content from Strapi
+    getVisionMission(), // Vision and Mission from Strapi
   ]);
 
   // Sort events: upcoming events first (ascending by date), then past events (descending by date)
@@ -81,6 +83,15 @@ export default async function HomePage() {
             className="w-full"
           />
         </div>
+      )}
+
+      {/* Vision Section - Testimonial Style */}
+      {visionMission && (
+        <VisionMission
+          visionTitle={visionMission.visionTitle}
+          visionContent={visionMission.visionContent}
+          visionImage={visionMission.visionImage}
+        />
       )}
 
       {/* Main Content - Mobile First Layout */}

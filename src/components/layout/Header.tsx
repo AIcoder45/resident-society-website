@@ -9,7 +9,7 @@ import type { Event } from "@/types";
 
 const navigation = [
   { name: "Home", href: "/" },
-  { name: "News", href: "/news" },
+  { name: "Society's Updates", href: "/news" },
   { name: "Events", href: "/events" },
   { name: "Gallery", href: "/gallery" },
   { name: "Quick Contact", href: "/quick-contact" },

@@ -40,14 +40,18 @@ export function PWAInstallPrompt() {
       return;
     }
 
-    // Listen for beforeinstallprompt event (Chrome/Edge)
+    // Listen for beforeinstallprompt event (Chrome/Edge/Android)
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Show prompt after a delay to avoid interrupting initial load
-      setTimeout(() => {
-        setShowPrompt(true);
-      }, 2000);
+      const promptEvent = e as BeforeInstallPromptEvent;
+      // Verify the event has the required methods
+      if (promptEvent.prompt && typeof promptEvent.prompt === 'function') {
+        setDeferredPrompt(promptEvent);
+        // Show prompt after a delay to avoid interrupting initial load
+        setTimeout(() => {
+          setShowPrompt(true);
+        }, 2000);
+      }
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -75,8 +79,8 @@ export function PWAInstallPrompt() {
 
   const handleInstall = async () => {
     try {
-      if (deferredPrompt) {
-        // Show the install prompt (Chrome/Edge)
+      if (deferredPrompt && deferredPrompt.prompt) {
+        // Show the install prompt (Chrome/Edge/Android)
         await deferredPrompt.prompt();
 
         // Wait for user response
@@ -85,12 +89,13 @@ export function PWAInstallPrompt() {
         if (outcome === "accepted") {
           setShowPrompt(false);
           setIsInstalled(true);
+          // Clear deferred prompt after successful installation
+          setDeferredPrompt(null);
         } else {
           // User dismissed, hide prompt
           setShowPrompt(false);
+          setDeferredPrompt(null);
         }
-
-        setDeferredPrompt(null);
       } else {
         // For iOS Safari or other browsers, show instructions
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -112,6 +117,7 @@ export function PWAInstallPrompt() {
         alert("To install this app:\n1. Tap the menu (⋮)\n2. Select 'Add to Home Screen' or 'Install App'");
       }
       setShowPrompt(false);
+      setDeferredPrompt(null);
     }
   };
 
@@ -125,8 +131,19 @@ export function PWAInstallPrompt() {
   if (
     isInstalled ||
     !showPrompt ||
-    sessionStorage.getItem("pwa-install-dismissed") === "true"
+    (typeof window !== "undefined" && sessionStorage.getItem("pwa-install-dismissed") === "true")
   ) {
+    return null;
+  }
+
+  // Only show if we have deferredPrompt (Android/Chrome) or on iOS Safari
+  // Check iOS only on client side
+  if (typeof window !== "undefined") {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    if (!deferredPrompt && !isIOS) {
+      return null;
+    }
+  } else if (!deferredPrompt) {
     return null;
   }
 
@@ -139,39 +156,39 @@ export function PWAInstallPrompt() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed bottom-20 sm:bottom-24 left-3 right-3 sm:left-4 sm:right-4 z-[55] lg:hidden safe-area-inset-bottom"
+          className="fixed bottom-20 sm:bottom-24 left-2 right-2 sm:left-3 sm:right-3 z-[55] lg:hidden safe-area-inset-bottom"
         >
-          <div className="bg-white rounded-lg shadow-xl border border-gray-200/60 p-2 max-w-sm mx-auto">
-            <div className="flex items-center gap-2 mb-2">
+          <div className="bg-white rounded-lg shadow-xl border border-gray-200/60 p-1.5 max-w-xs mx-auto">
+            <div className="flex items-center gap-1.5 mb-1.5">
               <div className="flex-1 min-w-0">
-                <h3 className="text-xs font-semibold text-text truncate">
+                <h3 className="text-[11px] font-semibold text-text truncate">
                   Install App
                 </h3>
-                <p className="text-[10px] text-text-light leading-tight line-clamp-1">
-                  Quick access & offline support
+                <p className="text-[9px] text-text-light leading-tight line-clamp-1">
+                  Quick access & offline
                 </p>
               </div>
               <button
                 onClick={handleDismiss}
-                className="flex-shrink-0 p-1 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation min-h-[28px] min-w-[28px] flex items-center justify-center"
+                className="flex-shrink-0 p-0.5 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation min-h-[24px] min-w-[24px] flex items-center justify-center"
                 aria-label="Dismiss"
               >
-                <X className="h-3 w-3 text-gray-500" />
+                <X className="h-2.5 w-2.5 text-gray-500" />
               </button>
             </div>
-            <div className="flex gap-1.5">
+            <div className="flex gap-1">
               <Button
                 onClick={handleInstall}
-                className="flex-1 touch-manipulation min-h-[32px] text-[10px] px-2 py-1 h-auto"
+                className="flex-1 touch-manipulation min-h-[28px] text-[9px] px-2 py-0.5 h-auto"
                 size="sm"
               >
-                <Download className="h-3 w-3 mr-1" />
+                <Download className="h-2.5 w-2.5 mr-0.5" />
                 Install
               </Button>
               <Button
                 onClick={handleDismiss}
                 variant="outline"
-                className="touch-manipulation min-h-[32px] text-[10px] px-2 py-1 h-auto"
+                className="touch-manipulation min-h-[28px] text-[9px] px-2 py-0.5 h-auto"
                 size="sm"
               >
                 Later

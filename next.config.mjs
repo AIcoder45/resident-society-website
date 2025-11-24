@@ -2,7 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["localhost", "admin.greenwoodscity.in"],
     remotePatterns: [
       {
         protocol: "http",
@@ -112,12 +111,56 @@ const nextConfig = {
         ],
       },
       {
-        // Don't cache HTML
+        // Don't cache HTML pages - always fetch fresh
         source: "/:path*.html",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=0, must-revalidate",
+            value: "no-cache, no-store, must-revalidate, max-age=0",
+          },
+          {
+            key: "Pragma",
+            value: "no-cache",
+          },
+          {
+            key: "Expires",
+            value: "0",
+          },
+        ],
+      },
+      {
+        // Don't cache root and page routes - always fetch fresh content
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate, max-age=0",
+          },
+          {
+            key: "Pragma",
+            value: "no-cache",
+          },
+          {
+            key: "Expires",
+            value: "0",
+          },
+        ],
+      },
+      {
+        // Don't cache dynamic routes (news, events, etc.)
+        source: "/(news|events|gallery|contact|notifications|policies|rwa|advertisements|quick-contact)/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate, max-age=0",
+          },
+          {
+            key: "Pragma",
+            value: "no-cache",
+          },
+          {
+            key: "Expires",
+            value: "0",
           },
         ],
       },

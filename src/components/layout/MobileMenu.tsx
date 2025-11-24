@@ -11,7 +11,7 @@ import {
   Users, 
   Megaphone, 
   Bell, 
-  FileText,
+  FileText, 
   Phone,
   X,
   ChevronRight
@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Home", href: "/", icon: Home },
-  { name: "News", href: "/news", icon: Newspaper },
+  { name: "Society's Updates", href: "/news", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
   { name: "Gallery", href: "/gallery", icon: Image },
   { name: "RWA", href: "/rwa", icon: Users },

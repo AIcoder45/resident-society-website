@@ -14,10 +14,13 @@ export default async function PoliciesPage() {
   const categories = Array.from(new Set(policies.map((p) => p.category || "Other").filter(Boolean)));
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
       <Breadcrumb items={[{ label: "Policies" }]} />
 
-      <Section title="Policies & Documents" subtitle="Community policies, rules, and regulations">
+      <Section 
+        title="Policies & Documents" 
+        subtitle="Access community policies, rules, and regulations. Download documents directly."
+      >
         {policies.length > 0 ? (
           <div className="space-y-8">
             {categories.length > 0 ? (
@@ -25,7 +28,12 @@ export default async function PoliciesPage() {
                 const categoryPolicies = policies.filter((p) => (p.category || "Other") === category);
                 return (
                   <div key={category} className="mb-8">
-                    <h2 className="text-xl sm:text-2xl font-bold text-text mb-4">{category}</h2>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl sm:text-2xl font-bold text-text">{category}</h2>
+                      <span className="text-sm text-text-light">
+                        {categoryPolicies.length} {categoryPolicies.length === 1 ? 'policy' : 'policies'}
+                      </span>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 w-full">
                       {categoryPolicies.map((policy) => (
                         <PolicyCard key={policy.id} policy={policy} />
