@@ -98,16 +98,20 @@ export async function fetchStrapi<T>(
         await new Promise(resolve => setTimeout(resolve, delay));
       }
 
-      const response = await fetch(url, {
+      // Build fetch options compatible with static export
+      // During static export, Next.js cannot use 'no-store'
+      // Use revalidate: 0 for fresh data (removed cache: 'no-store' to fix static export)
+      const fetchOptions: RequestInit = {
         headers: {
           "Content-Type": "application/json",
           ...options?.headers,
         },
         ...options,
-        next: { revalidate: 0 }, // Always fetch fresh data, no caching
-        cache: 'no-store', // Prevent browser caching
+        next: { revalidate: 0 }, // Always fetch fresh data
         signal: AbortSignal.timeout(10000), // 10 second timeout
-      });
+      };
+
+      const response = await fetch(url, fetchOptions);
 
       if (process.env.NODE_ENV === "development") {
         console.log("✅ [Strapi] Response status:", response.status, response.statusText);

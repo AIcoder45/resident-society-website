@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Toaster } from "sonner";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileBottomNav } from "./MobileBottomNav";
@@ -34,6 +35,12 @@ export function ClientLayout({ theme, children }: ClientLayoutProps) {
           <OfflineHandler />
         </div>
         <ShareButton variant="floating" />
+        <Toaster 
+          position="top-center" 
+          duration={5000}
+          richColors
+          closeButton
+        />
       </ThemeProvider>
     </ErrorBoundary>
   );

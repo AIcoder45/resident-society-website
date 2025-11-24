@@ -4,6 +4,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, BellOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toastSuccess, toastError } from "@/lib/utils/toast";
 
 interface PushNotificationManagerProps {
   className?: string;
@@ -48,7 +49,7 @@ export function PushNotificationManager({ className }: PushNotificationManagerPr
       // Request notification permission
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
-        alert("Notification permission denied. Please enable notifications in your browser settings.");
+        toastError("Notification permission denied", "Please enable notifications in your browser settings.");
         setIsLoading(false);
         return;
       }
@@ -76,15 +77,14 @@ export function PushNotificationManager({ className }: PushNotificationManagerPr
 
       if (response.ok) {
         setIsSubscribed(true);
-        // Show success message (you can use toast library here)
-        console.log("Push notifications enabled!");
+        toastSuccess("Push notifications enabled!", "You'll now receive important updates.");
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to subscribe");
       }
     } catch (error: any) {
       console.error("Subscription error:", error);
-      alert(`Failed to enable push notifications: ${error.message}`);
+      toastError("Failed to enable push notifications", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -109,14 +109,14 @@ export function PushNotificationManager({ className }: PushNotificationManagerPr
 
         if (response.ok) {
           setIsSubscribed(false);
-          console.log("Push notifications disabled");
+          toastSuccess("Push notifications disabled", "You won't receive push notifications anymore.");
         } else {
           throw new Error("Failed to unsubscribe from server");
         }
       }
     } catch (error: any) {
       console.error("Unsubscribe error:", error);
-      alert(`Failed to disable push notifications: ${error.message}`);
+      toastError("Failed to disable push notifications", error.message);
     } finally {
       setIsLoading(false);
     }
