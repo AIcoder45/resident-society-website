@@ -6,6 +6,7 @@ import { Section } from "@/components/shared/Section";
 import { Separator } from "@/components/ui/separator";
 import { RichTextContent } from "@/components/shared/RichTextContent";
 import { VideoPlayer } from "@/components/shared/VideoPlayer";
+import { PageShareButton } from "@/components/shared/PageShareButton";
 import { getNewsBySlug, getNews } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -57,12 +58,20 @@ export default async function NewsDetailPage({ params }: Props) {
         <Section className="!pt-1 !pb-3 sm:!pt-2 sm:!pb-4">
           <div className="space-y-2">
             <div>
-              <span className="text-[9px] font-semibold text-primary uppercase tracking-wide">
-                {news.category}
-              </span>
-              <h1 className="text-base sm:text-lg md:text-xl font-bold text-text mt-1 mb-1 leading-tight">
-                {news.title}
-              </h1>
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <div className="flex-1">
+                  <span className="text-[9px] font-semibold text-primary uppercase tracking-wide">
+                    {news.category}
+                  </span>
+                  <h1 className="text-base sm:text-lg md:text-xl font-bold text-text mt-1 mb-1 leading-tight">
+                    {news.title}
+                  </h1>
+                </div>
+                <PageShareButton
+                  title={news.title}
+                  description={news.shortDescription}
+                />
+              </div>
               <p className="text-[10px] sm:text-[11px] text-text-light">
                 Published on {formatDate(news.publishedAt, "long")}
               </p>

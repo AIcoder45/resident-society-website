@@ -6,6 +6,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { Separator } from "@/components/ui/separator";
 import { RichTextContent } from "@/components/shared/RichTextContent";
+import { PageShareButton } from "@/components/shared/PageShareButton";
 import { getEventBySlug, getEvents } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -60,14 +61,22 @@ export default async function EventDetailPage({ params }: Props) {
         <Section>
           <div className="space-y-4 sm:space-y-6">
             <div>
-              {isUpcoming && (
-                <span className="inline-block bg-primary text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
-                  Upcoming Event
-                </span>
-              )}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text mb-3 sm:mb-4 leading-tight">
-                {event.title}
-              </h1>
+              <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
+                <div className="flex-1">
+                  {isUpcoming && (
+                    <span className="inline-block bg-primary text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
+                      Upcoming Event
+                    </span>
+                  )}
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text leading-tight">
+                    {event.title}
+                  </h1>
+                </div>
+                <PageShareButton
+                  title={event.title}
+                  description={event.description}
+                />
+              </div>
               <div className="flex flex-col gap-2 sm:gap-3 text-sm sm:text-base text-text-light">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />

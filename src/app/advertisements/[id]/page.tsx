@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RichTextContent } from "@/components/shared/RichTextContent";
+import { PageShareButton } from "@/components/shared/PageShareButton";
 import { getAdvertisementById, getAdvertisements } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -94,9 +95,15 @@ export default async function AdvertisementDetailPage({ params }: Props) {
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text mb-3 sm:mb-4 leading-tight">
-                {advertisement.title}
-              </h1>
+              <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text leading-tight flex-1">
+                  {advertisement.title}
+                </h1>
+                <PageShareButton
+                  title={advertisement.title}
+                  description={advertisement.description}
+                />
+              </div>
 
               {advertisement.businessName && (
                 <p className="text-base sm:text-lg font-semibold text-primary mb-2">
