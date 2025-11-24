@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RichTextContent } from "@/components/shared/RichTextContent";
+import { PageShareButton } from "@/components/shared/PageShareButton";
 import { getPolicyById, getPolicyBySlug, getPolicies } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -147,9 +148,15 @@ export default async function PolicyDetailPage({ params }: Props) {
                 </div>
               )}
 
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-text leading-tight">
-                {policy.title}
-              </h1>
+              <div className="flex items-start justify-between gap-2">
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-text leading-tight flex-1">
+                  {policy.title}
+                </h1>
+                <PageShareButton
+                  title={policy.title}
+                  description={policy.description}
+                />
+              </div>
 
               {policy.updatedAt && (
                 <div className="flex items-center gap-1.5 text-xs sm:text-sm text-text-light">
