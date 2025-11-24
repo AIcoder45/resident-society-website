@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
-import { ThemeProvider } from "@/components/shared/ThemeProvider";
+import { ClientLayout } from "@/components/layout/ClientLayout";
 import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegistration";
-import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
-import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
-import { OfflineHandler } from "@/components/shared/OfflineHandler";
-import { ShareButton } from "@/components/shared/ShareButton";
+import { MaintenancePage } from "@/components/shared/MaintenancePage";
 import { getTheme } from "@/lib/api";
+import { StrapiApiError } from "@/lib/strapi";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+// Force dynamic rendering - always fetch fresh content
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Greenwood City Block C - Building Community Together",
@@ -27,8 +26,13 @@ export const metadata: Metadata = {
   // Explicitly setting it ensures proper PWA installation
   manifest: "/manifest.json",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/logo.png", sizes: "192x192", type: "image/png" },
+      { url: "/logo.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/logo.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 
@@ -37,29 +41,45 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch theme data from Strapi
-  const theme = await getTheme();
+  // Fetch theme data from Strapi with error handling
+  let theme = null;
+  let showMaintenance = false;
+
+  try {
+    theme = await getTheme();
+  } catch (error) {
+    // Check if it's a StrapiApiError (API connection failure after retries)
+    if (error instanceof StrapiApiError) {
+      console.error("❌ [Layout] Strapi API unavailable after retries:", error);
+      showMaintenance = true;
+    } else {
+      // For other errors, log but don't show maintenance page
+      console.error("❌ [Layout] Error fetching theme:", error);
+    }
+  }
 
   // Update theme color for metadata
   const themeColor = theme?.themeColor || "#2F855A";
+
+  // If API is unavailable, show maintenance page
+  if (showMaintenance) {
+    return (
+      <html lang="en">
+        <body className={`${inter.variable} font-sans antialiased`}>
+          <ServiceWorkerRegistration />
+          <MaintenancePage />
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
         <ServiceWorkerRegistration />
-        <ErrorBoundary>
-          <ThemeProvider theme={theme}>
-        <div className="flex min-h-screen flex-col">
-          <Header />
-              <main className="flex-1 pb-16 lg:pb-0">{children}</main>
-          <Footer />
-              <MobileBottomNav />
-              <PWAInstallPrompt />
-              <OfflineHandler />
-        </div>
-        <ShareButton variant="floating" />
-          </ThemeProvider>
-        </ErrorBoundary>
+        <ClientLayout theme={theme}>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

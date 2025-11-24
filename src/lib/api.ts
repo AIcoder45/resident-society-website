@@ -12,8 +12,9 @@ import type {
   Homepage,
   Theme,
   ServiceProvider,
+  VisionMission,
 } from "@/types";
-import { fetchStrapi, getStrapiImageUrl as getStrapiImageUrlUtil } from "@/lib/strapi";
+import { fetchStrapi, getStrapiImageUrl as getStrapiImageUrlUtil, StrapiApiError } from "@/lib/strapi";
 
 /**
  * API utility functions for fetching content
@@ -757,6 +758,7 @@ export async function getPolicies(): Promise<Policy[]> {
 
         return {
           id: policyId,
+          slug: itemData.slug || item.slug || undefined,
           title: itemData.title || "Untitled Policy",
           description: itemData.description || null,
           category: itemData.category || null,
@@ -843,19 +845,38 @@ export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
       const itemData = item.attributes ? item.attributes : item;
       const itemId = item.id || "";
 
-      // Extract documents array
-      const documentsData = itemData.documents || [];
+      // Extract documents array - check both itemData.documents and item.documents
+      const documentsData = itemData.documents || item.documents || [];
       const documents: PolicyDocument[] = [];
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("📄 [getPolicyBySlug] Documents data:", {
+          hasItemDataDocuments: !!itemData.documents,
+          hasItemDocuments: !!item.documents,
+          documentsCount: documentsData.length,
+          documentsStructure: documentsData.length > 0 ? Object.keys(documentsData[0]) : [],
+        });
+      }
 
       if (Array.isArray(documentsData) && documentsData.length > 0) {
         documents.push(...documentsData.map((doc: any) => {
           // Extract file URL - handle multiple structures:
           // Strapi v4: file.data.attributes.url
-          // Strapi v5: file.url
+          // Strapi v5 flat: file.url (direct object)
           // Direct: file.url (string)
           let fileUrl = "";
           let fileSize: number | undefined = undefined;
           let fileMime: string | undefined = undefined;
+
+          if (process.env.NODE_ENV === "development") {
+            console.log("📄 [getPolicyBySlug] Processing document:", {
+              docId: doc.id,
+              docName: doc.documentName,
+              hasFile: !!doc.file,
+              fileType: typeof doc.file,
+              fileKeys: doc.file ? Object.keys(doc.file) : [],
+            });
+          }
 
           // Priority 1: Strapi v4 nested structure - file.data.attributes.url
           if (doc.file?.data?.attributes?.url) {
@@ -866,7 +887,7 @@ export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
             fileSize = doc.file.data.attributes.size;
             fileMime = doc.file.data.attributes.mime;
           }
-          // Priority 2: Strapi v5 flat structure - file.url
+          // Priority 2: Strapi v5 flat structure - file.url (direct object)
           else if (doc.file?.url) {
             const url = doc.file.url as string;
             fileUrl = url.startsWith("http")
@@ -882,6 +903,16 @@ export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
               : `${getStrapiUrl()}${doc.file.startsWith("/") ? "" : "/"}${doc.file}`;
           }
 
+          if (process.env.NODE_ENV === "development") {
+            console.log("📄 [getPolicyBySlug] Extracted file:", {
+              docId: doc.id,
+              fileUrl: fileUrl.substring(0, 80),
+              hasUrl: !!fileUrl,
+              fileSize,
+              fileMime,
+            });
+          }
+
           return {
             id: doc.id?.toString() || "",
             documentName: doc.documentName || "Document",
@@ -892,11 +923,24 @@ export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
         }).filter((doc: PolicyDocument) => doc.file && doc.file.length > 0));
       }
 
+      if (process.env.NODE_ENV === "development") {
+        console.log("📄 [getPolicyBySlug] Final documents:", {
+          totalDocuments: documents.length,
+          documents: documents.map(d => ({
+            id: d.id,
+            name: d.documentName,
+            hasFile: !!d.file,
+            fileUrl: d.file?.substring(0, 60),
+          })),
+        });
+      }
+
       // Ensure we always have a valid ID
       const policyId = itemId != null ? String(itemId) : "";
 
       const policy = {
         id: policyId,
+        slug: itemData.slug || item.slug || slug,
         title: itemData.title || "Untitled Policy",
         description: itemData.description || null,
         category: itemData.category || null,
@@ -907,6 +951,7 @@ export async function getPolicyBySlug(slug: string): Promise<Policy | null> {
       if (process.env.NODE_ENV === "development") {
         console.log("✅ [getPolicyBySlug] Policy extracted:", {
           id: policy.id,
+          slug: policy.slug,
           title: policy.title,
           documentsCount: policy.documents?.length || 0,
         });
@@ -1004,19 +1049,38 @@ export async function getPolicyById(id: string): Promise<Policy | null> {
         });
       }
 
-      // Extract documents array
-      const documentsData = item.documents || [];
+      // Extract documents array - check both item.documents and response.data.documents
+      const documentsData = item.documents || response.data.documents || [];
       const documents: PolicyDocument[] = [];
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("📄 [getPolicyById] Documents data:", {
+          hasItemDocuments: !!item.documents,
+          hasDataDocuments: !!response.data.documents,
+          documentsCount: documentsData.length,
+          documentsStructure: documentsData.length > 0 ? Object.keys(documentsData[0]) : [],
+        });
+      }
 
       if (Array.isArray(documentsData) && documentsData.length > 0) {
         documents.push(...documentsData.map((doc: any) => {
           // Extract file URL - handle multiple structures:
           // Strapi v4: file.data.attributes.url
-          // Strapi v5: file.url
+          // Strapi v5 flat: file.url (direct object)
           // Direct: file.url (string)
           let fileUrl = "";
           let fileSize: number | undefined = undefined;
           let fileMime: string | undefined = undefined;
+
+          if (process.env.NODE_ENV === "development") {
+            console.log("📄 [getPolicyById] Processing document:", {
+              docId: doc.id,
+              docName: doc.documentName,
+              hasFile: !!doc.file,
+              fileType: typeof doc.file,
+              fileKeys: doc.file ? Object.keys(doc.file) : [],
+            });
+          }
 
           // Priority 1: Strapi v4 nested structure - file.data.attributes.url
           if (doc.file?.data?.attributes?.url) {
@@ -1027,7 +1091,7 @@ export async function getPolicyById(id: string): Promise<Policy | null> {
             fileSize = doc.file.data.attributes.size;
             fileMime = doc.file.data.attributes.mime;
           }
-          // Priority 2: Strapi v5 flat structure - file.url
+          // Priority 2: Strapi v5 flat structure - file.url (direct object)
           else if (doc.file?.url) {
             const url = doc.file.url as string;
             fileUrl = url.startsWith("http")
@@ -1043,6 +1107,16 @@ export async function getPolicyById(id: string): Promise<Policy | null> {
               : `${getStrapiUrl()}${doc.file.startsWith("/") ? "" : "/"}${doc.file}`;
           }
 
+          if (process.env.NODE_ENV === "development") {
+            console.log("📄 [getPolicyById] Extracted file:", {
+              docId: doc.id,
+              fileUrl: fileUrl.substring(0, 80),
+              hasUrl: !!fileUrl,
+              fileSize,
+              fileMime,
+            });
+          }
+
           return {
             id: doc.id?.toString() || "",
             documentName: doc.documentName || "Document",
@@ -1053,11 +1127,24 @@ export async function getPolicyById(id: string): Promise<Policy | null> {
         }).filter((doc: PolicyDocument) => doc.file && doc.file.length > 0));
       }
 
+      if (process.env.NODE_ENV === "development") {
+        console.log("📄 [getPolicyById] Final documents:", {
+          totalDocuments: documents.length,
+          documents: documents.map(d => ({
+            id: d.id,
+            name: d.documentName,
+            hasFile: !!d.file,
+            fileUrl: d.file?.substring(0, 60),
+          })),
+        });
+      }
+
       // Ensure we always have a valid ID
       const policyId = itemId != null ? String(itemId) : id;
 
       const policy = {
         id: policyId,
+        slug: item.slug || response.data.slug || undefined,
         title: item.title || "Untitled Policy",
         description: item.description || null,
         category: item.category || null,
@@ -1144,22 +1231,20 @@ export async function getContactPageData(): Promise<ContactPageData | null> {
         pageSubtitle: contactData.pageSubtitle || response.data.pageSubtitle || null,
         phoneNumber: contactData.phoneNumber || response.data.phoneNumber || undefined,
         emailAddress: contactData.emailAddress || response.data.emailAddress || undefined,
-        streetAddress: contactData.streetAddress || response.data.streetAddress || undefined,
-        city: contactData.city || response.data.city || undefined,
-        state: contactData.state || response.data.state || undefined,
-        zipCode: contactData.zipCode || response.data.zipCode || undefined,
+        address: contactData.address || response.data.address || undefined,
         officeHours: contactData.officeHours || response.data.officeHours || undefined,
+        messageSectionTitle: contactData.messageSectionTitle || response.data.messageSectionTitle || null,
         generalInquiryText: contactData.generalInquiryText || response.data.generalInquiryText || null,
         urgentMattersText: contactData.urgentMattersText || response.data.urgentMattersText || null,
       };
 
       if (process.env.NODE_ENV === "development") {
-        console.log(`✅ Successfully fetched contact page data from Strapi`);
+        console.log(`✅ Successfully fetched contact page data from Bemo CMS`);
         console.log("Contact data:", {
           pageTitle: contactPageData.pageTitle,
           hasPhone: !!contactPageData.phoneNumber,
           hasEmail: !!contactPageData.emailAddress,
-          hasAddress: !!(contactPageData.streetAddress || contactPageData.city),
+          hasAddress: !!contactPageData.address,
         });
       }
 
@@ -1253,6 +1338,69 @@ export async function getHomepage(): Promise<Homepage | null> {
   } else {
     if (process.env.NODE_ENV === "development") {
       console.warn("⚠️ USE_STRAPI is false, using default homepage content");
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Fetches vision and mission data
+ * @returns VisionMission data or null if not available
+ */
+export async function getVisionMission(): Promise<VisionMission | null> {
+  if (shouldUseStrapi()) {
+    try {
+      const url = `/api/vision-mission?populate=*`;
+      
+      if (process.env.NODE_ENV === "development") {
+        const strapiUrl = getStrapiUrl();
+        console.log("🔍 Fetching vision-mission data from Strapi:", `${strapiUrl}${url}`);
+      }
+
+      const response = await fetchStrapi<any>(url);
+
+      if (!response?.data) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ No vision-mission data returned from Strapi");
+        }
+        return null;
+      }
+
+      // Handle both Strapi v4 (with attributes) and v5/flat structure
+      const isV4Structure = response.data.attributes !== undefined;
+      const vmData = isV4Structure ? response.data.attributes : response.data;
+
+      // Extract images
+      const visionImageData = isV4Structure 
+        ? vmData.visionImage?.data || vmData.visionImage
+        : response.data.visionImage?.data || response.data.visionImage;
+      
+      const missionImageData = isV4Structure 
+        ? vmData.missionImage?.data || vmData.missionImage
+        : response.data.missionImage?.data || response.data.missionImage;
+
+      const visionImage = getStrapiImageUrlUtil(visionImageData);
+      const missionImage = getStrapiImageUrlUtil(missionImageData);
+
+      const visionMission: VisionMission = {
+        id: response.data.id.toString(),
+        visionTitle: vmData.visionTitle || response.data.visionTitle || "Our Vision",
+        visionContent: vmData.visionContent || response.data.visionContent || "",
+        missionTitle: vmData.missionTitle || response.data.missionTitle || "Our Mission",
+        missionContent: vmData.missionContent || response.data.missionContent || "",
+        visionImage: visionImage || undefined,
+        missionImage: missionImage || undefined,
+      };
+
+      if (process.env.NODE_ENV === "development") {
+        console.log(`✅ Successfully fetched vision-mission data from Strapi`);
+      }
+
+      return visionMission;
+    } catch (error) {
+      console.error("❌ Error fetching vision-mission data from Strapi:", error);
+      return null;
     }
   }
 
@@ -1405,6 +1553,10 @@ export async function getTheme(): Promise<Theme | null> {
       if (error instanceof Error) {
         console.error("Error message:", error.message);
       }
+      // Re-throw StrapiApiError so layout can show maintenance page
+      if (error instanceof StrapiApiError) {
+        throw error;
+      }
       return null;
     }
   } else {
@@ -1455,18 +1607,11 @@ export async function getContactInfo(): Promise<ContactInfo[]> {
   }
 
   // Address
-  const addressParts = [
-    contactData.streetAddress,
-    contactData.city,
-    contactData.state,
-    contactData.zipCode,
-  ].filter(Boolean);
-  
-  if (addressParts.length > 0) {
+  if (contactData.address) {
     contactInfo.push({
       id: `${contactData.id}-address`,
       title: "Address",
-      content: addressParts.join(", "),
+      content: contactData.address,
       link: null,
       icon: "map",
       order: 3,
@@ -1495,7 +1640,7 @@ export async function getContactInfo(): Promise<ContactInfo[]> {
 export async function getRWAMembers(): Promise<RWAMember[]> {
   if (shouldUseStrapi()) {
     try {
-      const url = `/api/rwas?populate=*&sort[0]=order:asc`;
+      const url = `/api/rwas?populate=*&sort[0]=sequence:asc`;
       
       if (process.env.NODE_ENV === "development") {
         console.log("🔍 RWA: USE_STRAPI is true");
@@ -1569,17 +1714,26 @@ export async function getRWAMembers(): Promise<RWAMember[]> {
           }
         }
 
+        // Extract sequence field (priority: sequence > order > id)
+        const sequence = memberData.sequence !== undefined 
+          ? memberData.sequence 
+          : (item.sequence !== undefined 
+            ? item.sequence 
+            : (memberData.order !== undefined 
+              ? memberData.order 
+              : (item.order !== undefined ? item.order : parseInt(item.id) || 0)));
+
         return {
           id: item.id.toString(),
           name: memberData.name || item.name || "",
           position: memberData.position || item.position || "",
           photo: photoUrl,
           message: memberData.message || item.message || undefined,
-          order: memberData.order !== undefined ? memberData.order : (item.order !== undefined ? item.order : 0),
+          order: sequence, // Store sequence in order field for compatibility
         };
       });
 
-      // Sort by order if available, otherwise by id
+      // Sort by sequence (stored in order field) if available, otherwise by id
       members.sort((a, b) => {
         if (a.order !== undefined && b.order !== undefined) {
           return a.order - b.order;

@@ -1,8 +1,9 @@
 // Service Worker for PWA
 // This file will be served from /sw.js
+// Version updated to force cache refresh
 
-const CACHE_NAME = 'greenwood-city-v1';
-const RUNTIME_CACHE = 'greenwood-city-runtime-v1';
+const CACHE_NAME = 'greenwood-city-v2';
+const RUNTIME_CACHE = 'greenwood-city-runtime-v2';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -40,7 +41,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - network first, cache fallback
+// Fetch event - network first for HTML, cache first for assets
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
@@ -52,38 +53,91 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
+  const url = new URL(event.request.url);
+  const isHTML = event.request.destination === 'document' || 
+                 url.pathname.endsWith('.html') ||
+                 (!url.pathname.includes('.') && url.pathname !== '/sw.js');
+
+  if (isHTML) {
+    // Network-first strategy for HTML pages - always fetch fresh content
+    event.respondWith(
+      fetch(event.request, {
+        cache: 'no-store', // Don't cache HTML pages
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
-
-        return fetch(event.request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            caches.open(RUNTIME_CACHE)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // Offline fallback - return a basic offline page if available
-            if (event.request.destination === 'document') {
-              return caches.match('/');
+      })
+        .then((response) => {
+          // Return fresh response, don't cache HTML pages
+          return response;
+        })
+        .catch(() => {
+          // No fallback - return error response
+          return new Response('Service Unavailable', { 
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: {
+              'Content-Type': 'text/plain'
             }
           });
-      })
-  );
+        })
+    );
+  } else {
+    // Cache-first strategy for static assets (images, CSS, JS)
+    event.respondWith(
+      caches.match(event.request)
+        .then((cachedResponse) => {
+          if (cachedResponse) {
+            // Return cached version but also update in background
+            fetch(event.request)
+              .then((response) => {
+                if (response && response.status === 200 && response.type === 'basic') {
+                  const responseToCache = response.clone();
+                  caches.open(RUNTIME_CACHE)
+                    .then((cache) => {
+                      cache.put(event.request, responseToCache);
+                    });
+                }
+              })
+              .catch(() => {
+                // Ignore fetch errors for background update
+              });
+            return cachedResponse;
+          }
+
+          // Not in cache, fetch from network
+          return fetch(event.request)
+            .then((response) => {
+              // Don't cache non-successful responses
+              if (!response || response.status !== 200 || response.type !== 'basic') {
+                return response;
+              }
+
+              // Clone the response
+              const responseToCache = response.clone();
+
+              caches.open(RUNTIME_CACHE)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                });
+
+              return response;
+            })
+            .catch(() => {
+              // Network failed and not in cache - return error
+              return new Response('Service Unavailable', { 
+                status: 503,
+                statusText: 'Service Unavailable',
+                headers: {
+                  'Content-Type': 'text/plain'
+                }
+              });
+            });
+        })
+    );
+  }
 });
 
 // Push event - handle incoming push notifications

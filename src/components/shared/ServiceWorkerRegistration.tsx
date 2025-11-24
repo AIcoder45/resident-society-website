@@ -32,11 +32,18 @@ export function ServiceWorkerRegistration() {
             if (newWorker) {
               newWorker.addEventListener("statechange", () => {
                 if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                  console.log("🔄 New service worker available");
+                  console.log("🔄 New service worker available - reloading page");
+                  // Force reload when new service worker is ready
+                  window.location.reload();
                 }
               });
             }
           });
+
+          // Check for updates every 60 seconds
+          setInterval(() => {
+            registration.update();
+          }, 60000);
 
           // Log service worker state changes
           if (registration.installing) {

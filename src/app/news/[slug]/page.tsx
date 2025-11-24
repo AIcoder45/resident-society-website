@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!news) {
     return {
-      title: "News Not Found",
+      title: "Society's Update Not Found",
     };
   }
 
@@ -48,7 +48,7 @@ export default async function NewsDetailPage({ params }: Props) {
     <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
       <Breadcrumb
         items={[
-          { label: "News", href: "/news" },
+          { label: "Society's Updates", href: "/news" },
           { label: news.title },
         ]}
       />

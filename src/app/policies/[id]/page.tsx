@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RichTextContent } from "@/components/shared/RichTextContent";
-import { getPolicyById, getPolicies } from "@/lib/api";
+import { getPolicyById, getPolicyBySlug, getPolicies } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
 // Get file icon based on file extension
@@ -58,13 +58,14 @@ type Props = {
 export async function generateStaticParams() {
   const policies = await getPolicies();
   return policies.map((policy) => ({
-    id: policy.id,
+    id: policy.slug || policy.id,
   }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const policy = await getPolicyById(id);
+  // Try slug first, then fallback to ID
+  const policy = await getPolicyBySlug(id) || await getPolicyById(id);
 
   if (!policy) {
     return {
@@ -82,10 +83,11 @@ export default async function PolicyDetailPage({ params }: Props) {
   const { id } = await params;
   
   if (process.env.NODE_ENV === "development") {
-    console.log("🔍 [Policy Detail Page] Requested ID:", id);
+    console.log("🔍 [Policy Detail Page] Requested identifier:", id);
   }
 
-  const policy = await getPolicyById(id);
+  // Try slug first (most common), then fallback to ID
+  const policy = await getPolicyBySlug(id) || await getPolicyById(id);
 
   if (!policy) {
     if (process.env.NODE_ENV === "development") {
@@ -111,7 +113,7 @@ export default async function PolicyDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+    <div className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-5 md:px-6 lg:px-8">
       <Breadcrumb
         items={[
           { label: "Policies", href: "/policies" },
@@ -120,140 +122,125 @@ export default async function PolicyDetailPage({ params }: Props) {
       />
 
       <article>
-        <Section className="!pt-1 !pb-3 sm:!pt-2 sm:!pb-4">
-          <div className="space-y-3 sm:space-y-4">
-            {/* Header Section */}
-            <div className="space-y-2 sm:space-y-3">
-              <Button asChild variant="ghost" size="sm" className="text-xs sm:text-sm -ml-2 sm:-ml-3">
-                <Link href="/policies">
-                  <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
-                  Back to Policies
+        <Section className="!pt-2 !pb-4 sm:!pt-3 sm:!pb-5">
+          <div className="space-y-4 sm:space-y-5">
+            {/* Header Section - Mobile Optimized */}
+            <div className="space-y-3">
+              <Button 
+                asChild 
+                variant="ghost" 
+                size="sm" 
+                className="text-xs sm:text-sm -ml-1 sm:-ml-2 h-9 sm:h-10 px-2 sm:px-3 touch-manipulation"
+              >
+                <Link href="/policies" className="flex items-center">
+                  <ArrowLeft className="h-4 w-4 sm:h-4 sm:w-4 mr-1.5" />
+                  <span>Back</span>
                 </Link>
               </Button>
 
               {policy.category && (
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                  <span className="text-[9px] sm:text-xs font-semibold text-primary uppercase tracking-wide">
+                  <span className="text-[10px] sm:text-xs font-semibold text-primary uppercase tracking-wide">
                     {policy.category}
                   </span>
                 </div>
               )}
 
-              <h1 className="text-base sm:text-lg md:text-xl font-bold text-text leading-tight">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-text leading-tight">
                 {policy.title}
               </h1>
 
               {policy.updatedAt && (
-                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-text-light">
-                  <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  <span>Last updated: {formatDate(policy.updatedAt, "long")}</span>
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm text-text-light">
+                  <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <span>Updated {formatDate(policy.updatedAt, "short")}</span>
                 </div>
               )}
             </div>
 
-            <Separator className="my-2 sm:my-3" />
+            <Separator className="my-3 sm:my-4" />
 
-            {/* Description */}
+            {/* Description - Mobile Optimized */}
             {policy.description && (
-              <div className="prose prose-sm sm:prose-base max-w-none">
+              <div className="prose prose-sm sm:prose-base max-w-none text-text [&_p]:text-sm [&_p]:sm:text-base [&_p]:leading-relaxed [&_p]:mb-3">
                 <RichTextContent content={policy.description} />
               </div>
             )}
 
-            {/* Documents Section */}
-            <Separator className="my-2 sm:my-3" />
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                <h2 className="text-base sm:text-lg md:text-xl font-bold text-text">
+            {!policy.description && (
+              <div className="text-sm sm:text-base text-text-light italic py-2">
+                No description available for this policy.
+              </div>
+            )}
+
+            {/* Documents Section - Mobile Optimized */}
+            <Separator className="my-3 sm:my-4" />
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 flex-wrap">
+                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-text">
                   Documents
                 </h2>
                 {policy.documents && policy.documents.length > 0 && (
-                  <span className="text-xs sm:text-sm text-text-light">
-                    ({policy.documents.length} {policy.documents.length === 1 ? 'document' : 'documents'})
+                  <span className="text-xs sm:text-sm text-text-light bg-gray-100 px-2 py-1 rounded-full">
+                    {policy.documents.length} {policy.documents.length === 1 ? 'file' : 'files'}
                   </span>
                 )}
               </div>
 
               {policy.documents && policy.documents.length > 0 ? (
-                <div className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                   {policy.documents.map((doc, index) => {
                     const FileIcon = getFileIcon(doc.file || "");
                     const fileTypeLabel = getFileTypeLabel(doc.file || "");
                     const hasFile = doc.file && doc.file.length > 0;
                     
                     return (
-                      <Card key={doc.id || index} className="group hover:shadow-lg transition-all duration-200 border-2 hover:border-primary/30">
-                        <CardContent className="p-4 sm:p-5">
-                          <div className="flex items-start gap-4 sm:gap-5">
-                            <div className="flex-shrink-0">
-                              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                <FileIcon className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
-                              </div>
+                      <Card key={doc.id || index} className="border border-gray-200 hover:border-primary/40 transition-all duration-200 shadow-sm hover:shadow-md flex flex-col">
+                        <CardContent className="p-2 sm:p-2.5 flex flex-col flex-1">
+                          {/* Icon and Title */}
+                          <div className="flex flex-col items-center text-center mb-2">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded bg-primary/10 flex items-center justify-center mb-1.5">
+                              <FileIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-sm sm:text-base font-semibold text-text mb-2 leading-tight">
-                                {doc.documentName}
-                              </h4>
-                              
-                              {hasFile && (
-                                <>
-                                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                                    <span className="text-[10px] sm:text-xs text-text-light bg-gray-100 px-2 py-1 rounded">
-                                      {fileTypeLabel}
-                                    </span>
-                                    {doc.size && (
-                                      <span className="text-[10px] sm:text-xs text-text-light bg-gray-100 px-2 py-1 rounded">
-                                        {(doc.size).toFixed(2)} MB
-                                      </span>
-                                    )}
-                                  </div>
-                                  
-                                  <p className="text-[10px] sm:text-xs text-text-light mb-3 font-mono break-all line-clamp-1 bg-gray-50 p-2 rounded">
-                                    {doc.file.split('/').pop() || doc.file}
-                                  </p>
-                                </>
-                              )}
-
-                              {hasFile ? (
-                                <div className="flex items-center gap-3 flex-wrap">
-                                  <a
-                                    href={doc.file}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    download
-                                    className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-none text-xs sm:text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
-                                  >
-                                    <Download className="h-4 w-4 sm:h-5 sm:w-5" />
-                                    <span>Download Document</span>
-                                  </a>
-                                  <a
-                                    href={doc.file}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 border-2 border-primary text-primary hover:bg-primary/10 px-4 py-2 rounded-none text-xs sm:text-sm font-medium transition-colors duration-200"
-                                  >
-                                    <span>Open in New Tab</span>
-                                  </a>
-                                </div>
-                              ) : (
-                                <div className="flex items-center gap-2 text-[10px] sm:text-xs text-text-light italic bg-yellow-50 border border-yellow-200 px-3 py-2 rounded">
-                                  <FileText className="h-4 w-4" />
-                                  <span>File not available for download</span>
-                                </div>
-                              )}
-                            </div>
+                            <h4 className="text-xs sm:text-sm font-semibold text-text leading-tight line-clamp-2 mb-1">
+                              {doc.documentName}
+                            </h4>
+                            {hasFile && (
+                              <span className="text-[9px] sm:text-[10px] text-text-light bg-gray-100 px-1.5 py-0.5 rounded">
+                                {fileTypeLabel}
+                              </span>
+                            )}
                           </div>
+
+                          {/* Download Button - Fixed to stay inside card */}
+                          {hasFile ? (
+                            <a
+                              href={doc.file}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download={doc.documentName || undefined}
+                              className="mt-auto flex items-center justify-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-2 py-1.5 rounded text-xs font-medium transition-colors duration-200 shadow-sm hover:shadow-md touch-manipulation w-full"
+                            >
+                              <Download className="h-3.5 w-3.5" />
+                              <span>Download</span>
+                            </a>
+                          ) : (
+                            <div className="mt-auto flex items-center justify-center gap-1.5 text-[10px] text-text-light italic bg-yellow-50 border border-yellow-200 px-2 py-1 rounded">
+                              <FileText className="h-3 w-3 flex-shrink-0" />
+                              <span>Not available</span>
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     );
                   })}
                 </div>
               ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <FileText className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-sm sm:text-base text-text-light font-medium">
+                <div className="text-center py-8 sm:py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <FileText className="h-10 w-10 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                  <p className="text-sm sm:text-base text-text-light font-medium px-4">
                     No documents available for this policy.
                   </p>
                 </div>

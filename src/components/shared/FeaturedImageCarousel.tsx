@@ -103,9 +103,9 @@ export function FeaturedImageCarousel({
   const currentImage = images[currentIndex];
 
   return (
-    <div className={cn("relative w-full overflow-hidden flex justify-center z-0 lg:mt-[10px]", className)}>
+    <div className={cn("relative w-full overflow-hidden flex justify-center z-0 lg:mt-[8px]", className)}>
       <div 
-        className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/9] w-full lg:w-[54%] lg:aspect-[16/5.4]"
+        className="relative aspect-[16/11] sm:aspect-[21/11] md:aspect-[24/11] w-full lg:w-[54%] lg:aspect-[16/6.5]"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}

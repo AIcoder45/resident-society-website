@@ -59,6 +59,7 @@ export interface PolicyDocument {
 
 export interface Policy {
   id: string;
+  slug?: string;
   title: string;
   description?: string | null;
   category?: string | null;
@@ -81,11 +82,9 @@ export interface ContactPageData {
   pageSubtitle?: string | null;
   phoneNumber?: string;
   emailAddress?: string;
-  streetAddress?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
+  address?: string;
   officeHours?: string;
+  messageSectionTitle?: string | null;
   generalInquiryText?: string | null;
   urgentMattersText?: string | null;
 }
@@ -185,4 +184,14 @@ export interface ServiceProvider {
   order?: number; // Display order
   image?: string; // Service provider image URL
   createdAt: string;
+}
+
+export interface VisionMission {
+  id: string;
+  visionTitle: string;
+  visionContent: string; // HTML content
+  missionTitle?: string; // Optional - not displayed currently
+  missionContent?: string; // Optional - not displayed currently
+  visionImage?: string;
+  missionImage?: string; // Optional - not displayed currently
 }

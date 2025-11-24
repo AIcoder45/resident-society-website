@@ -21,92 +21,39 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
   // Build icons array first
   const icons: MetadataRoute.Manifest["icons"] = [];
 
-  // Add icons - prefer favicon, fallback to logo from theme, then logo.png
+  // Determine icon source - prefer favicon, fallback to logo from theme, then logo.png
   // PWA requires both 192x192 and 512x512 icons for installation
-  if (theme?.favicon) {
-    icons.push(
-      {
-        src: theme.favicon,
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: theme.favicon,
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "maskable",
-      },
-      {
-        src: theme.favicon,
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: theme.favicon,
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "maskable",
-      }
-    );
-  } else if (theme?.logo) {
-    // Fallback to logo from theme if favicon not available
-    icons.push(
-      {
-        src: theme.logo,
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: theme.logo,
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "maskable",
-      },
-      {
-        src: theme.logo,
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: theme.logo,
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "maskable",
-      }
-    );
-  } else {
-    // Final fallback to public/logo.png - ensure this always exists
-    icons.push(
-      {
-        src: "/logo.png",
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: "/logo.png",
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "maskable",
-      },
-      {
-        src: "/logo.png",
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: "/logo.png",
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "maskable",
-      }
-    );
-  }
+  // Note: Browser will scale images, but having proper sizes helps with installation
+  const iconSrc = theme?.favicon || theme?.logo || "/logo.png";
+
+  // Add icons with proper sizes for PWA installation
+  // Using the same source for both sizes - browser will scale appropriately
+  icons.push(
+    {
+      src: iconSrc,
+      sizes: "192x192",
+      type: "image/png",
+      purpose: "any",
+    },
+    {
+      src: iconSrc,
+      sizes: "192x192",
+      type: "image/png",
+      purpose: "maskable",
+    },
+    {
+      src: iconSrc,
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "any",
+    },
+    {
+      src: iconSrc,
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "maskable",
+    }
+  );
 
   const manifest: MetadataRoute.Manifest = {
     name: theme?.siteName || "Greenwood City Block C",

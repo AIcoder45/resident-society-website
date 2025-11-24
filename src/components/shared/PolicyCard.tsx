@@ -19,10 +19,13 @@ export interface PolicyCardProps {
  * Displays a policy with its documents and download buttons
  */
 export function PolicyCard({ policy, className }: PolicyCardProps) {
-  const hasDocuments = policy.documents && policy.documents.length > 0;
-  // Ensure we have a valid ID for the URL
-  const policyId = policy.id && policy.id !== "" ? policy.id : "unknown";
-  const policyUrl = `/policies/${policyId}`;
+  const hasDocuments = policy.documents && policy.documents.length > 0 && policy.documents.some(doc => doc.file && doc.file.length > 0);
+  // Use slug if available, otherwise use id
+  const policyIdentifier = policy.slug || (policy.id && policy.id !== "" ? policy.id : "unknown");
+  const policyUrl = `/policies/${policyIdentifier}`;
+  
+  // Get first document with valid file URL
+  const firstDocument = hasDocuments ? policy.documents!.find(doc => doc.file && doc.file.length > 0) : null;
 
   return (
     <motion.div
@@ -32,86 +35,71 @@ export function PolicyCard({ policy, className }: PolicyCardProps) {
       transition={{ duration: 0.3 }}
       className={cn("w-full", className)}
     >
-      <Card className="h-full w-full overflow-hidden border border-gray-200/60 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group bg-white relative cursor-pointer">
-        <Link 
-          href={policyUrl} 
-          className="absolute inset-0 z-0 touch-manipulation tap-feedback" 
-          aria-label={`View details for ${policy.title}`}
-          style={{ pointerEvents: 'auto' }}
-        />
-        <CardHeader className="pb-3 relative z-10">
-          {policy.category && (
-            <span className="text-[9px] sm:text-[10px] font-semibold text-primary uppercase tracking-wider mb-1 block">
-              {policy.category}
-            </span>
-          )}
-          <CardTitle className="text-sm sm:text-base font-semibold text-text leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-            {policy.title}
-          </CardTitle>
-          {policy.description && (
-            <p className="text-[10px] sm:text-xs text-text-light line-clamp-2 mt-1">
-              {policy.description.replace(/[#*]/g, "").substring(0, 100)}
-            </p>
-          )}
-          {policy.updatedAt && (
-            <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-text-light mt-2">
-              <Calendar className="h-3 w-3" />
-              <span>Updated {formatDate(policy.updatedAt, "short")}</span>
-            </div>
-          )}
+      <Card className="h-full w-full overflow-hidden border border-gray-200/60 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group bg-white relative">
+        <CardHeader className="pb-3">
+          <Link 
+            href={policyUrl} 
+            className="block"
+          >
+            {policy.category && (
+              <span className="text-[9px] sm:text-[10px] font-semibold text-primary uppercase tracking-wider mb-1 block">
+                {policy.category}
+              </span>
+            )}
+            <CardTitle className="text-sm sm:text-base font-semibold text-text leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+              {policy.title}
+            </CardTitle>
+            {policy.description && (
+              <p className="text-[10px] sm:text-xs text-text-light line-clamp-2 mt-1">
+                {policy.description.replace(/[#*]/g, "").substring(0, 100)}
+              </p>
+            )}
+            {policy.updatedAt && (
+              <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-text-light mt-2">
+                <Calendar className="h-3 w-3" />
+                <span>Updated {formatDate(policy.updatedAt, "short")}</span>
+              </div>
+            )}
+          </Link>
         </CardHeader>
 
-        {hasDocuments && (
-          <CardContent className="pt-0 relative z-10">
-            <div className="space-y-2">
-              <h4 className="text-[10px] sm:text-xs font-semibold text-text mb-2">
-                Documents ({policy.documents!.length})
-              </h4>
-              {policy.documents!.slice(0, 2).map((doc) => (
-                <div
-                  key={doc.id}
-                  className="flex items-center justify-between gap-2 p-2 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <FileText className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span className="text-[10px] sm:text-xs text-text truncate">
-                      {doc.documentName}
-                    </span>
-                  </div>
-                  {doc.file && (
-                    <a
-                      href={doc.file}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      onClick={(e) => e.stopPropagation()}
-                      className="relative z-20 inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-[9px] sm:text-[10px] font-medium transition-colors duration-200 flex-shrink-0 touch-manipulation"
-                    >
-                      <Download className="h-3 w-3" />
-                      <span>Download</span>
-                    </a>
-                  )}
+        <CardContent className="pt-0">
+          {hasDocuments && firstDocument ? (
+            <div className="flex items-center justify-between gap-2 pt-2">
+              <Link 
+                href={policyUrl}
+                className="flex items-center gap-2 flex-1 min-w-0 hover:text-primary transition-colors"
+              >
+                <FileText className="h-4 w-4 text-primary flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] sm:text-xs text-text-light">
+                    {policy.documents!.filter(doc => doc.file && doc.file.length > 0).length} {policy.documents!.filter(doc => doc.file && doc.file.length > 0).length === 1 ? 'document' : 'documents'} available
+                  </span>
                 </div>
-              ))}
-              {policy.documents!.length > 2 && (
-                <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-primary font-medium pt-1">
-                  <span>+{policy.documents!.length - 2} more document{policy.documents!.length - 2 > 1 ? 's' : ''}</span>
-                  <ArrowRight className="h-3 w-3" />
-                </div>
-              )}
+              </Link>
+              <a
+                href={firstDocument.file}
+                target="_blank"
+                rel="noopener noreferrer"
+                download={firstDocument.documentName || undefined}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-[10px] sm:text-xs font-medium transition-colors duration-200 flex-shrink-0 touch-manipulation shadow-sm hover:shadow-md"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Download</span>
+              </a>
             </div>
-          </CardContent>
-        )}
-
-        {!hasDocuments && (
-          <CardContent className="pt-0 relative z-10">
-            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-primary font-medium">
-              <span>View Details</span>
-              <ArrowRight className="h-3 w-3" />
-            </div>
-          </CardContent>
-        )}
+          ) : (
+            <Link href={policyUrl} className="block">
+              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-primary font-medium pt-2 hover:text-primary/80 transition-colors">
+                <span>View Details</span>
+                <ArrowRight className="h-3 w-3" />
+              </div>
+            </Link>
+          )}
+        </CardContent>
       </Card>
     </motion.div>
   );
