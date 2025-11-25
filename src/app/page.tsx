@@ -49,12 +49,29 @@ export default async function HomePage() {
   // Combine: upcoming first, then past events, limit to 4
   const events = [...upcomingEvents, ...pastEvents].slice(0, 4);
 
-  // Get featured images from latest content
-  const featuredImages = [
-    ...latestNews.filter(item => item.image).slice(0, 2).map(item => ({ src: item.image!, alt: item.title, href: `/news/${item.slug}` })),
-    ...events.filter(event => event.coverImage).slice(0, 2).map(event => ({ src: event.coverImage!, alt: event.title, href: `/events/${event.slug}` })),
-    ...galleryItems.filter(item => item.images && item.images.length > 0).slice(0, 2).map(item => ({ src: item.images[0], alt: item.title || 'Gallery Image', href: '/gallery' })),
-  ].slice(0, 4); // Show max 4 featured images
+  // Get featured images from content with sequence number 1
+  // If no items have sequence === 1, fall back to showing items without sequence filtering
+  const newsWithSequence1 = latestNews.filter(item => item.image && item.sequence === 1);
+  const eventsWithSequence1 = events.filter(event => event.coverImage && event.sequence === 1);
+  
+  // Check if we have any items with sequence === 1
+  const hasSequence1Items = newsWithSequence1.length > 0 || eventsWithSequence1.length > 0;
+  
+  let featuredImages: Array<{ src: string; alt: string; href: string }> = [];
+  
+  if (hasSequence1Items) {
+    // Show only items with sequence === 1
+    featuredImages = [
+      ...newsWithSequence1.map(item => ({ src: item.image!, alt: item.title, href: `/news/${item.slug}` })),
+      ...eventsWithSequence1.map(event => ({ src: event.coverImage!, alt: event.title, href: `/events/${event.slug}` })),
+    ].slice(0, 4);
+  } else {
+    // Fallback: show items without sequence filtering (original behavior)
+    featuredImages = [
+      ...latestNews.filter(item => item.image).slice(0, 2).map(item => ({ src: item.image!, alt: item.title, href: `/news/${item.slug}` })),
+      ...events.filter(event => event.coverImage).slice(0, 2).map(event => ({ src: event.coverImage!, alt: event.title, href: `/events/${event.slug}` })),
+    ].slice(0, 4);
+  }
 
   // Use homepage data from Strapi if available, otherwise use defaults
   const heroWelcomeText = homepage?.heroWelcomeText || "Welcome to";
@@ -76,7 +93,7 @@ export default async function HomePage() {
 
       {/* Featured Images Carousel */}
       {featuredImages.length > 0 && (
-        <div className="w-full px-0 relative z-0">
+        <div className="w-full flex items-center justify-center px-0 relative z-0">
           <FeaturedImageCarousel 
             images={featuredImages} 
             autoPlayInterval={5000}

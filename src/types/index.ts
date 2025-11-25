@@ -14,6 +14,7 @@ export interface News {
   instagramUrl?: string; // Instagram post/reel URL
   category: string;
   publishedAt: string;
+  sequence?: number; // Display sequence for carousel (1 = show in carousel)
 }
 
 export interface Event {
@@ -27,6 +28,8 @@ export interface Event {
   gallery?: string[];
   youtubeUrl?: string;
   instagramUrl?: string;
+  publishedAt: string;
+  sequence?: number; // Display sequence for carousel (1 = show in carousel)
 }
 
 export interface GalleryItem {
@@ -36,6 +39,7 @@ export interface GalleryItem {
   images: string[];
   eventId?: string;
   createdAt: string;
+  publishedAt: string;
   youtubeUrl?: string;
   instagramUrl?: string;
 }

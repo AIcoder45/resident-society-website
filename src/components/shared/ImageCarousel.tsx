@@ -31,20 +31,33 @@ export function ImageCarousel({
   const [currentIndex, setCurrentIndex] = React.useState(initialIndex);
   const [isLoading, setIsLoading] = React.useState(true);
   const [swipeOffset, setSwipeOffset] = React.useState(0);
+  const [direction, setDirection] = React.useState<"left" | "right">("right");
+  const [isHovered, setIsHovered] = React.useState(false);
   const touchStartX = React.useRef<number | null>(null);
   const touchStartY = React.useRef<number | null>(null);
   const isSwiping = React.useRef(false);
   const swipeOffsetRef = React.useRef(0);
 
   const goToNext = React.useCallback(() => {
+    setDirection("right");
     setCurrentIndex((prev) => (prev + 1) % images.length);
     setIsLoading(true);
   }, [images.length]);
 
   const goToPrevious = React.useCallback(() => {
+    setDirection("left");
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
     setIsLoading(true);
   }, [images.length]);
+
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
 
   // Handle keyboard navigation
   React.useEffect(() => {
@@ -107,9 +120,11 @@ export function ImageCarousel({
     if (Math.abs(swipeDistance) > threshold) {
       if (swipeDistance > 0) {
         // Swipe right - go to previous
+        setDirection("left");
         goToPrevious();
       } else {
         // Swipe left - go to next
+        setDirection("right");
         goToNext();
       }
     }
@@ -127,55 +142,107 @@ export function ImageCarousel({
   if (!currentImage) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
+    <div 
+      className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center overflow-hidden"
+      style={{
+        overflow: 'hidden',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Close button */}
-      <button
+      <motion.button
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-colors"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="absolute top-4 right-4 z-20 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-all duration-200 hover:scale-110"
         aria-label="Close"
       >
         <X className="h-6 w-6" />
-      </button>
+      </motion.button>
 
       {/* Image container */}
-      <div className="relative w-full h-full flex items-center justify-center p-4">
+      <div 
+        className="relative w-full h-full flex items-center justify-center p-4 md:p-6 overflow-hidden"
+        style={{
+          maxWidth: '100vw',
+          maxHeight: '100vh',
+          overflow: 'hidden',
+        }}
+      >
         {/* Previous button */}
         {images.length > 1 && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToPrevious}
-            className="absolute left-4 z-10 bg-white/10 hover:bg-white/20 text-white h-12 w-12 rounded-full"
-            aria-label="Previous image"
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ 
+              opacity: isHovered ? 1 : 0.7,
+              x: isHovered ? 0 : -20
+            }}
+            transition={{ duration: 0.2 }}
+            className="absolute left-2 md:left-4 z-20"
           >
-            <ChevronLeft className="h-6 w-6" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={goToPrevious}
+              className="bg-white/10 hover:bg-white/20 text-white h-10 w-10 md:h-14 md:w-14 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110 shadow-lg touch-manipulation"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-5 w-5 md:h-7 md:w-7" />
+            </Button>
+          </motion.div>
         )}
 
         {/* Image */}
         <div 
-          className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center touch-none"
+          className="relative w-full h-full flex items-center justify-center touch-none overflow-hidden"
+          style={{
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            padding: '0',
+            margin: '0',
+            overflow: 'hidden',
+          }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentIndex}
-              initial={{ opacity: 0, scale: 0.9 }}
+              custom={direction}
+              initial={(dir) => ({ 
+                opacity: 0, 
+                x: dir === "right" ? 100 : -100,
+                scale: 0.95
+              })}
               animate={{ 
                 opacity: 1, 
-                scale: 1,
                 x: swipeOffset,
+                scale: 1
               }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              exit={(dir) => ({ 
+                opacity: 0, 
+                x: dir === "right" ? -100 : 100,
+                scale: 0.95
+              })}
               transition={{ 
-                duration: isSwiping.current ? 0 : 0.3,
-                ease: "easeOut"
+                duration: isSwiping.current ? 0 : 0.4,
+                ease: [0.25, 0.46, 0.45, 0.94]
               }}
-              className="relative w-full h-full flex items-center justify-center"
+              className="relative flex items-center justify-center w-full h-full"
               style={{
                 cursor: isSwiping.current ? 'grabbing' : 'grab',
+                maxWidth: 'calc(100vw - 2rem)',
+                maxHeight: 'calc(100vh - 8rem)',
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
               }}
             >
               <Image
@@ -183,13 +250,19 @@ export function ImageCarousel({
                 alt={title ? `${title} - Image ${currentIndex + 1}` : `Gallery image ${currentIndex + 1}`}
                 fill
                 className={cn(
-                  "object-contain select-none",
+                  "object-contain select-none transition-opacity duration-300",
                   isLoading && "opacity-0"
                 )}
-                sizes="(max-width: 768px) 100vw, 90vw"
+                sizes="100vw"
                 priority={currentIndex < 3}
                 onLoad={() => setIsLoading(false)}
                 draggable={false}
+                style={{
+                  objectFit: 'contain',
+                  objectPosition: 'center',
+                  width: '100%',
+                  height: '100%',
+                }}
               />
             </motion.div>
           </AnimatePresence>
@@ -197,22 +270,36 @@ export function ImageCarousel({
 
         {/* Next button */}
         {images.length > 1 && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToNext}
-            className="absolute right-4 z-10 bg-white/10 hover:bg-white/20 text-white h-12 w-12 rounded-full"
-            aria-label="Next image"
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ 
+              opacity: isHovered ? 1 : 0.7,
+              x: isHovered ? 0 : 20
+            }}
+            transition={{ duration: 0.2 }}
+            className="absolute right-2 md:right-4 z-20"
           >
-            <ChevronRight className="h-6 w-6" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={goToNext}
+              className="bg-white/10 hover:bg-white/20 text-white h-10 w-10 md:h-14 md:w-14 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110 shadow-lg touch-manipulation"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-5 w-5 md:h-7 md:w-7" />
+            </Button>
+          </motion.div>
         )}
 
         {/* Image counter */}
         {images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium"
+          >
             {currentIndex + 1} / {images.length}
-          </div>
+          </motion.div>
         )}
 
         {/* Video Platform Buttons - Positioned above thumbnails or at bottom if no thumbnails */}
@@ -252,30 +339,42 @@ export function ImageCarousel({
 
       {/* Thumbnail strip at bottom */}
       {images.length > 1 && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 max-w-4xl overflow-x-auto px-4 pb-2">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setCurrentIndex(index);
-                setIsLoading(true);
-              }}
-              className={cn(
-                "relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0",
-                currentIndex === index
-                  ? "border-primary scale-110"
-                  : "border-transparent opacity-60 hover:opacity-100"
-              )}
-            >
-              <Image
-                src={image}
-                alt={`Thumbnail ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="64px"
-              />
-            </button>
-          ))}
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4 pb-2 overflow-hidden">
+          <div 
+            className="flex gap-2 overflow-x-auto scrollbar-hide px-2 py-2"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            {images.map((image, index) => (
+              <motion.button
+                key={index}
+                onClick={() => {
+                  setDirection(index > currentIndex ? "right" : "left");
+                  setCurrentIndex(index);
+                  setIsLoading(true);
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={cn(
+                  "relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 flex-shrink-0",
+                  currentIndex === index
+                    ? "border-primary scale-110 ring-2 ring-primary/50"
+                    : "border-transparent opacity-60 hover:opacity-100 hover:border-white/30"
+                )}
+              >
+                <Image
+                  src={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-300 hover:scale-110"
+                  sizes="64px"
+                />
+              </motion.button>
+            ))}
+          </div>
         </div>
       )}
     </div>

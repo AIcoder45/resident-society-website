@@ -145,6 +145,12 @@ export async function getNews(limit?: number): Promise<News[]> {
         const youtubeUrl = newsData.youtubeUrl || item.youtubeUrl || undefined;
         const instagramUrl = newsData.instagramUrl || item.instagramUrl || undefined;
 
+        // Extract publishedAt (fallback to publishDate or createdAt if not available)
+        const publishedAt = newsData.publishedAt || newsData.publishDate || newsData.createdAt || item.publishedAt || item.publishDate || item.createdAt;
+
+        // Extract sequence number
+        const sequence = newsData.sequence !== undefined ? newsData.sequence : (item.sequence !== undefined ? item.sequence : undefined);
+
         return {
           id: item.id.toString(),
           title: newsData.title || item.title,
@@ -156,7 +162,8 @@ export async function getNews(limit?: number): Promise<News[]> {
           youtubeUrl: youtubeUrl,
           instagramUrl: instagramUrl,
           category: newsData.category || item.category || "",
-          publishedAt: newsData.publishedAt || item.publishedAt,
+          publishedAt: publishedAt,
+          sequence: sequence,
         };
       });
 
@@ -189,7 +196,13 @@ export async function getNews(limit?: number): Promise<News[]> {
 
   // Fallback to JSON files
   const newsData = await import("@/data/news.json");
-  let news = newsData.default as News[];
+  let news = newsData.default as any[];
+
+  // Ensure sequence is included from JSON data
+  news = news.map((item): News => ({
+    ...item,
+    sequence: item.sequence !== undefined ? item.sequence : undefined,
+  }));
 
   // Sort by published date (newest first)
   news = news.sort(
@@ -264,6 +277,9 @@ export async function getNewsBySlug(slug: string): Promise<News | null> {
       const youtubeUrl = newsData.youtubeUrl || item.youtubeUrl || undefined;
       const instagramUrl = newsData.instagramUrl || item.instagramUrl || undefined;
 
+      // Extract publishedAt (fallback to publishDate or createdAt if not available)
+      const publishedAt = newsData.publishedAt || newsData.publishDate || newsData.createdAt || item.publishedAt || item.publishDate || item.createdAt;
+
       return {
         id: item.id.toString(),
         title: newsData.title || item.title,
@@ -275,7 +291,7 @@ export async function getNewsBySlug(slug: string): Promise<News | null> {
         youtubeUrl: youtubeUrl,
         instagramUrl: instagramUrl,
         category: newsData.category || item.category || "",
-        publishedAt: newsData.publishedAt || item.publishedAt,
+        publishedAt: publishedAt,
       };
     } catch (error) {
       console.error("Error fetching news from Strapi:", error);
@@ -300,8 +316,8 @@ export async function getEvents(
 ): Promise<Event[]> {
   if (shouldUseStrapi()) {
     try {
-      // Sort by event date (upcoming first for better UX)
-      let url = `/api/events?populate=*&sort[0]=eventDate:asc&pagination[pageSize]=100`;
+      // Sort by published date (newest first)
+      let url = `/api/events?populate=*&sort[0]=publishedAt:desc&pagination[pageSize]=100`;
 
       if (upcomingOnly) {
         const now = new Date().toISOString();
@@ -389,6 +405,12 @@ export async function getEvents(
         const youtubeUrl = eventData.youtubeUrl || item.youtubeUrl || undefined;
         const instagramUrl = eventData.instagramUrl || item.instagramUrl || undefined;
 
+        // Extract publishedAt (fallback to publishDate or createdAt if not available)
+        const publishedAt = eventData.publishedAt || eventData.publishDate || eventData.createdAt || item.publishedAt || item.publishDate || item.createdAt;
+
+        // Extract sequence number
+        const sequence = eventData.sequence !== undefined ? eventData.sequence : (item.sequence !== undefined ? item.sequence : undefined);
+
         return {
           id: item.id.toString(),
           title: eventData.title || item.title,
@@ -400,6 +422,8 @@ export async function getEvents(
           gallery: galleryUrls,
           youtubeUrl: youtubeUrl,
           instagramUrl: instagramUrl,
+          publishedAt: publishedAt,
+          sequence: sequence,
         };
       });
 
@@ -425,17 +449,25 @@ export async function getEvents(
 
   // Fallback to JSON files
   const eventsData = await import("@/data/events.json");
-  let events = eventsData.default as Event[];
+  let events = eventsData.default as any[];
+
+  // Ensure publishedAt exists (fallback to createdAt or eventDate)
+  // Also ensure sequence is included
+  events = events.map((event): Event => ({
+    ...event,
+    publishedAt: event.publishedAt || event.publishDate || event.createdAt || event.eventDate,
+    sequence: event.sequence !== undefined ? event.sequence : undefined,
+  }));
 
   if (upcomingOnly) {
     const now = new Date();
     events = events.filter((event) => new Date(event.eventDate) >= now);
   }
 
-  // Sort by event date (upcoming first)
+  // Sort by published date (newest first)
   events = events.sort(
     (a, b) =>
-      new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
 
   return limit ? events.slice(0, limit) : events;
@@ -501,6 +533,9 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
       const youtubeUrl = eventData.youtubeUrl || item.youtubeUrl || undefined;
       const instagramUrl = eventData.instagramUrl || item.instagramUrl || undefined;
 
+      // Extract publishedAt (fallback to publishDate or createdAt if not available)
+      const publishedAt = eventData.publishedAt || eventData.publishDate || eventData.createdAt || item.publishedAt || item.publishDate || item.createdAt;
+
       return {
         id: item.id.toString(),
         title: eventData.title || item.title,
@@ -512,6 +547,7 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
         gallery: galleryUrls,
         youtubeUrl: youtubeUrl,
         instagramUrl: instagramUrl,
+        publishedAt: publishedAt,
       };
     } catch (error) {
       console.error("Error fetching event from Strapi:", error);
@@ -532,7 +568,7 @@ export async function getEventBySlug(slug: string): Promise<Event | null> {
 export async function getGallery(limit?: number): Promise<GalleryItem[]> {
   if (shouldUseStrapi()) {
     try {
-      const url = `/api/galleries?populate=*&sort[0]=createdAt:desc`;
+      const url = `/api/galleries?populate=*&sort[0]=publishedAt:desc`;
       
       if (process.env.NODE_ENV === "development") {
         const strapiUrl = getStrapiUrl();
@@ -577,6 +613,10 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
         const youtubeUrl = galleryData.youtubeUrl || item.youtubeUrl || undefined;
         const instagramUrl = galleryData.instagramUrl || item.instagramUrl || undefined;
 
+        // Extract publishedAt (fallback to publishDate or createdAt if not available)
+        const publishedAt = galleryData.publishedAt || galleryData.publishDate || galleryData.createdAt || item.publishedAt || item.publishDate || item.createdAt;
+        const createdAt = galleryData.createdAt || item.createdAt;
+
         // Debug logging in development
         if (process.env.NODE_ENV === "development" && (youtubeUrl || instagramUrl)) {
           console.log(`Gallery item ${item.id}:`, {
@@ -594,7 +634,8 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
           description: galleryData.description || item.description || undefined,
           images: imageUrls,
           eventId,
-          createdAt: galleryData.createdAt || item.createdAt,
+          createdAt: createdAt,
+          publishedAt: publishedAt,
           youtubeUrl: youtubeUrl,
           instagramUrl: instagramUrl,
         };
@@ -616,12 +657,13 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
   let gallery: GalleryItem[] = (galleryData.default as any[]).map((item) => ({
     ...item,
     eventId: item.eventId ?? undefined,
+    publishedAt: item.publishedAt || item.publishDate || item.createdAt,
   }));
 
-  // Sort by creation date (newest first)
+  // Sort by published date (newest first)
   gallery = gallery.sort(
     (a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
 
   return limit ? gallery.slice(0, limit) : gallery;
