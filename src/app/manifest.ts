@@ -24,10 +24,36 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
   // Determine icon source - prefer favicon, fallback to logo from theme, then logo.png
   // PWA requires both 192x192 and 512x512 icons for installation
   // Note: Browser will scale images, but having proper sizes helps with installation
-  const iconSrc = theme?.favicon || theme?.logo || "/logo.png";
-
+  let iconSrc = theme?.favicon || theme?.logo || "/logo.png";
+  
+  // Fix icon URL - ensure it's not localhost or invalid URL
+  // If it contains localhost or is from Strapi with localhost, use fallback
+  if (iconSrc) {
+    // Check if URL contains localhost (development URL)
+    if (iconSrc.includes("localhost") || iconSrc.includes("127.0.0.1")) {
+      // Use fallback logo instead of localhost URL
+      iconSrc = "/logo.png";
+    } else if (!iconSrc.startsWith("http") && !iconSrc.startsWith("/")) {
+      // Ensure relative paths start with /
+      iconSrc = `/${iconSrc}`;
+    } else if (iconSrc.startsWith("http")) {
+      // For external URLs, validate they're not localhost
+      try {
+        const url = new URL(iconSrc);
+        if (url.hostname === "localhost" || url.hostname === "127.0.0.1") {
+          iconSrc = "/logo.png";
+        }
+      } catch {
+        // Invalid URL, use fallback
+        iconSrc = "/logo.png";
+      }
+    }
+  } else {
+    iconSrc = "/logo.png";
+  }
+  
   // Add icons with proper sizes for PWA installation
-  // Using the same source for both sizes - browser will scale appropriately
+  // iconSrc is guaranteed to be set (fallback to /logo.png)
   icons.push(
     {
       src: iconSrc,
@@ -37,21 +63,9 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     },
     {
       src: iconSrc,
-      sizes: "192x192",
-      type: "image/png",
-      purpose: "maskable",
-    },
-    {
-      src: iconSrc,
       sizes: "512x512",
       type: "image/png",
       purpose: "any",
-    },
-    {
-      src: iconSrc,
-      sizes: "512x512",
-      type: "image/png",
-      purpose: "maskable",
     }
   );
 

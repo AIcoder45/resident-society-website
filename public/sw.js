@@ -2,27 +2,42 @@
 // This file will be served from /sw.js
 // Version updated to force cache refresh
 
-const CACHE_NAME = 'greenwood-city-v2';
-const RUNTIME_CACHE = 'greenwood-city-runtime-v2';
+const CACHE_NAME = 'greenwood-city-v4';
+const RUNTIME_CACHE = 'greenwood-city-runtime-v4';
 
-// Assets to cache on install
+// Assets to cache on install (optional - will cache if available)
 const PRECACHE_ASSETS = [
-  '/',
-  '/news',
-  '/events',
-  '/gallery',
-  '/contact',
   '/manifest.json',
 ];
 
-// Install event - cache essential assets
+// Install event - cache essential assets with error handling
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(PRECACHE_ASSETS);
+        // Use Promise.allSettled to handle failures gracefully
+        // Don't fail installation if some assets can't be cached
+        return Promise.allSettled(
+          PRECACHE_ASSETS.map((url) => 
+            fetch(url)
+              .then((response) => {
+                if (response.ok) {
+                  return cache.put(url, response);
+                }
+              })
+              .catch((error) => {
+                console.warn(`[SW] Failed to cache ${url}:`, error);
+                // Don't throw - allow other assets to cache
+              })
+          )
+        );
       })
       .then(() => self.skipWaiting())
+      .catch((error) => {
+        console.error('[SW] Install error:', error);
+        // Still skip waiting even if caching fails
+        self.skipWaiting();
+      })
   );
 });
 
@@ -59,10 +74,12 @@ self.addEventListener('fetch', (event) => {
                  (!url.pathname.includes('.') && url.pathname !== '/sw.js');
 
   if (isHTML) {
-    // Network-first strategy for HTML pages - always fetch fresh content
+    // Network-only strategy for HTML pages - NO cache fallback
+    // Always fetch fresh content, return error if network fails
+    // This ensures users always see current content or maintenance page
     event.respondWith(
       fetch(event.request, {
-        cache: 'no-store', // Don't cache HTML pages
+        cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -70,16 +87,19 @@ self.addEventListener('fetch', (event) => {
         }
       })
         .then((response) => {
-          // Return fresh response, don't cache HTML pages
+          // Don't cache HTML pages at all - always fetch fresh
+          // Return the response directly
           return response;
         })
-        .catch(() => {
-          // No fallback - return error response
-          return new Response('Service Unavailable', { 
+        .catch((error) => {
+          console.error('[SW] Network fetch failed - no cache fallback:', error);
+          // Return error response - let the app show maintenance page
+          // Don't serve cached content - always require fresh fetch
+          return new Response('Network Error - Please check your connection', { 
             status: 503,
             statusText: 'Service Unavailable',
             headers: {
-              'Content-Type': 'text/plain'
+              'Content-Type': 'text/html; charset=utf-8'
             }
           });
         })

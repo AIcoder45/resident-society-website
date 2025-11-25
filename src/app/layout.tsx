@@ -17,14 +17,9 @@ export const metadata: Metadata = {
   title: "Greenwood City Block C - Building Community Together",
   description: "Stay connected with Greenwood City Block C. Get the latest news, events, and updates.",
   keywords: ["greenwood city", "greenwood city block c", "block c", "community", "news", "events", "notifications"],
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Block C",
-  },
-  // Additional iOS meta tags for better PWA installation
+  // iOS meta tags for PWA installation (using modern standard)
+  // Note: Removed appleWebApp.capable as it generates deprecated apple-mobile-web-app-capable
   other: {
-    "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
     "apple-mobile-web-app-title": "Block C",
     "mobile-web-app-capable": "yes",
@@ -39,6 +34,9 @@ export const metadata: Metadata = {
     ],
     apple: [
       { url: "/logo.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: [
+      { url: "/logo.png", sizes: "32x32", type: "image/png" },
     ],
   },
 };
