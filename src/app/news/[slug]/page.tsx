@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { Calendar } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { Separator } from "@/components/ui/separator";
@@ -72,9 +73,14 @@ export default async function NewsDetailPage({ params }: Props) {
                   description={news.shortDescription}
                 />
               </div>
-              <p className="text-[10px] sm:text-[11px] text-text-light">
-                Published on {formatDate(news.publishedAt, "long")}
-              </p>
+              {news.publishedAt && (
+                <div className="flex items-center gap-2 mt-2">
+                  <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                  <span className="text-[10px] sm:text-[11px] text-text-light">
+                    Published on {formatDate(news.publishedAt, "long")}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Show Image and Video */}

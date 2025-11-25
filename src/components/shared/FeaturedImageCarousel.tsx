@@ -103,9 +103,9 @@ export function FeaturedImageCarousel({
   const currentImage = images[currentIndex];
 
   return (
-    <div className={cn("relative w-full overflow-hidden flex justify-center z-0 lg:mt-[8px]", className)}>
+    <div className={cn("relative w-full overflow-hidden flex items-center justify-center z-0 px-0", className)}>
       <div 
-        className="relative aspect-[16/11] sm:aspect-[21/11] md:aspect-[24/11] w-full lg:w-[54%] lg:aspect-[16/6.5]"
+        className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/9] w-full max-w-full mx-auto"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -117,24 +117,27 @@ export function FeaturedImageCarousel({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.5 }}
-            className="absolute inset-0"
+            className="absolute inset-0 flex items-center justify-center"
           >
             <Link
               href={currentImage.href}
-              className="block w-full h-full group"
+              className="block w-full h-full group flex items-center justify-center"
             >
               <Image
                 src={currentImage.src}
                 alt={currentImage.alt}
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                className="object-contain transition-transform duration-700 group-hover:scale-105"
                 sizes="100vw"
                 priority
                 unoptimized={currentImage.src.startsWith("/") && !currentImage.src.startsWith("http")}
+                style={{
+                  objectPosition: 'center',
+                }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               {/* Optional: Add title overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8">
+              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 pointer-events-none">
                 <h3 className="text-white text-sm sm:text-base md:text-lg font-semibold line-clamp-2 drop-shadow-lg">
                   {currentImage.alt}
                 </h3>

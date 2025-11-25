@@ -305,4 +305,36 @@
   .interactive-spacing > * + * {
     margin-top: var(--touch-target-padding, 8px);
   }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none !important;  /* Chrome, Safari and Opera */
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Additional webkit scrollbar hiding for overflow containers */
+  .overflow-x-auto.scrollbar-hide::-webkit-scrollbar,
+  .overflow-y-auto.scrollbar-hide::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  /* Prevent scrollbars on fixed/absolute positioned elements */
+  .fixed.overflow-hidden,
+  .absolute.overflow-hidden {
+    overflow: hidden !important;
+  }
+
+  /* Ensure no scrollbars on modal containers */
+  [class*="fixed"][class*="inset-0"] {
+    overflow: hidden !important;
+  }
 }

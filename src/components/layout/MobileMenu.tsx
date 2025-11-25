@@ -27,7 +27,7 @@ const navigation = [
   { name: "RWA", href: "/rwa", icon: Users },
   { name: "Advertisements", href: "/advertisements", icon: Megaphone },
   { name: "Notifications", href: "/notifications", icon: Bell },
-  { name: "Policies", href: "/policies", icon: FileText },
+  { name: "Policies and Documents", href: "/policies", icon: FileText },
   { name: "Contact Us", href: "/contact", icon: Phone },
 ];
 

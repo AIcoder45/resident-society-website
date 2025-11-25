@@ -27,6 +27,7 @@ export function GalleryCarousel({
     item: GalleryItem;
     initialIndex: number;
   } | null>(null);
+  const [isHovered, setIsHovered] = React.useState(false);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   const scrollToIndex = (index: number) => {
@@ -72,15 +73,20 @@ export function GalleryCarousel({
   if (items.length === 0) return null;
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div 
+      className={cn("relative w-full", className)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Carousel container */}
       <div className="relative overflow-hidden rounded-lg">
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-4"
+          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
+            WebkitOverflowScrolling: "touch",
           }}
         >
           {items.map((item, index) => (
@@ -133,24 +139,44 @@ export function GalleryCarousel({
       {/* Navigation buttons */}
       {items.length > 1 && (
         <>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToPrevious}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg z-10"
-            aria-label="Previous"
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ 
+              opacity: isHovered ? 1 : 0,
+              x: isHovered ? 0 : -10
+            }}
+            transition={{ duration: 0.2 }}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-20"
           >
-            <ChevronLeft className="h-6 w-6" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={goToNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg z-10"
-            aria-label="Next"
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={goToPrevious}
+              className="bg-white/90 hover:bg-white shadow-lg h-10 w-10 rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm"
+              aria-label="Previous"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ 
+              opacity: isHovered ? 1 : 0,
+              x: isHovered ? 0 : 10
+            }}
+            transition={{ duration: 0.2 }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-20"
           >
-            <ChevronRight className="h-6 w-6" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={goToNext}
+              className="bg-white/90 hover:bg-white shadow-lg h-10 w-10 rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm"
+              aria-label="Next"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </motion.div>
 
           {/* Dots indicator */}
           <div className="flex justify-center gap-2 mt-4">

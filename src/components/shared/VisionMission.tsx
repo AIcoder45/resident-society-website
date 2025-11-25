@@ -85,9 +85,9 @@ export function VisionMission({
               >
                 {/* Pulsing glow background */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-green-100/20 via-emerald-100/30 to-green-100/20 rounded-lg"
+                  className="absolute inset-0 bg-gradient-to-r from-green-50/40 via-emerald-50/50 to-green-50/40 rounded-lg"
                   animate={{
-                    opacity: [0.3, 0.6, 0.3],
+                    opacity: [0.4, 0.7, 0.4],
                   }}
                   transition={{
                     duration: 4,
@@ -111,11 +111,69 @@ export function VisionMission({
                     width: '60%',
                   }}
                 />
-                <div className="text-[10px] sm:text-[14px] md:text-[16px] text-text leading-relaxed text-center font-medium relative z-10">
-                  <div className="[&_p]:text-center [&_p]:mb-1 [&_p:last-child]:mb-0 [&_p]:text-[10px] [&_p]:sm:text-[14px] [&_p]:md:text-[16px] [&_*]:text-[10px] [&_*]:sm:text-[14px] [&_*]:md:text-[16px]">
-                    <RichTextContent content={cleanContent} />
+                <motion.div 
+                  className="text-[10px] sm:text-[14px] md:text-[16px] text-gray-900 leading-relaxed text-center font-semibold relative z-10"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  <div className="relative px-4 sm:px-6 md:px-8">
+                    {/* Opening apostrophe */}
+                    <motion.span
+                      className="absolute -left-2 sm:-left-3 md:-left-4 top-0 text-primary text-xl sm:text-2xl md:text-3xl font-serif leading-none"
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                      animate={{
+                        scale: [1, 1.15, 1],
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      "
+                    </motion.span>
+                    
+                    <motion.div 
+                      className="[&_p]:text-center [&_p]:mb-1 [&_p:last-child]:mb-0 [&_p]:text-[10px] [&_p]:sm:text-[14px] [&_p]:md:text-[16px] [&_p]:text-gray-900 [&_p]:font-semibold [&_*]:text-[10px] [&_*]:sm:text-[14px] [&_*]:md:text-[16px] [&_*]:text-gray-900"
+                      animate={{
+                        opacity: [0.95, 1, 0.95],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      <RichTextContent content={cleanContent} />
+                    </motion.div>
+                    
+                    {/* Closing apostrophe */}
+                    <motion.span
+                      className="absolute -right-2 sm:-right-3 md:-right-4 bottom-0 text-primary text-xl sm:text-2xl md:text-3xl font-serif leading-none"
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                      animate={{
+                        scale: [1, 1.15, 1],
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      "
+                    </motion.span>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             </div>
           </div>
