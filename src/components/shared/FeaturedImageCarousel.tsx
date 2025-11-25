@@ -157,7 +157,8 @@ export function FeaturedImageCarousel({
                 alt={currentImage.alt}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
-                sizes="100vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1920px"
+                quality={70}
                 priority
                 unoptimized={currentImage.src.startsWith("/") && !currentImage.src.startsWith("http")}
                 style={{

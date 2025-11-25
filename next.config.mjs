@@ -111,6 +111,37 @@ const nextConfig = {
         ],
       },
       {
+        // Cache CSS files aggressively - they're versioned by Next.js
+        source: "/_next/static/css/:path*.css",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Cache-control for Next.js optimized images
+        source: "/_next/image/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
+          },
+        ],
+      },
+      {
+        // Cache-control for static image files
+        // Matches images in /images/ directory and root-level image files
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
+          },
+        ],
+      },
+      {
         // Don't cache HTML pages - always fetch fresh
         source: "/:path*.html",
         headers: [

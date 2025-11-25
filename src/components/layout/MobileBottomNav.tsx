@@ -88,6 +88,12 @@ export function MobileBottomNav() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => {
+                // Close More menu when clicking on other nav items
+                if (moreMenuOpen) {
+                  setMoreMenuOpen(false);
+                }
+              }}
               className={cn(
                   "flex flex-col items-center justify-center min-h-[44px] touch-manipulation transition-all duration-200 relative",
                 isActive && "bg-primary/5"

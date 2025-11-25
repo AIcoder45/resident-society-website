@@ -56,12 +56,18 @@ export function ImageCarousel({
     setDirection("right");
     setCurrentIndex((prev) => (prev + 1) % images.length);
     setIsLoading(true);
+    // Reset swipe offset when changing images
+    swipeOffsetRef.current = 0;
+    setSwipeOffset(0);
   }, [images.length]);
 
   const goToPrevious = React.useCallback(() => {
     setDirection("left");
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
     setIsLoading(true);
+    // Reset swipe offset when changing images
+    swipeOffsetRef.current = 0;
+    setSwipeOffset(0);
   }, [images.length]);
 
   // Prevent body scroll when modal is open
@@ -141,14 +147,21 @@ export function ImageCarousel({
         setDirection("right");
         goToNext();
       }
+      // Reset swipe offset immediately when changing images
+      setTimeout(() => {
+        swipeOffsetRef.current = 0;
+        setSwipeOffset(0);
+      }, 100);
+    } else {
+      // If swipe wasn't enough, smoothly return to center
+      swipeOffsetRef.current = 0;
+      setSwipeOffset(0);
     }
 
     // Reset
     touchStartX.current = null;
     touchStartY.current = null;
     isSwiping.current = false;
-    swipeOffsetRef.current = 0;
-    setSwipeOffset(0);
   }, [goToNext, goToPrevious]);
 
   // Set up touch event listeners with passive: false
@@ -167,6 +180,14 @@ export function ImageCarousel({
     };
   }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
+  // Reset swipe offset when image index changes
+  React.useEffect(() => {
+    if (!isSwiping.current) {
+      swipeOffsetRef.current = 0;
+      setSwipeOffset(0);
+    }
+  }, [currentIndex]);
+
   const currentImage = images[currentIndex];
 
   if (!currentImage) return null;
@@ -175,7 +196,7 @@ export function ImageCarousel({
     <div 
       className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center overflow-hidden"
       onClick={(e) => {
-        // Close on backdrop click
+        // Close on backdrop click - only if clicking directly on the backdrop
         if (e.target === e.currentTarget) {
           onClose?.();
         }
@@ -196,12 +217,16 @@ export function ImageCarousel({
 
       {/* Image container */}
       <div 
-        className="relative w-full h-full flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8"
+        className="relative w-full h-full flex items-center justify-center"
+        onClick={(e) => {
+          // Prevent closing when clicking on the image container or its children
+          e.stopPropagation();
+        }}
         style={{
-          paddingTop: 'clamp(3rem, 8vw, 4rem)',
-          paddingBottom: 'clamp(6rem, 15vw, 10rem)',
-          paddingLeft: 'clamp(3rem, 6vw, 4rem)',
-          paddingRight: 'clamp(3rem, 6vw, 4rem)',
+          paddingTop: images.length > 1 ? 'clamp(3rem, 7vw, 4rem)' : 'clamp(3rem, 7vw, 4rem)',
+          paddingBottom: images.length > 1 ? 'clamp(7rem, 18vw, 10rem)' : 'clamp(3rem, 7vw, 4rem)',
+          paddingLeft: 'clamp(2rem, 5vw, 3rem)',
+          paddingRight: 'clamp(2rem, 5vw, 3rem)',
         }}
       >
         {/* Previous button */}
@@ -230,7 +255,20 @@ export function ImageCarousel({
         {/* Image */}
         <div 
           ref={imageContainerRef}
-          className="relative w-full h-full flex items-center justify-center touch-none max-w-full max-h-full"
+          className="absolute inset-0 flex items-center justify-center touch-none"
+          onClick={(e) => {
+            // Prevent closing when clicking on the image area
+            e.stopPropagation();
+          }}
+          style={{
+            top: images.length > 1 ? 'clamp(3rem, 7vw, 4rem)' : 'clamp(3rem, 7vw, 4rem)',
+            bottom: images.length > 1 ? 'clamp(7rem, 18vw, 10rem)' : 'clamp(3rem, 7vw, 4rem)',
+            left: 'clamp(2rem, 5vw, 3rem)',
+            right: 'clamp(2rem, 5vw, 3rem)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -251,13 +289,27 @@ export function ImageCarousel({
               className="relative flex items-center justify-center w-full h-full"
               style={{
                 cursor: isSwiping.current ? 'grabbing' : 'grab',
+                maxWidth: '100%',
+                maxHeight: '100%',
+              }}
+              onAnimationComplete={() => {
+                // Ensure swipe offset is reset after animation completes
+                if (!isSwiping.current) {
+                  setSwipeOffset(0);
+                  swipeOffsetRef.current = 0;
+                }
               }}
             >
               <div 
-                className="relative w-full h-full flex items-center justify-center"
+                className="relative flex items-center justify-center"
                 style={{
+                  width: '100%',
+                  height: '100%',
                   maxWidth: '100%',
                   maxHeight: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <Image
@@ -270,13 +322,18 @@ export function ImageCarousel({
                   )}
                   sizes="(max-width: 640px) calc(100vw - 4rem), (max-width: 1024px) calc(100vw - 8rem), calc(100vw - 12rem)"
                   priority={currentIndex < 3}
-                  onLoad={() => setIsLoading(false)}
+                  onLoad={() => {
+                    setIsLoading(false);
+                    // Reset position after image loads
+                    setSwipeOffset(0);
+                  }}
                   draggable={false}
                   style={{
                     objectFit: 'contain',
-                    objectPosition: 'center',
+                    objectPosition: 'center center',
                   }}
                   unoptimized={currentImage.startsWith("/") && !currentImage.startsWith("http")}
+                  suppressHydrationWarning
                 />
               </div>
             </motion.div>
@@ -356,7 +413,13 @@ export function ImageCarousel({
 
       {/* Thumbnail strip at bottom */}
       {images.length > 1 && (
-        <div className="absolute bottom-20 sm:bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-2 sm:px-4 pb-2 overflow-hidden z-10">
+        <div 
+          className="absolute bottom-20 sm:bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-2 sm:px-4 pb-2 overflow-hidden z-10"
+          onClick={(e) => {
+            // Prevent closing when clicking on thumbnails
+            e.stopPropagation();
+          }}
+        >
           <div 
             className="flex gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide px-2 py-2"
             style={{
