@@ -105,7 +105,7 @@ export function FeaturedImageCarousel({
   return (
     <div className={cn("relative w-full overflow-hidden flex items-center justify-center z-0 px-0", className)}>
       <div 
-        className="relative aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/9] w-full max-w-full mx-auto"
+        className="relative aspect-[64/27] sm:aspect-[28/9] md:aspect-[32/9] w-full max-w-full mx-auto"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -127,13 +127,15 @@ export function FeaturedImageCarousel({
                 src={currentImage.src}
                 alt={currentImage.alt}
                 fill
-                className="object-contain transition-transform duration-700 group-hover:scale-105"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="100vw"
                 priority
                 unoptimized={currentImage.src.startsWith("/") && !currentImage.src.startsWith("http")}
                 style={{
                   objectPosition: 'center',
+                  objectFit: 'cover',
                 }}
+                suppressHydrationWarning
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               {/* Optional: Add title overlay */}
