@@ -9,9 +9,9 @@ import { MobileMoreMenu } from "./MobileMoreMenu";
 
 const mobileNavItems = [
   { name: "Home", href: "/", icon: Home },
-  { name: "Society's Updates", href: "/news", icon: Newspaper },
+  { name: "Updates", href: "/news", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
-  { name: "Quick Contact", href: "/quick-contact", icon: Phone },
+  { name: "Contacts", href: "/quick-contact", icon: Phone },
   { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "More", href: "#", icon: MoreVertical },
 ];
@@ -84,9 +84,6 @@ export function MobileBottomNav() {
             );
           }
 
-          const isLongText = item.name === "Society's Updates" || item.name === "Quick Contact";
-          const isQuickContact = item.name === "Quick Contact";
-
           return (
             <Link
               key={item.name}
@@ -98,10 +95,7 @@ export function MobileBottomNav() {
                 aria-label={`Navigate to ${item.name}${isNotifications && notificationCount > 0 ? ` (${notificationCount} new)` : ""}`}
               aria-current={isActive ? "page" : undefined}
             >
-                <div className={cn(
-                  "relative flex items-center justify-center pt-1.5",
-                  isLongText && "w-full -mt-0.5"
-                )}>
+                <div className="relative flex items-center justify-center pt-1.5">
               <Icon className={cn(
                     "h-4 w-4 sm:h-5 sm:w-5 mb-0.5 sm:mb-1 transition-all duration-200",
                     isActive ? "text-primary scale-110" : "text-gray-500"
@@ -115,23 +109,12 @@ export function MobileBottomNav() {
                     </span>
                   )}
                 </div>
-              {isQuickContact ? (
-                <span className={cn(
+              <span className={cn(
                   "text-[9px] sm:text-[10px] font-medium transition-colors leading-tight text-center",
-                  isActive ? "text-primary font-semibold" : "text-gray-600"
-                )}>
-                  <span className="block">Quick</span>
-                  <span className="block">Contact</span>
-                </span>
-              ) : (
-                <span className={cn(
-                  "text-[9px] sm:text-[10px] font-medium transition-colors leading-tight text-center",
-                  isLongText && "px-0.5",
                   isActive ? "text-primary font-semibold" : "text-gray-600"
                 )}>
                   {item.name}
                 </span>
-              )}
             </Link>
           );
         })}

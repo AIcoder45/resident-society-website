@@ -98,6 +98,35 @@ export function FeaturedImageCarousel({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goToNext, goToPrevious]);
 
+  // Preload images for better performance and caching
+  React.useEffect(() => {
+    const preloadLinks: HTMLLinkElement[] = [];
+    
+    images.forEach((image) => {
+      // Create preload link for better browser caching
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = image.src;
+      link.crossOrigin = "anonymous";
+      document.head.appendChild(link);
+      preloadLinks.push(link);
+      
+      // Also preload the image in browser cache
+      const img = new window.Image();
+      img.src = image.src;
+    });
+    
+    // Cleanup: remove preload links when component unmounts or images change
+    return () => {
+      preloadLinks.forEach((link) => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+      });
+    };
+  }, [images]);
+
   if (images.length === 0) return null;
 
   const currentImage = images[currentIndex];

@@ -32,6 +32,24 @@ export function Section({
   viewAllLink,
   headerAction,
 }: SectionProps) {
+  const [mounted, setMounted] = React.useState(false);
+  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const motionProps = mounted
+    ? {
+        initial: { opacity: 0, y: 20 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.5 },
+      }
+    : {
+        initial: { opacity: 1, y: 0 },
+        animate: { opacity: 1, y: 0 },
+      };
+
   return (
     <section
       id={id}
@@ -43,10 +61,7 @@ export function Section({
       )}
     >
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        {...motionProps}
         className="w-full"
       >
         {(title || subtitle || viewAllLink || headerAction) && (

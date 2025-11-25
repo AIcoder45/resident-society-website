@@ -7,7 +7,7 @@ import { Home, Newspaper, Calendar, Image, Users, Megaphone, Bell, FileText, Pho
 const footerLinks = {
   main: [
     { name: "Home", href: "/", icon: Home },
-    { name: "Society's Updates", href: "/news", icon: Newspaper },
+    { name: "Updates", href: "/news", icon: Newspaper },
     { name: "Events", href: "/events", icon: Calendar },
     { name: "Gallery", href: "/gallery", icon: Image },
   ],
@@ -17,7 +17,7 @@ const footerLinks = {
     { name: "Policies and Documents", href: "/policies", icon: FileText },
   ],
   contact: [
-    { name: "Quick Contact", href: "/quick-contact", icon: Phone },
+    { name: "Contacts", href: "/quick-contact", icon: Phone },
     { name: "Contact Us", href: "/contact", icon: Phone },
     { name: "Notifications", href: "/notifications", icon: Bell },
   ],
@@ -27,7 +27,7 @@ export function Footer() {
   return (
     <footer className="hidden lg:block bg-primary text-white mt-8">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {/* Main Navigation */}
           <div>
             <h3 className="text-sm font-semibold mb-3 text-white">Navigation</h3>

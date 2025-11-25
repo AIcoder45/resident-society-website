@@ -94,7 +94,7 @@ export async function getNews(limit?: number): Promise<News[]> {
       const response = await fetchStrapi<any[]>(url);
 
       // Handle both Strapi v4 (with attributes) and v5/flat structure
-      const news: News[] = (response.data || []).map((item: any) => {
+      let news: News[] = (response.data || []).map((item: any) => {
         const isV4Structure = item.attributes !== undefined;
         const newsData = isV4Structure ? item.attributes : item;
 
@@ -166,6 +166,12 @@ export async function getNews(limit?: number): Promise<News[]> {
           sequence: sequence,
         };
       });
+
+      // Sort by published date (newest first) to ensure correct order
+      news = news.sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+      );
 
       if (process.env.NODE_ENV === "development") {
         console.log(`✅ [News] Successfully fetched ${news.length} articles from Strapi`);
@@ -340,7 +346,7 @@ export async function getEvents(
       }
 
       // Handle both Strapi v4 (with attributes) and v5/flat structure
-      const events: Event[] = (response.data || []).map((item: any) => {
+      let events: Event[] = (response.data || []).map((item: any) => {
         // Check if this is Strapi v4 structure (has attributes) or v5/flat structure
         const isV4Structure = item.attributes !== undefined;
         const eventData = isV4Structure ? item.attributes : item;
@@ -426,6 +432,12 @@ export async function getEvents(
           sequence: sequence,
         };
       });
+
+      // Sort by published date (newest first) to ensure correct order
+      events = events.sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+      );
 
       if (process.env.NODE_ENV === "development") {
         console.log(`Successfully fetched ${events.length} events from Strapi`);
@@ -578,7 +590,7 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
       const response = await fetchStrapi<any[]>(url);
 
       // Handle both Strapi v4 (with attributes) and v5/flat structure
-      const gallery: GalleryItem[] = (response.data || []).map((item: any) => {
+      let gallery: GalleryItem[] = (response.data || []).map((item: any) => {
         const isV4Structure = item.attributes !== undefined;
         const galleryData = isV4Structure ? item.attributes : item;
 
@@ -640,6 +652,12 @@ export async function getGallery(limit?: number): Promise<GalleryItem[]> {
           instagramUrl: instagramUrl,
         };
       });
+
+      // Sort by published date (newest first) to ensure correct order
+      gallery = gallery.sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+      );
 
       if (process.env.NODE_ENV === "development") {
         console.log(`Successfully fetched ${gallery.length} gallery items from Strapi`);

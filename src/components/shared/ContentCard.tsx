@@ -48,6 +48,12 @@ export function ContentCard({
   youtubeUrl,
   instagramUrl,
 }: ContentCardProps) {
+  const [mounted, setMounted] = React.useState(false);
+  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const displayDescription = description ? limitWords(description, 30) : "";
 
   const cardContent = (
@@ -146,13 +152,22 @@ export function ContentCard({
     </Card>
   );
 
+  const motionProps = mounted
+    ? {
+        initial: { opacity: 0, y: 20 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-50px" },
+        transition: { duration: 0.3 },
+      }
+    : {
+        initial: { opacity: 1, y: 0 },
+        animate: { opacity: 1, y: 0 },
+      };
+
   if (href) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3 }}
+        {...motionProps}
         className="w-full min-w-0"
       >
         <div className="relative h-full w-full">
@@ -165,10 +180,7 @@ export function ContentCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3 }}
+      {...motionProps}
       className="w-full min-w-0"
     >
       {cardContent}
