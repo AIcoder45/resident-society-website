@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export interface PageShareButtonProps {
   url?: string;
   title?: string;
-  description?: string;
+  description?: string | null;
   className?: string;
   variant?: "icon" | "button";
 }
@@ -25,6 +25,9 @@ export function PageShareButton({
   className,
   variant = "icon",
 }: PageShareButtonProps) {
+  // Convert null to undefined for ShareButton compatibility
+  const normalizedDescription = description ?? undefined;
+
   if (variant === "button") {
     return (
       <div className={cn("flex items-center", className)}>
@@ -33,7 +36,7 @@ export function PageShareButton({
           size="sm"
           url={url}
           title={title}
-          description={description}
+          description={normalizedDescription}
         />
       </div>
     );
@@ -46,7 +49,7 @@ export function PageShareButton({
         size="sm"
         url={url}
         title={title}
-        description={description}
+        description={normalizedDescription}
         className="text-text hover:text-primary transition-colors"
       />
     </div>
