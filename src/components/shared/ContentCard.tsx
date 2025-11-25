@@ -48,12 +48,6 @@ export function ContentCard({
   youtubeUrl,
   instagramUrl,
 }: ContentCardProps) {
-  const [mounted, setMounted] = React.useState(false);
-  
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const displayDescription = description ? limitWords(description, 30) : "";
 
   const cardContent = (
@@ -83,6 +77,7 @@ export function ContentCard({
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
             loading="lazy"
             unoptimized={image.startsWith("/") && !image.startsWith("http")}
+            suppressHydrationWarning
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
@@ -152,17 +147,13 @@ export function ContentCard({
     </Card>
   );
 
-  const motionProps = mounted
-    ? {
-        initial: { opacity: 0, y: 20 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true, margin: "-50px" },
-        transition: { duration: 0.3 },
-      }
-    : {
-        initial: { opacity: 1, y: 0 },
-        animate: { opacity: 1, y: 0 },
-      };
+  // Animation props - ensure cards are always visible
+  // Use animate instead of whileInView to prevent disappearing
+  const motionProps = {
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.2, ease: "easeOut" },
+  };
 
   if (href) {
     return (
