@@ -63,16 +63,18 @@ export class StrapiApiError extends Error {
 }
 
 /**
- * Fetches data from Strapi API with retry logic
+ * Fetches data from Strapi API with retry logic and caching
  * @param endpoint - API endpoint (e.g., '/api/events')
  * @param options - Fetch options
  * @param maxRetries - Maximum number of retry attempts (default: 2)
+ * @param revalidateSeconds - Cache revalidation time in seconds (default: 60). Set to 0 for no cache.
  * @returns Strapi response with data
  */
 export async function fetchStrapi<T>(
   endpoint: string,
   options?: RequestInit,
   maxRetries: number = 2,
+  revalidateSeconds: number = 60,
 ): Promise<StrapiResponse<T>> {
   const strapiUrl = getStrapiUrl();
   const url = `${strapiUrl}${endpoint}`;
@@ -99,15 +101,19 @@ export async function fetchStrapi<T>(
       }
 
       // Build fetch options compatible with static export
-      // During static export, Next.js cannot use 'no-store'
-      // Use revalidate: 0 for fresh data (removed cache: 'no-store' to fix static export)
+      // Use configurable revalidation for caching (default: 60 seconds)
+      // Set revalidateSeconds to 0 for always-fresh data
       const fetchOptions: RequestInit = {
         headers: {
           "Content-Type": "application/json",
           ...options?.headers,
         },
         ...options,
-        next: { revalidate: 0 }, // Always fetch fresh data
+        next: { 
+          revalidate: revalidateSeconds,
+          // Add cache tags for selective invalidation
+          tags: [`strapi-${endpoint.split('?')[0]}`],
+        },
         signal: AbortSignal.timeout(10000), // 10 second timeout
       };
 

@@ -77,16 +77,47 @@ export function PullToRefresh({
       shouldRefresh.current = false;
       
       // Use setTimeout to defer router.refresh() outside of render phase
-      setTimeout(() => {
-        router.refresh();
-        
-        // Reset after a short delay
-        setTimeout(() => {
-          setIsRefreshing(false);
-          setIsPulling(false);
-          setPullDistance(0);
-          touchStartY.current = null;
-        }, 1000);
+      setTimeout(async () => {
+        try {
+          // Invalidate all Strapi cache tags
+          // This ensures fresh data is fetched on refresh
+          if (typeof window !== "undefined") {
+            // Call server action to invalidate cache
+            const response = await fetch("/api/revalidate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                tags: ["strapi-all"],
+                path: window.location.pathname,
+              }),
+            });
+            
+            if (!response.ok) {
+              console.warn("⚠️ Cache invalidation failed, using router.refresh()");
+            }
+          }
+          
+          // Always refresh the router to update the page
+          router.refresh();
+          
+          // Reset after a short delay
+          setTimeout(() => {
+            setIsRefreshing(false);
+            setIsPulling(false);
+            setPullDistance(0);
+            touchStartY.current = null;
+          }, 1000);
+        } catch (error) {
+          console.error("❌ Error during refresh:", error);
+          // Fallback to router.refresh() if cache invalidation fails
+          router.refresh();
+          setTimeout(() => {
+            setIsRefreshing(false);
+            setIsPulling(false);
+            setPullDistance(0);
+            touchStartY.current = null;
+          }, 1000);
+        }
       }, 0);
     }
   }, [isRefreshing, router]);
