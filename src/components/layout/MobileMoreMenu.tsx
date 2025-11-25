@@ -47,7 +47,12 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={(e) => {
+              // Close when clicking on backdrop
+              if (e.target === e.currentTarget) {
+                onClose();
+              }
+            }}
             className="fixed inset-0 bg-black/50 z-50 lg:hidden"
           />
           
@@ -57,6 +62,10 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            onClick={(e) => {
+              // Prevent backdrop click when clicking on menu panel
+              e.stopPropagation();
+            }}
             className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl z-[60] lg:hidden safe-area-inset-bottom"
           >
             <div className="flex flex-col">

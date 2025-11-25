@@ -151,9 +151,9 @@ export function ContentCard({
   // Use animate instead of whileInView to prevent disappearing
   const motionProps = {
     initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
+        animate: { opacity: 1, y: 0 },
     transition: { duration: 0.2, ease: "easeOut" },
-  };
+      };
 
   if (href) {
     return (

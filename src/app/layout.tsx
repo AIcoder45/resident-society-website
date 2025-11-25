@@ -7,7 +7,12 @@ import { MaintenancePage } from "@/components/shared/MaintenancePage";
 import { getTheme } from "@/lib/api";
 import { StrapiApiError } from "@/lib/strapi";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ 
+  subsets: ["latin"], 
+  variable: "--font-inter",
+  display: "swap", // Optimize font loading - show fallback until font loads
+  preload: true, // Preload font for better performance
+});
 
 // Force dynamic rendering - always fetch fresh content
 export const dynamic = 'force-dynamic';
