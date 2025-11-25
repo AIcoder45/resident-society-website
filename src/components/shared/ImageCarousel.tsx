@@ -20,6 +20,19 @@ export interface ImageCarouselProps {
  * Image carousel lightbox component with navigation
  * Displays images in a modal with previous/next navigation
  */
+const slideVariants = {
+  enter: (dir: "left" | "right") => ({
+    opacity: 0,
+    x: dir === "right" ? 100 : -100,
+    scale: 0.95
+  }),
+  exit: (dir: "left" | "right") => ({
+    opacity: 0,
+    x: dir === "right" ? -100 : 100,
+    scale: 0.95
+  })
+};
+
 export function ImageCarousel({
   images,
   title,
@@ -216,18 +229,7 @@ export function ImageCarousel({
             <motion.div
               key={currentIndex}
               custom={direction}
-              variants={{
-                enter: (dir: "left" | "right") => ({
-                  opacity: 0,
-                  x: dir === "right" ? 100 : -100,
-                  scale: 0.95
-                }),
-                exit: (dir: "left" | "right") => ({
-                  opacity: 0,
-                  x: dir === "right" ? -100 : 100,
-                  scale: 0.95
-                })
-              }}
+              variants={slideVariants}
               initial="enter"
               animate={{ 
                 opacity: 1, 

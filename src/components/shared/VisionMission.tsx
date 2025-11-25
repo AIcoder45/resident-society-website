@@ -125,15 +125,12 @@ export function VisionMission({
                       initial={{ opacity: 0, scale: 0 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.5 }}
                       animate={{
                         scale: [1, 1.15, 1],
                       }}
                       transition={{
-                        duration: 2.5,
-                        repeat: Infinity,
-                        repeatDelay: 3,
-                        ease: 'easeInOut',
+                        opacity: { duration: 0.5, delay: 0.5 },
+                        scale: { duration: 2.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' },
                       }}
                     >
                       "
@@ -159,15 +156,12 @@ export function VisionMission({
                       initial={{ opacity: 0, scale: 0 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.5 }}
                       animate={{
                         scale: [1, 1.15, 1],
                       }}
                       transition={{
-                        duration: 2.5,
-                        repeat: Infinity,
-                        repeatDelay: 3,
-                        ease: 'easeInOut',
+                        opacity: { duration: 0.5, delay: 0.5 },
+                        scale: { duration: 2.5, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' },
                       }}
                     >
                       "

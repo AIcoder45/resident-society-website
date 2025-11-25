@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "verify": "node scripts/verify-components.js",
-    "prebuild": "node scripts/verify-components.js"
+    "clean": "node scripts/clean-build.js",
+    "prebuild": "node scripts/clean-build.js && node scripts/verify-components.js"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",

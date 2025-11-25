@@ -1,13 +1,39 @@
-# Fix EPERM Build Error on Windows
+# Fix Build Errors on Windows
 
-## Problem
+## Problems
+
+### Error 1: EPERM
 ```
 Error: EPERM: operation not permitted, open '.next\trace'
 ```
 
-This error occurs when OneDrive tries to sync the `.next` build folder, causing file permission conflicts.
+### Error 2: ENOTEMPTY
+```
+Error: ENOTEMPTY: directory not empty, rmdir 'C:\Users\hp\OneDrive\Desktop\Greenwood\SYS\.next\export'
+```
+
+These errors occur when OneDrive tries to sync the `.next` build folder, causing file permission conflicts, or when Next.js tries to remove non-empty directories on Windows.
 
 ## Solutions
+
+### Solution 0: Automatic Cleanup (Now Built-In) ⭐
+
+**The build process now automatically cleans build directories before building!**
+
+The `prebuild` script runs `scripts/clean-build.js` which:
+- Safely removes `.next/export` directory (handles ENOTEMPTY errors)
+- Cleans `out` directory if it exists
+- Handles Windows file locking issues gracefully
+
+Just run:
+```bash
+npm run build
+```
+
+The cleanup happens automatically. If you need to clean manually:
+```bash
+npm run clean
+```
 
 ### Solution 1: Exclude .next Folder from OneDrive Sync (Recommended)
 
