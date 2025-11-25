@@ -216,21 +216,25 @@ export function ImageCarousel({
             <motion.div
               key={currentIndex}
               custom={direction}
-              initial={(dir) => ({ 
-                opacity: 0, 
-                x: dir === "right" ? 100 : -100,
-                scale: 0.95
-              })}
+              variants={{
+                enter: (dir: "left" | "right") => ({
+                  opacity: 0,
+                  x: dir === "right" ? 100 : -100,
+                  scale: 0.95
+                }),
+                exit: (dir: "left" | "right") => ({
+                  opacity: 0,
+                  x: dir === "right" ? -100 : 100,
+                  scale: 0.95
+                })
+              }}
+              initial="enter"
               animate={{ 
                 opacity: 1, 
                 x: swipeOffset,
                 scale: 1
               }}
-              exit={(dir) => ({ 
-                opacity: 0, 
-                x: dir === "right" ? -100 : 100,
-                scale: 0.95
-              })}
+              exit="exit"
               transition={{ 
                 duration: isSwiping.current ? 0 : 0.4,
                 ease: [0.25, 0.46, 0.45, 0.94]
