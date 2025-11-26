@@ -146,3 +146,5 @@ STRAPI_URL=https://your-strapi-instance.onrender.com
 
 **See [STRAPI_SETUP.md](./STRAPI_SETUP.md) for detailed configuration.**
 
+
+
