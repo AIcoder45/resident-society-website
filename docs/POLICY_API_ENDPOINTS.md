@@ -533,3 +533,5 @@ GET /api/policies?filters[slug][$eq]={slug}&populate=*
 
 **Code Handles:** All three file structures automatically
 
+
+

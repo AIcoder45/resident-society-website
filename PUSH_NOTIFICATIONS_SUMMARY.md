@@ -295,3 +295,5 @@ STRAPI_API_TOKEN=...
 ### Ready to Use:
 All code is ready - just configure Strapi and environment variables!
 
+
+

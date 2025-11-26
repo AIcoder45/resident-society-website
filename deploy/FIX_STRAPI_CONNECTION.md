@@ -370,3 +370,5 @@ curl -I https://admin.greenwoodscity.in/admin
 - `src/lib/strapi.ts` - Strapi API client
 - `src/lib/api.ts` - API functions using Strapi
 
+
+

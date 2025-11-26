@@ -68,3 +68,5 @@ echo "4. Restart PM2: pm2 restart greenwood-city --update-env"
 echo "5. Verify: pm2 env 0 | grep STRAPI_URL"
 echo ""
 
+
+

@@ -371,3 +371,5 @@ Always use ISO 8601 format: `YYYY-MM-DDTHH:mm:ssZ`
 - **Images**: Use `public/images/` directory
 - **Questions**: Check component types in `src/types/index.ts`
 
+
+
