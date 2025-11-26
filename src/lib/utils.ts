@@ -38,6 +38,11 @@ export function isEventUpcoming(eventDate: string | Date): boolean {
  * @param date - Date string or Date object
  * @param format - Format type ('short' | 'long' | 'relative')
  * @returns Formatted date string or empty string if invalid
+ *
+ * NOTE:
+ * We explicitly format using the "Asia/Kolkata" timezone so that
+ * server-side rendering (which typically runs in UTC) and client-side
+ * rendering are consistent and do not show the date one day earlier.
  */
 export function formatDate(
   date: string | Date | null | undefined,
@@ -70,17 +75,23 @@ export function formatDate(
     return `${Math.floor(days / 365)} years ago`;
   }
 
+  const timeZone = "Asia/Kolkata";
+
   if (format === "long") {
-    return dateObj.toLocaleDateString("en-US", {
+    const options: Intl.DateTimeFormatOptions = {
       year: "numeric",
       month: "long",
       day: "numeric",
-    });
+      timeZone,
+    };
+    return new Intl.DateTimeFormat("en-IN", options).format(dateObj);
   }
 
-  return dateObj.toLocaleDateString("en-US", {
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "short",
     day: "numeric",
-  });
+    timeZone,
+  };
+  return new Intl.DateTimeFormat("en-IN", options).format(dateObj);
 }

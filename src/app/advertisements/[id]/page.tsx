@@ -15,7 +15,7 @@ import { getAdvertisementById, getAdvertisements } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 };
 
 export async function generateStaticParams() {
@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
+  const { id } = params;
   const advertisement = await getAdvertisementById(id);
 
   if (!advertisement) {
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function AdvertisementDetailPage({ params }: Props) {
-  const { id } = await params;
+  const { id } = params;
   
   if (process.env.NODE_ENV === "development") {
     console.log("🔍 Advertisement detail page - ID:", id);
