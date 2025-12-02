@@ -174,8 +174,10 @@ export function AdvertisementCard({
                 onClick={(e) => e.stopPropagation()}
                 className="flex items-center gap-2 text-sm text-text-light hover:text-primary transition-colors touch-manipulation touch-target tap-feedback"
               >
-                <Mail className="h-4 w-4" />
-                <span>{advertisement.contactEmail}</span>
+                <Mail className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate break-all max-w-[9rem] sm:max-w-[11rem] md:max-w-none">
+                  {advertisement.contactEmail}
+                </span>
               </a>
             )}
             {advertisement.website && (
