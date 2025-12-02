@@ -17,7 +17,7 @@ const navigation = [
   { name: "Advertisements", href: "/advertisements" },
   { name: "Notifications", href: "/notifications" },
   { name: "Policies", href: "/policies" },
-  { name: "Contact", href: "/contact" },
+  { name: "Contact Us", href: "/contact" },
 ];
 
 export function Header() {
@@ -44,8 +44,9 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <nav className="mx-auto flex max-w-[640px] items-center justify-center py-1 sm:py-1 lg:py-0 px-4 lg:px-8" aria-label="Global">
+    <header className="sticky top-0 z-40 flex justify-center bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <div className="w-full max-w-full lg:max-w-5xl border-b border-gray-200">
+      <nav className="mx-auto flex items-center justify-center py-1 sm:py-1 lg:py-0 px-4 lg:px-8" aria-label="Global">
         {/* Mobile Layout: Logo + Marquee centered */}
         <div className="flex lg:hidden items-center justify-center flex-1 min-w-0 gap-2">
           {/* Icon/Logo */}
@@ -75,7 +76,7 @@ export function Header() {
         </div>
 
         {/* Desktop Layout: Logo + Navigation centered */}
-        <div className="hidden lg:flex items-center justify-center gap-6 w-full">
+        <div className="hidden lg:flex items-center justify-center gap-3 w-full">
           {/* Icon/Logo */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {(logoUrl || faviconUrl) && (
@@ -99,12 +100,12 @@ export function Header() {
         </div>
 
           {/* Navigation links */}
-          <div className="flex gap-x-6 items-center">
+          <div className="flex gap-x-2 items-center">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="text-xs font-semibold leading-5 text-text hover:text-primary transition-colors touch-manipulation touch-target tap-feedback flex items-center whitespace-nowrap"
+              className="text-[11px] font-semibold leading-5 text-text hover:text-primary transition-colors touch-manipulation touch-target tap-feedback flex items-center whitespace-nowrap"
               aria-label={`Navigate to ${item.name}`}
             >
               {item.name}
@@ -113,6 +114,7 @@ export function Header() {
           </div>
         </div>
       </nav>
+      </div>
     </header>
   );
 }

@@ -73,7 +73,7 @@ export default async function ContactPage() {
   }
   
   // Use Bemo CMS data if available, otherwise use default
-  const contactInfo = strapiContactInfo.length > 0
+  const contactInfoSource = strapiContactInfo.length > 0
     ? strapiContactInfo.map((item) => {
         const iconName = item.icon?.toLowerCase().trim() || "";
         const IconComponent = iconMap[iconName] || Mail; // Default to Mail if icon not found
@@ -94,6 +94,18 @@ export default async function ContactPage() {
         };
       })
     : defaultContactInfo;
+
+  // Remove phone number card(s) from the displayed contact info
+  const contactInfo = contactInfoSource.filter((info) => {
+    const title = info.title?.toLowerCase() ?? "";
+    const link = info.link ?? "";
+
+    const isPhoneTitle =
+      title.includes("phone") || title.includes("mobile");
+    const isPhoneLink = link.startsWith("tel:");
+
+    return !isPhoneTitle && !isPhoneLink;
+  });
 
   // Use page title and subtitle from Bemo CMS if available
   const pageTitle = contactPageData?.pageTitle || "Contact Us";

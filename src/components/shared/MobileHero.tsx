@@ -48,15 +48,16 @@ export function MobileHero({
     <section
       className={cn(
         "bg-primary text-white relative z-10",
-        "py-2 sm:py-2.5 md:py-3", // Reduced by 20% from previous: py-2(8px), py-2.5(10px), py-3(12px)
+        // Mobile-first padding; further reduced on web (md+) to shrink banner height ~40%
+        "py-2 sm:py-2.5 md:py-2", 
         "px-4 sm:px-6", // Horizontal padding optimized for mobile
         className
       )}
     >
-      <div className="mx-auto max-w-full sm:max-w-[90%] md:max-w-[80%] lg:max-w-[70%]">
+      <div className="mx-auto max-w-full sm:max-w-[90%] md:max-w-[48%] lg:max-w-[42%]">
         <div className="text-center space-y-2 sm:space-y-2.5 md:space-y-3">
-          {/* Combined Title - Line 1 */}
-          <h1 className="text-base sm:text-lg md:text-xl font-semibold leading-tight text-white line-clamp-1">
+          {/* Combined Title - allow up to two lines on web view */}
+          <h1 className="text-base sm:text-lg md:text-xl font-semibold leading-tight text-white line-clamp-1 sm:line-clamp-2">
             {combinedTitle}
           </h1>
 

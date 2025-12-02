@@ -65,14 +65,14 @@ export function PolicyCard({ policy, className }: PolicyCardProps) {
 
         <CardContent className="pt-0">
           {hasDocuments && firstDocument ? (
-            <div className="flex items-center justify-between gap-2 pt-2">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 pt-2">
               <Link 
                 href={policyUrl}
-                className="flex items-center gap-2 flex-1 min-w-0 hover:text-primary transition-colors"
+                className="order-2 md:order-1 flex items-center gap-2 flex-1 min-w-0 hover:text-primary transition-colors"
               >
                 <FileText className="h-4 w-4 text-primary flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] sm:text-xs text-text-light">
+                  <span className="text-[10px] sm:text-xs text-text-light whitespace-nowrap">
                     {policy.documents!.filter(doc => doc.file && doc.file.length > 0).length} {policy.documents!.filter(doc => doc.file && doc.file.length > 0).length === 1 ? 'document' : 'documents'} available
                   </span>
                 </div>
@@ -85,7 +85,7 @@ export function PolicyCard({ policy, className }: PolicyCardProps) {
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-                className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-[10px] sm:text-xs font-medium transition-colors duration-200 flex-shrink-0 touch-manipulation shadow-sm hover:shadow-md"
+                className="order-1 md:order-2 inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-[10px] sm:text-xs font-medium transition-colors duration-200 flex-shrink-0 touch-manipulation shadow-sm hover:shadow-md w-full md:w-auto justify-center"
               >
                 <Download className="h-3.5 w-3.5" />
                 <span>Download</span>

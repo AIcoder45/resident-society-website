@@ -37,7 +37,6 @@ export function ClientLayout({ theme, children }: ClientLayoutProps) {
           </div>
         </PullToRefresh>
         <MobileBottomNav />
-        <ShareButton variant="floating" />
         <Toaster 
           position="top-center" 
           duration={5000}

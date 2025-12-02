@@ -1876,7 +1876,13 @@ export async function getAdvertisements(
 ): Promise<Advertisement[]> {
   if (shouldUseStrapi()) {
     try {
-      let url = `/api/advertisements?populate=*&sort[0]=publishedAt:desc`;
+      // Build base URL using server-side filtering for non-expired ads
+      // Matches:
+      //   /api/advertisements?populate=*&filters[validUntil][$gte]=YYYY-MM-DD
+      const today = new Date();
+      const todayDate = today.toISOString().split("T")[0]; // Use date-only for Strapi filter
+
+      let url = `/api/advertisements?populate=*&sort[0]=publishedAt:desc&filters[validUntil][$gte]=${todayDate}`;
 
       if (category) {
         url += `&filters[category][$eq]=${encodeURIComponent(category)}`;
@@ -1944,7 +1950,13 @@ export async function getAdvertisements(
             validUntil:
               adData.validUntil || item.validUntil || undefined,
             publishedAt:
-              adData.publishedAt || item.publishedAt || adData.createdAt || item.createdAt,
+              // Prefer Strapi system publishedAt or custom publishedDate, then fall back to createdAt
+              adData.publishedAt ||
+              item.publishedAt ||
+              adData.publishedDate ||
+              item.publishedDate ||
+              adData.createdAt ||
+              item.createdAt,
             createdAt:
               adData.createdAt || item.createdAt || new Date().toISOString(),
           };
@@ -2016,42 +2028,43 @@ export async function getAdvertisements(
 export async function getAdvertisementById(id: string): Promise<Advertisement | null> {
   if (shouldUseStrapi()) {
     try {
-      const url = `/api/advertisements/${id}?populate=*`;
-      
+      // Use the list API with filters so the structure exactly matches getAdvertisements
+      const isNumericId = !Number.isNaN(Number(id));
+      const baseUrl = `/api/advertisements?populate=*`;
+      const filterParam = isNumericId
+        ? `filters[id][$eq]=${encodeURIComponent(id)}`
+        : `filters[documentId][$eq]=${encodeURIComponent(id)}`;
+      const url = `${baseUrl}&${filterParam}`;
+
       if (process.env.NODE_ENV === "development") {
         const strapiUrl = getStrapiUrl();
-        console.log("🔍 Fetching advertisement by ID from Strapi:", `${strapiUrl}${url}`);
-      }
-
-      const response = await fetchStrapi<any>(url);
-
-      if (process.env.NODE_ENV === "development") {
-        console.log("📦 Advertisement detail API response:", {
-          hasResponse: !!response,
-          hasData: !!response?.data,
-          dataKeys: response?.data ? Object.keys(response.data) : [],
+        console.log("🔍 Fetching advertisement by ID from Strapi (list API):", {
+          id,
+          isNumericId,
+          url: `${strapiUrl}${url}`,
         });
       }
 
-      if (!response || !response.data) {
+      const response = await fetchStrapi<any[]>(url);
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("📦 Advertisement detail API (list) response:", {
+          hasResponse: !!response,
+          hasData: !!response?.data,
+          dataLength: Array.isArray(response?.data) ? response.data.length : 0,
+        });
+      }
+
+      if (!response || !response.data || !Array.isArray(response.data) || response.data.length === 0) {
         if (process.env.NODE_ENV === "development") {
-          console.warn("⚠️ No data in advertisement detail response");
+          console.warn("⚠️ No matching advertisement found in list API for ID:", id);
         }
         return null;
       }
 
-      const item = response.data;
+      const item = response.data[0];
       const isV4Structure = item.attributes !== undefined;
       const adData = isV4Structure ? item.attributes : item;
-
-      if (process.env.NODE_ENV === "development") {
-        console.log("🔍 Processing advertisement:", {
-          id: item.id,
-          isV4Structure,
-          title: adData.title || item.title,
-          hasImage: !!(adData.image || item.image),
-        });
-      }
 
       // Extract image - handle both v4 and v5 structures
       const imageData = isV4Structure ? adData.image : item.image;
@@ -2110,8 +2123,14 @@ export async function getAdvertisementById(id: string): Promise<Advertisement | 
         image: imageUrl,
         validUntil: adData.validUntil || item.validUntil || undefined,
         publishedAt:
-          adData.publishedAt || item.publishedAt || adData.createdAt || item.createdAt,
-        createdAt: adData.createdAt || item.createdAt || new Date().toISOString(),
+          adData.publishedAt ||
+          item.publishedAt ||
+          adData.publishedDate ||
+          item.publishedDate ||
+          adData.createdAt ||
+          item.createdAt,
+        createdAt:
+          adData.createdAt || item.createdAt || new Date().toISOString(),
       };
 
       if (process.env.NODE_ENV === "development") {

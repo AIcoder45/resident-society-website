@@ -197,7 +197,7 @@ export default async function PolicyDetailPage({ params }: Props) {
               </div>
 
               {policy.documents && policy.documents.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                   {policy.documents.map((doc, index) => {
                     const FileIcon = getFileIcon(doc.file || "");
                     const fileTypeLabel = getFileTypeLabel(doc.file || "");
