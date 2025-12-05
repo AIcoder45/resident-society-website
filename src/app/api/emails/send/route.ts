@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendEmail } from "@/lib/email";
 
 interface EmailRequestBody {
   subject?: string;
@@ -40,24 +39,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const endpoint =
+      process.env.STRAPI_EMAIL_ENDPOINT ||
+      "https://admin.greenwoodscity.in/api/emails/send";
+
     if (process.env.NODE_ENV === "development") {
-      console.log("📨 [EmailAPI] Sending email", {
+      console.log("📨 [EmailAPI] Proxying email to Strapi endpoint", {
         requestId,
+        endpoint,
         hasText: !!text,
         hasHtml: !!html,
       });
     }
 
-    await sendEmail({
-      subject,
-      text,
-      html,
+    const strapiResponse = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(process.env.STRAPI_API_TOKEN && {
+          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+        }),
+      },
+      body: JSON.stringify({ subject, text, html }),
     });
 
-    return NextResponse.json({
-      success: true,
-      message: "Email sent successfully",
-    });
+    const data = await strapiResponse.json().catch(() => ({}));
+
+    if (!strapiResponse.ok || (data && data.success === false)) {
+      console.error("❌ [EmailAPI] Strapi email endpoint returned error", {
+        requestId,
+        status: strapiResponse.status,
+        data,
+      });
+
+      return NextResponse.json(
+        { error: "Failed to send email via email service" },
+        { status: 502 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message:
+          data?.message || "Email sent successfully via external email service",
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("❌ [EmailAPI] Error handling request:", {
       requestId,
