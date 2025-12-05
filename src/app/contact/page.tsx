@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Section } from "@/components/shared/Section";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedCard } from "@/components/shared/AnimatedCard";
+import { ContactForm } from "@/components/shared/ContactForm";
 import { getContactPageData, getContactInfo } from "@/lib/api";
 import type { ContactInfo, ContactPageData } from "@/types";
 
@@ -163,30 +164,15 @@ export default async function ContactPage() {
           })}
         </div>
 
-        {/* Information Section */}
+        {/* Send Message Section - Contact Form Only */}
         {(generalInquiryText || urgentMattersText) && (
           <div className="w-full mt-8 sm:mt-10 md:mt-12">
-            <Card className="w-full border border-gray-200/60 shadow-lg">
-              <CardContent className="p-5 sm:p-6 md:p-8">
-                <div className="space-y-4 sm:space-y-5">
-                  {contactPageData?.messageSectionTitle && (
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text mb-3">
-                      {contactPageData.messageSectionTitle}
-                    </h2>
-                  )}
-                  {generalInquiryText && (
-                    <p className="text-sm sm:text-base text-text-light leading-relaxed">
-                      {generalInquiryText}
-                    </p>
-                  )}
-                  {urgentMattersText && (
-                    <p className="text-xs sm:text-sm text-text-light/80 italic">
-                      {urgentMattersText}
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="w-full max-w-3xl mx-auto">
+              <ContactForm
+                generalInquiryText={generalInquiryText || undefined}
+                urgentMattersText={urgentMattersText || undefined}
+              />
+            </div>
           </div>
         )}
       </Section>

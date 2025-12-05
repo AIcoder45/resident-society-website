@@ -34,6 +34,14 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
 
+  const effectiveGeneralInquiryText =
+    generalInquiryText ||
+    "For general inquiries, suggestions, or feedback, please reach out using the form below or the contact details above.";
+
+  const effectiveUrgentMattersText =
+    urgentMattersText ||
+    "For urgent matters, please call or visit the management office during business hours for the fastest response.";
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof ContactFormData, string>> = {};
 
@@ -73,12 +81,24 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
     setSubmitMessage("");
 
     try {
-      const response = await fetch("/api/contact", {
+      const emailPayload = {
+        subject: `Contact Form: ${formData.subject}`,
+        text: `New contact form submission:\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || "N/A"}\n\nMessage:\n${formData.message}`,
+        html: `<h2>New contact form submission</h2>
+<p><strong>Name:</strong> ${formData.name}</p>
+<p><strong>Email:</strong> ${formData.email}</p>
+<p><strong>Phone:</strong> ${formData.phone || "N/A"}</p>
+<p><strong>Subject:</strong> ${formData.subject}</p>
+<p><strong>Message:</strong></p>
+<p>${formData.message.replace(/\n/g, "<br />")}</p>`,
+      };
+
+      const response = await fetch("/api/emails/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(emailPayload),
       });
 
       const data = await response.json();
@@ -126,14 +146,14 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text mb-3">
               Send us a Message
             </h2>
-            {generalInquiryText && (
+            {effectiveGeneralInquiryText && (
               <p className="text-sm sm:text-base text-text-light mb-2 leading-relaxed">
-                {generalInquiryText}
+                {effectiveGeneralInquiryText}
               </p>
             )}
-            {urgentMattersText && (
+            {effectiveUrgentMattersText && (
               <p className="text-xs sm:text-sm text-text-light/80 italic">
-                {urgentMattersText}
+                {effectiveUrgentMattersText}
               </p>
             )}
           </div>
