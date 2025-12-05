@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       (!html || typeof html !== "string")
     ) {
       return NextResponse.json(
-        { error: "Either text or html content is required" },
+        { error: "Either text or html content is required " },
         { status: 400 },
       );
     }
