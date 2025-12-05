@@ -38,9 +38,7 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
     generalInquiryText ||
     "For general inquiries, suggestions, or feedback, please reach out using the form below or the contact details above.";
 
-  const effectiveUrgentMattersText =
-    urgentMattersText ||
-    "For urgent matters, please call or visit the management office during business hours for the fastest response.";
+  const effectiveUrgentMattersText = urgentMattersText || "";
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof ContactFormData, string>> = {};
@@ -213,7 +211,7 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
                 type="tel"
                 name="phone"
                 label="Phone Number (Optional)"
-                placeholder="+1 (555) 123-4567"
+                placeholder="+91 98765 43210"
                 value={formData.phone}
                 onChange={handleChange}
                 error={errors.phone}
