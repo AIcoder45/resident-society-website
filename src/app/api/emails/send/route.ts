@@ -43,6 +43,9 @@ export async function POST(request: NextRequest) {
       process.env.STRAPI_EMAIL_ENDPOINT ||
       "https://admin.greenwoodscity.in/api/emails/send";
 
+    // Prefer STRAPI_API_TOKEN but fall back to generic API_TOKEN for auth
+    const apiToken = process.env.STRAPI_API_TOKEN || process.env.API_TOKEN;
+
     if (process.env.NODE_ENV === "development") {
       console.log("📨 [EmailAPI] Proxying email to Strapi endpoint", {
         requestId,
@@ -56,8 +59,8 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(process.env.STRAPI_API_TOKEN && {
-          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+        ...(apiToken && {
+          Authorization: `Bearer ${apiToken}`,
         }),
       },
       body: JSON.stringify({ subject, text, html }),
