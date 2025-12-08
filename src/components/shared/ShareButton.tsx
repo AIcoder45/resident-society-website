@@ -4,6 +4,7 @@ import * as React from "react";
 import { Share2, Facebook, Twitter, MessageCircle, Linkedin, Mail, Copy, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface ShareButtonProps {
@@ -82,6 +83,9 @@ export function ShareButton({
         text: shareDescription,
         url: shareUrl,
       });
+      trackEvent("share_action", {
+        method: "web_share",
+      });
     } catch (error) {
       // User cancelled or error occurred
       if (error instanceof Error && error.name !== "AbortError") {
@@ -96,6 +100,9 @@ export function ShareButton({
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      trackEvent("share_action", {
+        method: "copy_link",
+      });
     } catch (error) {
       console.error("Failed to copy:", error);
       // Fallback for older browsers
@@ -128,6 +135,10 @@ export function ShareButton({
     if (link) {
       window.open(link, "_blank", "width=600,height=400,noopener,noreferrer");
       setIsOpen(false);
+      trackEvent("share_action", {
+        method: "social",
+        platform,
+      });
     }
   };
 

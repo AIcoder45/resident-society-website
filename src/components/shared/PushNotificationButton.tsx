@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bell, BellOff } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://admin.greenwoodscity.in';
 const FIRST_VISIT_KEY = 'push-notification-first-visit';
@@ -19,6 +20,18 @@ export default function PushNotificationButton() {
   const [hasCheckedFirstVisit, setHasCheckedFirstVisit] = useState(false);
 
   useEffect(() => {
+    // Temporary debug: log selected public env vars in browser console.
+    // Remove this after verifying env configuration.
+    // eslint-disable-next-line no-console
+    console.log('Env debug (client)', {
+      NODE_ENV: process.env.NODE_ENV,
+      NEXT_PUBLIC_STRAPI_URL: process.env.NEXT_PUBLIC_STRAPI_URL,
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+      NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+      VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY,
+      VAPID_PRIVATE_KEY : process.env.VAPID_PRIVATE_KEY 
+    });
+
     // Check if browser supports push notifications
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       setIsSupported(true);
@@ -61,7 +74,15 @@ export default function PushNotificationButton() {
 
   async function checkSubscription(): Promise<boolean> {
     try {
-      const registration = await navigator.serviceWorker.ready;
+      // Avoid waiting on navigator.serviceWorker.ready before a worker is registered,
+      // which can cause the button to stay disabled.
+      const registration = await navigator.serviceWorker.getRegistration('/sw.js');
+
+      if (!registration) {
+        setIsSubscribed(false);
+        return false;
+      }
+
       const subscription = await registration.pushManager.getSubscription();
       const subscribed = !!subscription;
       setIsSubscribed(subscribed);
@@ -114,7 +135,10 @@ export default function PushNotificationButton() {
       // 2. Get VAPID public key from environment variable
       const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!vapidPublicKey) {
-        throw new Error('VAPID public key not configured. Please check your environment variables.');
+        console.error('Push notifications disabled: VAPID public key not configured.');
+        alert('Push notifications are not available right now. Please try again later.');
+        setIsLoading(false);
+        return;
       }
 
       // 3. Convert VAPID key to Uint8Array
@@ -167,6 +191,9 @@ export default function PushNotificationButton() {
         setIsSubscribed(true);
         console.log('Successfully subscribed to push notifications');
         alert('Successfully subscribed to push notifications!');
+        trackEvent('push_subscribe', {
+          device: navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop',
+        });
       } else {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error?.message || 'Failed to save subscription');
@@ -175,6 +202,9 @@ export default function PushNotificationButton() {
       console.error('Error subscribing to push:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       alert(`Failed to subscribe to push notifications: ${errorMessage}`);
+      trackEvent('push_subscribe', {
+        error_message: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -213,6 +243,7 @@ export default function PushNotificationButton() {
         setIsSubscribed(false);
         console.log('Successfully unsubscribed from push notifications');
         alert('Unsubscribed from push notifications');
+        trackEvent('push_unsubscribe');
       }
     } catch (error) {
       console.error('Error unsubscribing:', error);

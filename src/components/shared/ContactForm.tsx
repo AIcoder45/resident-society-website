@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { trackEvent } from "@/lib/analytics";
 
 interface ContactFormData {
   name: string;
@@ -112,13 +113,24 @@ export function ContactForm({ generalInquiryText, urgentMattersText }: ContactFo
           message: "",
         });
         setErrors({});
+
+        trackEvent("contact_form_submit", {
+          subject: formData.subject,
+          has_phone: Boolean(formData.phone?.trim()),
+        });
       } else {
         setSubmitStatus("error");
         setSubmitMessage(data.error || "Failed to send message. Please try again later.");
+        trackEvent("contact_form_submit_error", {
+          error_message: data.error || "Unknown server error",
+        });
       }
     } catch (error) {
       setSubmitStatus("error");
       setSubmitMessage("Network error. Please check your connection and try again.");
+      trackEvent("contact_form_submit_error", {
+        error_message: error instanceof Error ? error.message : "Network error",
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X, Download, Share2, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toastSuccess, toastInfo, toastError } from "@/lib/utils/toast";
+import { trackEvent } from "@/lib/analytics";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -57,6 +58,9 @@ export function PWAInstallPrompt() {
         // Show prompt after a delay to avoid interrupting initial load
         setTimeout(() => {
           setShowPrompt(true);
+          trackEvent("pwa_install_prompt_shown", {
+            method: "beforeinstallprompt",
+          });
         }, 2000);
       }
     };
@@ -69,6 +73,9 @@ export function PWAInstallPrompt() {
       setShowPrompt(false);
       setShowIOSInstructions(false);
       toastSuccess("App installed!", "The app has been added to your home screen.");
+      trackEvent("pwa_install_accepted", {
+        method: "appinstalled_event",
+      });
     };
 
     window.addEventListener("appinstalled", handleAppInstalled);
@@ -147,20 +154,32 @@ export function PWAInstallPrompt() {
           toastSuccess("App installed!", "The app has been added to your home screen.");
           // Clear deferred prompt after successful installation
           setDeferredPrompt(null);
+          trackEvent("pwa_install_accepted", {
+            method: "beforeinstallprompt",
+          });
         } else {
           // User dismissed, hide prompt
           setShowPrompt(false);
           setDeferredPrompt(null);
+          trackEvent("pwa_install_dismissed", {
+            method: "beforeinstallprompt",
+          });
         }
       } else if (isIOS) {
         // For iOS Safari, show visual instructions
         setShowPrompt(false);
         setShowIOSInstructions(true);
         toastInfo("Installation Instructions", "Follow the steps shown below to add the app to your home screen.");
+        trackEvent("pwa_install_prompt_shown", {
+          method: "ios_manual",
+        });
       } else {
         // For Android browsers without beforeinstallprompt
         setShowPrompt(false);
         toastInfo("Installation Instructions", "Tap the menu (⋮) → Select 'Add to Home Screen' or 'Install App'");
+        trackEvent("pwa_install_prompt_shown", {
+          method: "manual",
+        });
       }
     } catch (error) {
       console.error("Error installing PWA:", error);
@@ -182,6 +201,9 @@ export function PWAInstallPrompt() {
     setShowIOSInstructions(false);
     // Remember dismissal for this session
     sessionStorage.setItem("pwa-install-dismissed", "true");
+    trackEvent("pwa_install_dismissed", {
+      method: isIOS ? "ios" : "banner",
+    });
   };
 
   const handleCloseIOSInstructions = () => {
