@@ -54,7 +54,17 @@ export async function POST(request: NextRequest) {
     // Send test notification
     try {
       const webpush = (await import("web-push")).default;
-      
+
+      // Temporary server-side debug for VAPID configuration.
+      // Check your server logs (not browser console) to verify these.
+      // Remove this once you have confirmed values.
+      // eslint-disable-next-line no-console
+      console.log("VAPID config (server)", {
+        hasPublic: !!process.env.VAPID_PUBLIC_KEY,
+        hasPrivate: !!process.env.VAPID_PRIVATE_KEY,
+        email: process.env.VAPID_EMAIL,
+      });
+
       webpush.setVapidDetails(
         process.env.VAPID_EMAIL || "mailto:notifications@greenwoodcity.com",
         process.env.VAPID_PUBLIC_KEY || "",
