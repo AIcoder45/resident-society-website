@@ -37,9 +37,10 @@ const nextConfig = {
       "default-src 'self'",
       // Next.js requires unsafe-inline for hydration scripts
       // unsafe-eval is only needed in development for React Fast Refresh
+      // Google Analytics (gtag.js) is loaded from googletagmanager.com and sends data to google-analytics.com
       isDevelopment
-        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-        : "script-src 'self' 'unsafe-inline'",
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com"
+        : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Tailwind inline styles + Google Fonts
       "font-src 'self' https://fonts.gstatic.com data:", // Google Fonts + data URIs for font loading
       "img-src 'self' data: blob: http://admin.greenwoodscity.in https://admin.greenwoodscity.in http://localhost:1337 https:", // Images from Strapi (HTTP/HTTPS) and HTTPS sources

@@ -81,10 +81,29 @@ export async function POST(request: NextRequest) {
     );
 
     const subscriptionsData = await subscriptionsResponse.json();
-    const subscriptions = subscriptionsData.data || [];
+    const rawSubscriptions = subscriptionsData?.data ?? [];
+
+    // Normalize Strapi subscription format: { id, attributes: { endpoint, keys } }
+    const subscriptions = rawSubscriptions
+      .map((sub: any) => {
+        const attributes = sub?.attributes;
+        if (!attributes?.endpoint || !attributes?.keys) {
+          console.warn("Push subscription missing endpoint/keys, skipping", {
+            id: sub?.id,
+          });
+          return null;
+        }
+
+        return {
+          id: sub.id,
+          endpoint: attributes.endpoint,
+          keys: attributes.keys,
+        };
+      })
+      .filter((sub: any) => sub !== null);
 
     if (subscriptions.length === 0) {
-      console.log("No push subscriptions found");
+      console.log("No valid push subscriptions found");
       return NextResponse.json({ message: "No subscriptions" });
     }
 

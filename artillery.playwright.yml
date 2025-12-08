@@ -1,0 +1,24 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    # Ramp up to approximately 40 active browser sessions
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 40
+      name: "ramp-up-to-40-browsers"
+  engines:
+    playwright:
+      launchOptions:
+        headless: true
+      contextOptions:
+        viewport:
+          width: 1280
+          height: 720
+
+scenarios:
+  - name: "homepage-and-contact-under-load"
+    engine: playwright
+    flowScript: "./playwright-scenario.js"
+
+
+
