@@ -10,6 +10,7 @@ import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
 import { OfflineHandler } from "@/components/shared/OfflineHandler";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { LenisProvider } from "@/components/shared/LenisProvider";
 import { PullToRefresh } from "@/components/shared/PullToRefresh";
 import { Analytics } from "@/components/shared/Analytics";
 import type { Theme } from "@/types";
@@ -27,25 +28,27 @@ interface ClientLayoutProps {
 export function ClientLayout({ theme, children }: ClientLayoutProps) {
   return (
     <ErrorBoundary>
-      <ThemeProvider theme={theme}>
-        <PullToRefresh>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1 pb-14 sm:pb-16 lg:pb-0">{children}</main>
-            <Footer />
-            <PWAInstallPrompt />
-            <OfflineHandler />
-          </div>
-        </PullToRefresh>
-        <Analytics />
-        <MobileBottomNav />
-        <Toaster 
-          position="top-center" 
-          duration={5000}
-          richColors
-          closeButton
-        />
-      </ThemeProvider>
+      <LenisProvider>
+        <ThemeProvider theme={theme}>
+          <PullToRefresh>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1 pb-14 sm:pb-16 lg:pb-0">{children}</main>
+              <Footer />
+              <PWAInstallPrompt />
+              <OfflineHandler />
+            </div>
+          </PullToRefresh>
+          <Analytics />
+          <MobileBottomNav />
+          <Toaster 
+            position="top-center" 
+            duration={5000}
+            richColors
+            closeButton
+          />
+        </ThemeProvider>
+      </LenisProvider>
     </ErrorBoundary>
   );
 }

@@ -21,7 +21,7 @@
   /* Base font size: 16px minimum for mobile (prevents auto-zoom) */
   html {
     font-size: 16px;
-    scroll-behavior: smooth;
+    /* Let Lenis fully control scroll behavior */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /* Allow pinch-to-zoom but control initial scale */
