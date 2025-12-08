@@ -11,6 +11,7 @@ import { OfflineHandler } from "@/components/shared/OfflineHandler";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { PullToRefresh } from "@/components/shared/PullToRefresh";
+import { Analytics } from "@/components/shared/Analytics";
 import type { Theme } from "@/types";
 
 interface ClientLayoutProps {
@@ -36,6 +37,7 @@ export function ClientLayout({ theme, children }: ClientLayoutProps) {
             <OfflineHandler />
           </div>
         </PullToRefresh>
+        <Analytics />
         <MobileBottomNav />
         <Toaster 
           position="top-center" 
