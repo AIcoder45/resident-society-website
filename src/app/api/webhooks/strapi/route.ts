@@ -45,6 +45,15 @@ export async function POST(request: NextRequest) {
     const authHeader = request.headers.get("authorization");
     const expectedToken = process.env.STRAPI_API_TOKEN;
 
+    // If the server isn't configured with a token, return a clearer error
+    if (!expectedToken) {
+      console.error("Webhook error: STRAPI_API_TOKEN is not set in the environment");
+      return NextResponse.json(
+        { error: "Server token not configured" },
+        { status: 500 }
+      );
+    }
+
     if (authHeader !== `Bearer ${expectedToken}`) {
       return NextResponse.json(
         { error: "Unauthorized" },
