@@ -32,9 +32,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  // Get the site URL - fallback to production URL if not set
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://greenwoodscity.in';
+  const pageUrl = `${siteUrl}/news/${news.slug}`;
+  
+  // Ensure image URL is absolute
+  const imageUrl = news.image 
+    ? news.image.startsWith('http') 
+      ? news.image 
+      : `${siteUrl}${news.image}`
+    : `${siteUrl}/logo.png`; // Fallback to logo
+
   return {
     title: `${news.title} - Greenwood City`,
     description: news.shortDescription,
+    openGraph: {
+      title: news.title,
+      description: news.shortDescription,
+      url: pageUrl,
+      siteName: 'Greenwood City Block C',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: news.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'article',
+      publishedTime: news.publishedAt,
+      authors: ['Greenwood City Block C'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: news.title,
+      description: news.shortDescription,
+      images: [imageUrl],
+    },
   };
 }
 
