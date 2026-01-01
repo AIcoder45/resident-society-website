@@ -36,9 +36,45 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  // Get the site URL - fallback to production URL if not set
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://greenwoodscity.in';
+  const pageUrl = `${siteUrl}/advertisements/${advertisement.id}`;
+  
+  // Ensure image URL is absolute
+  const imageUrl = advertisement.image 
+    ? advertisement.image.startsWith('http') 
+      ? advertisement.image 
+      : `${siteUrl}${advertisement.image}`
+    : `${siteUrl}/logo.png`; // Fallback to logo
+
+  // Extract plain text description (remove HTML tags if present)
+  const plainDescription = advertisement.description?.replace(/<[^>]*>/g, '').substring(0, 200) || 'Check out this local advertisement';
+
   return {
     title: `${advertisement.title} - Greenwood City`,
-    description: advertisement.description,
+    description: plainDescription,
+    openGraph: {
+      title: advertisement.title,
+      description: plainDescription,
+      url: pageUrl,
+      siteName: 'Greenwood City Block C',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: advertisement.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: advertisement.title,
+      description: plainDescription,
+      images: [imageUrl],
+    },
   };
 }
 
