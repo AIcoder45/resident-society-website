@@ -223,13 +223,11 @@ export default async function EventDetailPage({ params }: Props) {
               </>
             )}
 
-            {/* Event Analytics Section - After button, only for upcoming events */}
-            {isUpcoming && (
-              <>
-                <Separator />
-                <EventAnalytics eventId={event.id} />
-              </>
-            )}
+            {/* Event Analytics Section - Show for all events */}
+            <>
+              <Separator />
+              <EventAnalytics eventId={event.id} />
+            </>
           </div>
         </Section>
       </article>
