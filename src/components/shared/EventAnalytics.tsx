@@ -45,11 +45,48 @@ export function EventAnalytics({ eventId }: EventAnalyticsProps) {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`/api/event-interests/event/${eventId}`);
+        const apiUrl = `/api/event-interests/event/${eventId}`;
+        
+        // Log in production for debugging
+        if (process.env.NODE_ENV === "production") {
+          console.log("[EventAnalytics] Fetching:", apiUrl);
+        }
+
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Don't cache in production to ensure fresh data
+          cache: "no-store",
+        });
+
+        // Check if response is ok before parsing JSON
+        if (!response.ok) {
+          const errorText = await response.text();
+          let errorData;
+          try {
+            errorData = JSON.parse(errorText);
+          } catch {
+            errorData = { error: errorText || `HTTP ${response.status}` };
+          }
+          
+          const errorMessage = errorData.error || `Failed to fetch analytics (${response.status})`;
+          console.error("[EventAnalytics] API Error:", {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData,
+            url: apiUrl,
+          });
+          throw new Error(errorMessage);
+        }
+
         const result = await response.json();
 
-        if (!response.ok || !result.success) {
-          throw new Error(result.error || "Failed to fetch analytics");
+        if (!result.success) {
+          const errorMessage = result.error || "Failed to fetch analytics";
+          console.error("[EventAnalytics] Response error:", result);
+          throw new Error(errorMessage);
         }
 
         // Handle Strapi custom endpoint response structure
@@ -112,10 +149,13 @@ export function EventAnalytics({ eventId }: EventAnalyticsProps) {
           registrations: interests,
         });
       } catch (err) {
-        console.error("Error fetching event analytics:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load analytics"
-        );
+        const errorMessage = err instanceof Error ? err.message : "Failed to load analytics";
+        console.error("[EventAnalytics] Error:", {
+          error: errorMessage,
+          eventId,
+          details: err,
+        });
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -165,17 +205,38 @@ export function EventAnalytics({ eventId }: EventAnalyticsProps) {
     );
   }
 
-  if (!analytics || analytics.totalRegistrations === 0) {
+  // Show component even if no registrations (don't hide it)
+  if (!analytics) {
+    return null; // Still loading or error state handled above
+  }
+
+  if (analytics.totalRegistrations === 0) {
     return (
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-            Event Attendance
+            Event Attendance Analytics
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-xs sm:text-sm text-text-light text-center py-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <div className="bg-primary/10 rounded-lg p-2 sm:p-3 border border-primary/20">
+              <div className="flex items-center gap-1 mb-1">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                <span className="text-xs font-medium text-text">Total Members</span>
+              </div>
+              <p className="text-lg sm:text-xl font-bold text-primary">0</p>
+            </div>
+            <div className="bg-blue-50 rounded-lg p-2 sm:p-3 border border-blue-200">
+              <div className="flex items-center gap-1 mb-1">
+                <Home className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
+                <span className="text-xs font-medium text-text">Houses</span>
+              </div>
+              <p className="text-lg sm:text-xl font-bold text-blue-600">0</p>
+            </div>
+          </div>
+          <p className="text-xs sm:text-sm text-text-light text-center py-3 mt-3">
             No registrations yet. Be the first to mark your availability!
           </p>
         </CardContent>
