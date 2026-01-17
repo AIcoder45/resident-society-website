@@ -27,6 +27,7 @@ export interface CheckEventInterestResponse {
       contactNumber?: string; // Support both for backward compatibility
       numberOfMembers?: number;
       attendeeCount?: number; // Support both for backward compatibility
+      notes?: string;
       showInterest?: boolean;
       interested?: string; // Support both for backward compatibility
     } | null;
@@ -105,6 +106,7 @@ export async function checkEventInterest(
         residentName: interest.name || interest.residentName,
         contactNumber: interest.mobileNo || interest.contactNumber,
         attendeeCount: interest.numberOfMembers || interest.attendeeCount || 1,
+        notes: interest.notes,
         interested: interest.showInterest !== undefined ? (interest.showInterest ? "yes" : "no") : interest.interested || "yes",
       };
     }
