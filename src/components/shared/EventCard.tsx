@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, isEventUpcoming } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { MarkAvailabilityButton } from "./MarkAvailabilityButton";
 import type { Event } from "@/types";
 
 /**
@@ -57,7 +58,7 @@ export function EventCard({ event, className, compact = false }: EventCardProps)
       className={cn("w-full min-w-0", className)}
     >
         <Card className="h-full w-full overflow-hidden active:scale-[0.98] sm:active:scale-100 bg-white border border-gray-200/60 rounded-xl transition-all duration-300 ease-out hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/30 group cursor-pointer flex flex-col relative">
-        <Link href={`/events/${event.slug}`} className="absolute inset-0 z-0 touch-manipulation tap-feedback" aria-label={`View event: ${event.title}`} />
+        <Link href={`/events/${event.slug}`} className="absolute inset-0 z-0 touch-manipulation tap-feedback" aria-label={`View event: ${event.title}`} style={{ zIndex: 0 }} />
           {/* Upcoming Badge - Show on card regardless of image */}
           {/* Always render the div to maintain consistent DOM structure */}
             <div
@@ -168,6 +169,27 @@ export function EventCard({ event, className, compact = false }: EventCardProps)
                 compact ? "text-[9px] sm:text-[10px]" : "text-[10px] sm:text-xs"
               )}>{displayDescription}</p>
                 )}
+            
+            {/* Mark Availability Button - Only show for upcoming events */}
+            {mounted && isUpcoming && (
+              <div 
+                className={cn(
+                  "mt-2 pt-2 border-t border-gray-100 relative z-10",
+                  compact ? "pt-1.5" : "pt-2"
+                )}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MarkAvailabilityButton
+                  event={event}
+                  variant="outline"
+                  size={compact ? "sm" : "default"}
+                  className={cn(
+                    "w-full",
+                    compact ? "text-[9px] sm:text-[10px] h-7 sm:h-8" : "text-xs sm:text-sm"
+                  )}
+                />
+              </div>
+            )}
               </div>
         </Card>
     </motion.div>
