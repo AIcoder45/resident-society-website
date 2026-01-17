@@ -199,3 +199,25 @@ export interface VisionMission {
   visionImage?: string;
   missionImage?: string; // Optional - not displayed currently
 }
+
+export interface EventInterest {
+  event: string; // Event ID
+  houseNumber: string; // e.g., "C-101"
+  floorNumber: string; // e.g., "First", "Second", etc.
+  residentName: string;
+  attendeeCount: number; // Minimum 1
+  contactNumber: string;
+  notes?: string; // Optional
+  interested: "yes"; // Always "yes"
+}
+
+export interface EventInterestFormData {
+  event: string;
+  floorNumber: string;
+  houseNumber: string;
+  residentName: string;
+  attendeeCount: number;
+  contactNumber: string;
+  notes: string;
+  interested: "yes";
+}

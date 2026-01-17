@@ -7,6 +7,8 @@ import { Section } from "@/components/shared/Section";
 import { Separator } from "@/components/ui/separator";
 import { RichTextContent } from "@/components/shared/RichTextContent";
 import { PageShareButton } from "@/components/shared/PageShareButton";
+import { EventAnalytics } from "@/components/shared/EventAnalytics";
+import { MarkAvailabilityButton } from "@/components/shared/MarkAvailabilityButton";
 import { getEventBySlug, getEvents } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
@@ -208,6 +210,24 @@ export default async function EventDetailPage({ params }: Props) {
                     ))}
                   </div>
                 </div>
+              </>
+            )}
+
+            {/* Mark Availability Button - Small, at end of page, only for upcoming events */}
+            {isUpcoming && (
+              <>
+                <Separator />
+                <div className="flex justify-center">
+                  <MarkAvailabilityButton event={event} size="sm" />
+                </div>
+              </>
+            )}
+
+            {/* Event Analytics Section - After button, only for upcoming events */}
+            {isUpcoming && (
+              <>
+                <Separator />
+                <EventAnalytics eventId={event.id} />
               </>
             )}
           </div>

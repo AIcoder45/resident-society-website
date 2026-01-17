@@ -407,3 +407,5 @@ All details are in these files:
 
 **Ready to fix it? Choose a solution and follow the guide in `SOCIAL_MEDIA_IMAGE_FIX.md`!** 📖
 
+
+
