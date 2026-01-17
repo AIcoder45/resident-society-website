@@ -7,7 +7,6 @@ import {
   User,
   Users,
   Phone,
-  FileText,
   Loader2,
   AlertCircle,
   CircleDot,
@@ -16,7 +15,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { submitEventInterest, checkEventInterest } from "@/lib/event-interest";
 import type { Event, EventInterestFormData } from "@/types";
 
@@ -469,28 +467,6 @@ export function AvailabilityForm({
             className="h-8 text-sm"
           />
         </div>
-      </div>
-
-      {/* Notes (Optional) - Compact */}
-      <div>
-        <label
-          htmlFor="notes"
-          className="flex items-center text-xs font-medium text-text mb-1"
-        >
-          <FileText className="h-3 w-3 mr-1 text-gray-500 flex-shrink-0" />
-          <span className="text-gray-500">Notes</span>
-        </label>
-        <Textarea
-          id="notes"
-          name="notes"
-          placeholder="Additional info..."
-          value={formData.notes}
-          onChange={handleChange}
-          error={errors.notes}
-          disabled={isSubmitting}
-          rows={2}
-          className="resize-none text-sm"
-        />
       </div>
 
       {/* Submit and Cancel Buttons - Compact */}
